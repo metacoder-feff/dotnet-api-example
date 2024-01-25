@@ -1,0 +1,6 @@
+@MegaBack_HostAddress = http://localhost:5194
+
+GET {{MegaBack_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
