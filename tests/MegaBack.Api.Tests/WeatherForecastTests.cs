@@ -20,13 +20,16 @@ public class WeatherForecastTests : IntegrationTest
         var response = await _client.GetAsync(url);
 
         // Assert
-        response.EnsureSuccessStatusCode(); // Status Code 200-299
+        Assert.InRange((int)response.StatusCode, 200, 299);
         Assert.Equal("application/json; charset=utf-8",
-                    response.Content?.Headers?.ContentType?.ToString());
+                     response.Content?.Headers?.ContentType?.ToString()
+        );
 
+        // Act
         var body = await response.Content?.ReadAsStringAsync()!;
         var json = JsonNode.Parse(body)!;
 
+        // Assert
         var arr = (JsonArray)json;
         Assert.Equal(5, arr.Count);
         Assert.All(arr, (val, idx) =>
