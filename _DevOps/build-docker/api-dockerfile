@@ -4,9 +4,9 @@ WORKDIR /App
 # Copy everything
 COPY . ./
 # Restore as distinct layers
-RUN dotnet restore                   src/MegaBackApi/MegaBackApi.csproj
+RUN dotnet restore                   src/MegaBack.Api/MegaBack.Api.csproj
 # Build and publish a release
-RUN dotnet publish -c Release -o out src/MegaBackApi/MegaBackApi.csproj
+RUN dotnet publish -c Release -o out src/MegaBack.Api/MegaBack.Api.csproj
 
 
 # Build runtime image
@@ -15,4 +15,4 @@ EXPOSE 8080
 WORKDIR /App
 COPY --from=build-env /App/out .
 RUN ls -hal .
-ENTRYPOINT ["dotnet", "MegaBackApi.dll"]
+ENTRYPOINT ["dotnet", "MegaBack.Api.dll"]

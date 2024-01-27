@@ -1,4 +1,4 @@
-namespace MegaBackApi;
+namespace MegaBack.Api;
 
 public class WeatherForecast
 {
