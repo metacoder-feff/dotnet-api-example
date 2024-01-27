@@ -1,5 +1,38 @@
-#https://github.com/gothinkster/aspnetcore-realworld-example-app/blob/master/.dockerignore
+# Multiple sources ...
+# 1. FROM: gitlab .Net template
+*.swp
+*.*~
+project.lock.json
+.DS_Store
+*.pyc
+nupkg/
 
+# Visual Studio Code
+.vscode
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+# 2. FROM: https://github.com/gothinkster/aspnetcore-realworld-example-app/blob/master/.dockerignore
 # Created by https://www.gitignore.io/api/csharp
 
 ### Csharp ###
