@@ -29,18 +29,20 @@ public class WeatherForecastTests : IntegrationTest
 
         var arr = (JsonArray)json;
         Assert.Equal(5, arr.Count);
+        Assert.All(arr, (val, idx) =>
+        {
+            var wfc = (JsonObject)val!;
+            //Console.WriteLine(wfc);
 
-//TODO: assert all
-        var first = (JsonObject)arr.First()!;
-        //Console.WriteLine(first);   
-        Assert.Equal(4, first.Count);
+            var dateStr = DateTime.Now.AddDays(idx +1).ToString("yyyy-MM-dd");
 
-        //var tomorrowStr = DateOnly.FromDateTime(DateTime.Now.AddDays(1)).ToShortDateString();
-        var tomorrowStr = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
+            Assert.Equal(dateStr, (string)wfc["date"]!);
+            Assert.InRange  (   (int)wfc["temperatureC"]!, -30, 60);
+            Assert.InRange  (   (int)wfc["temperatureF"]!, -15, 150);
+            Assert.NotEmpty ((string)wfc["summary"]!);   
 
-        Assert.Equal(tomorrowStr, (string)first["date"]!);
-        Assert.InRange  ((int)   first["temperatureC"]!, -50, 50);
-        Assert.InRange  ((int)   first["temperatureF"]!, -15, 150);
-        Assert.NotEmpty ((string)first["summary"]!);        
+            // no more props
+            Assert.Equal(4, wfc.Count);
+        });
     }
 }

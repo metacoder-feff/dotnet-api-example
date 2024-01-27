@@ -78,6 +78,7 @@ public class WeatherForecastController : ControllerBase
             {
                 var x = FindPrimeNumber(_rand.Next(1000) + 1);
                 res += (int) x;
+                res = res % 50; 
             }
 
             var forecast =  Enumerable.Range(1, 5).Select(index =>
