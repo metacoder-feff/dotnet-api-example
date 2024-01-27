@@ -25,9 +25,9 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    //TODO:
     logger.LogInformation("app.Environment.IsDevelopment() == false");
     
+//TODO:
     logger.LogError("disable swagger for prod");
     app.UseSwagger();
     app.UseSwaggerUI();

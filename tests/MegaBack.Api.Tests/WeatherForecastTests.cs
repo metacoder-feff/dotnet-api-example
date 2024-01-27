@@ -1,28 +1,22 @@
-using Microsoft.AspNetCore.Mvc.Testing;
+using MegaBack.Api.Tests.Fixtures;
 
 namespace MegaBack.Api.Tests;
 
-public class BasicTests: IClassFixture<WebApplicationFactory<Program>>
+public class WeatherForecastTests : IntegrationTest
 {
-    private readonly WebApplicationFactory<Program> _factory;
-
-    public BasicTests(WebApplicationFactory<Program> factory)
+    public WeatherForecastTests(ApiWebApplicationFactory fixture)
+        : base(fixture) 
     {
-        _factory = factory;
     }
 
     [Theory]
-    //[InlineData("/")]
     [InlineData("/api/v1/weather_forecast_static")]
     [InlineData("/api/v1/weather_forecast_io_bound")]
     [InlineData("/api/v1/weather_forecast_cpu_bound")]
     public async Task Get_EndpointsReturnSuccessAndCorrectContentType(string url)
     {
-        // Arrange
-        var client = _factory.CreateClient();
-
         // Act
-        var response = await client.GetAsync(url);
+        var response = await _client.GetAsync(url);
 
         // Assert
         response.EnsureSuccessStatusCode(); // Status Code 200-299
