@@ -37,8 +37,8 @@ public class WeatherForecastTests : IntegrationTest
             var dateStr = DateTime.Now.AddDays(idx +1).ToString("yyyy-MM-dd");
 
             Assert.Equal(dateStr, (string)wfc["date"]!);
-            Assert.InRange  (   (int)wfc["temperatureC"]!, -30, 60);
-            Assert.InRange  (   (int)wfc["temperatureF"]!, -15, 150);
+            Assert.InRange  (   (int)wfc["temperature_c"]!, -30, 60);
+            Assert.InRange  (   (int)wfc["temperature_f"]!, -15, 150);
             Assert.NotEmpty ((string)wfc["summary"]!);   
 
             // no more props
