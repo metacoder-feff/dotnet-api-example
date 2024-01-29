@@ -3,8 +3,11 @@ WORKDIR /App
 
 # Copy everything
 COPY . ./
+
 # Restore as distinct layers
-RUN dotnet restore                   src/MegaBack.Api/MegaBack.Api.csproj
+# using packages.lock.json
+RUN dotnet restore --locked-mode     src/MegaBack.Api/MegaBack.Api.csproj
+
 # Build and publish a release
 RUN dotnet publish -c Release -o out src/MegaBack.Api/MegaBack.Api.csproj
 
