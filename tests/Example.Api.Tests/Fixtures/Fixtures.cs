@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace MegaBack.Api.Tests.Fixtures;
+namespace Example.Api.Tests.Fixtures;
 
 public class ApiWebApplicationFactory: WebApplicationFactory<Program>
 {

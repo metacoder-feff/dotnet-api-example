@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
-using MegaBack.Api.Tests.Fixtures;
+using Example.Api.Tests.Fixtures;
 
-namespace MegaBack.Api.Tests;
+namespace Example.Api.Tests;
 
 public class WeatherForecastTests : IntegrationTest
 {

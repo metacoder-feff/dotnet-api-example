@@ -5,11 +5,11 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9B232E28-4D7B-442A-B17C-8B135DB46F83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MegaBack.Api.Tests", "tests\MegaBack.Api.Tests\MegaBack.Api.Tests.csproj", "{0F3626B7-6B75-47B9-8C90-E77791528FE4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.Api.Tests", "tests\Example.Api.Tests\Example.Api.Tests.csproj", "{0F3626B7-6B75-47B9-8C90-E77791528FE4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D0D4B2B8-CDC9-455D-809E-D5AF2C89B4C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MegaBack.Api", "src\MegaBack.Api\MegaBack.Api.csproj", "{B753C029-311E-4F60-B81E-9C5697F2692B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.Api", "src\Example.Api\Example.Api.csproj", "{B753C029-311E-4F60-B81E-9C5697F2692B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,11 +29,11 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {0CC8F81D-9B78-4779-B8D9-1AE54E52CFBA}
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0F3626B7-6B75-47B9-8C90-E77791528FE4} = {9B232E28-4D7B-442A-B17C-8B135DB46F83}
 		{B753C029-311E-4F60-B81E-9C5697F2692B} = {D0D4B2B8-CDC9-455D-809E-D5AF2C89B4C3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0CC8F81D-9B78-4779-B8D9-1AE54E52CFBA}
 	EndGlobalSection
 EndGlobal

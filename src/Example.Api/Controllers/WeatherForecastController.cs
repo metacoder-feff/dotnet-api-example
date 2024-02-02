@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 //using Asp.Versioning;
 
-namespace MegaBack.Api;
+namespace Example.Api;
 
 //[Route("[controller]")]
 //[ApiVersion("0.1")]

@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-     <InternalsVisibleTo Include="MegaBack.Api.Tests" />
+     <InternalsVisibleTo Include="Example.Api.Tests" />
   </ItemGroup>
 
 </Project>
