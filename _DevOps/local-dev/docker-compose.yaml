@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  meg-back:
+    build:
+      context: ../..
+      dockerfile: _DevOps/build-docker/api-dockerfile
+    ports:
+      - "127.0.0.1:8080:8085"
+    labels:
+      app: meg-back
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8085 # default was 8080
+    # env_file:
+    #   - .env
+    healthcheck:
+      test: wget -nv -t1 --spider "http://127.0.0.1:8080/health"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+
+
+
+

@@ -14,8 +14,15 @@ RUN dotnet publish -c Release -o out src/Example.Api/Example.Api.csproj
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
-EXPOSE 8080
+
+# for docker healthcheck
+RUN apt update && apt install wget -y
+
+ENV Logging__Console__FormatterName=Json
+#ENV ASPNETCORE_HTTP_PORTS=8080 # degfault is 8080
+
 WORKDIR /App
 COPY --from=build-env /App/out .
-RUN ls -hal .
+#RUN ls -hal .
+
 ENTRYPOINT ["dotnet", "Example.Api.dll"]
