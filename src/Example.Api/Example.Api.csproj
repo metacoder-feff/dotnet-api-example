@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile> <!-- for swagger comments ... -->
+    <NoWarn>$(NoWarn);1591</NoWarn> <!-- Missing XML comment ... -->
   </PropertyGroup>
 
   <ItemGroup>
