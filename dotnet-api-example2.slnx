@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/lib/">
+    <Project Path="lib/FEFF.Extensions/src/FEFF.Extensions/FEFF.Extensions.csproj" />
+    <Project Path="lib/FEFF.Extensions/src/FEFF.Extensions.Testing/FEFF.Extensions.Testing.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Example.Api/Example.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Example.Tests.Console/Example.Tests.Console.csproj" />
+    <Project Path="tests/Example.Tests/Example.Tests.csproj" />
+    <Project Path="lib/FEFF.Extensions/tests/FEFF.Extensions.Tests/FEFF.Extensions.Tests.csproj" />
+  </Folder>
+</Solution>
