@@ -6,6 +6,7 @@
 + TimeProvider
 + openapi/swagger-ui only in DEV + tests
 + metrics + tests
++ docker-compatible logging (jsonl/stdout)
 
 ## Testing
 + XUnit-3
