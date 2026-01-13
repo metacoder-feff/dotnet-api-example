@@ -6,11 +6,11 @@ using Microsoft.Extensions.Time.Testing;
 
 namespace Example.Tests;
 
-public sealed class TestClient : IDisposable
+public sealed class XUnitHttpClient : IDisposable
 {
     private readonly HttpClient _client;
 
-    public TestClient(HttpClient client)
+    public XUnitHttpClient(HttpClient client)
     {
         _client = client;
     }
@@ -75,10 +75,10 @@ public class AppFactory : WebApplicationFactory<Program>
         _aspEnvironment = env.ToString();
     }
 
-    public TestClient CreateTestClient()
+    public XUnitHttpClient CreateTestClient()
     {
         var httpClient = CreateClient();
-        return new TestClient(httpClient);
+        return new XUnitHttpClient(httpClient);
     }
 }
 
@@ -90,7 +90,7 @@ public class ApiTestBase: IAsyncDisposable
     /// <summary>
     /// Runs AppFactory, creates, memoizes and returns Client.
     /// </summary>
-    protected TestClient Client
+    protected XUnitHttpClient Client
     {
         get
         {
