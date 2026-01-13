@@ -1,3 +1,5 @@
+using Prometheus;
+
 namespace Example.Api;
 
 static class InfrastructureModule
@@ -23,5 +25,13 @@ static class InfrastructureModule
         }
 
         app.UseHttpsRedirection();
+
+        // Enable the /metrics page to export Prometheus metrics.
+        // Metrics published in this sample:
+        // * built-in process metrics giving basic information about the .NET runtime (enabled by default)
+        // * metrics from .NET Event Counters (enabled by default, updated every 10 seconds)
+        // * metrics from .NET Meters (enabled by default)
+        // ref: https://github.com/prometheus-net/prometheus-net/blob/master/Sample.Web/Program.cs
+        app.MapMetrics();
     }
 }
