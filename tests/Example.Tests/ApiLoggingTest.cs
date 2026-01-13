@@ -23,6 +23,14 @@ public class ApiLoggingTest(ITestOutputHelper testOutputHelper) : ApiTestBase
         var ll = str.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
         ll.Should().NotBeEmpty();
         
+        //every line should be a valid Json
+        ll.Should().AllSatisfy(
+            x => x
+                .ParseJToken()
+                .Should()
+                .HaveElement("Timestamp")
+        );
+
         var line = ll
             .First()
             .ParseJToken();
