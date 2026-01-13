@@ -25,15 +25,21 @@ public class ConsoleLoggingTest(ITestOutputHelper testOutputHelper) : ApiTestBas
         
         //every line should be a valid Json
         ll.Should().AllSatisfy(
-            x => x
-                .ParseJToken()
-                .Should()
-                .HaveElement("Timestamp")
+            x => x.Should().BeValidJson()
         );
 
         var line = ll
             .First()
-            .ParseJToken();
+            .ParseJToken(new JTokenParseOptions
+            {
+                DateParseHandling = Newtonsoft.Json.DateParseHandling.None,
+                LoadSettings = new JsonLoadSettings
+                {
+                    DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error,
+                    LineInfoHandling = LineInfoHandling.Ignore,
+                    CommentHandling = CommentHandling.Ignore
+                }
+            });
 
         // {
         //     "Timestamp": "2000-01-01T11:11:11.123456Z",
@@ -43,11 +49,12 @@ public class ConsoleLoggingTest(ITestOutputHelper testOutputHelper) : ApiTestBas
         //      ...
         // }
 
-        line.Should().HaveElement("Timestamp");
+        line.Should().HaveElement("Timestamp").Which.Type.Should().Be(JTokenType.String);
         line.Should().HaveElement("LogLevel").Which.Type.Should().Be(JTokenType.String);
         line.Should().HaveElement("Category").Which.Type.Should().Be(JTokenType.String);
         line.Should().HaveElement("Message").Which.Type.Should().Be(JTokenType.String);
 
 //TODO: assert Timestamp format
+        // var timestr = line["Timestamp"]!.Value<string>();
     }
 }
