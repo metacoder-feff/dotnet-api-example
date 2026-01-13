@@ -2,12 +2,12 @@ using System.Net;
 
 namespace Example.Tests;
 
-public class InfrastructrureApiTest : ApiTestBase
+public class OpenApiTest : ApiTestBase
 {
     [Theory]
     [InlineData(AspEnvironment.Development, HttpStatusCode.OK)]
     [InlineData(AspEnvironment.Production , HttpStatusCode.NotFound)]
-    public async Task Test_swagger_ui_enabled(AspEnvironment env, HttpStatusCode res)
+    public async Task Swagger_ui_should_be_enabled_if(AspEnvironment env, HttpStatusCode res)
     {
         _appFactory.SetAspEnvironment(env);
 
@@ -22,7 +22,7 @@ public class InfrastructrureApiTest : ApiTestBase
     [Theory]
     [InlineData(AspEnvironment.Development, HttpStatusCode.OK)]
     [InlineData(AspEnvironment.Production , HttpStatusCode.NotFound)]
-    public async Task Test_openapi_enabled(AspEnvironment env, HttpStatusCode res)
+    public async Task OpenAPI_should_be_enabled_if(AspEnvironment env, HttpStatusCode res)
     {
         _appFactory.SetAspEnvironment(env);
 
@@ -49,7 +49,7 @@ public class InfrastructrureApiTest : ApiTestBase
     /// This patch would be reviewed at MR/PR.
     /// </summary>
     [Fact]
-    public async Task OpenAPI_json__should_not_change()
+    public async Task OpenAPI_json__should_not_be_changed()
     {
 //TODO: attribute
         Assert.SkipUnless(IsCI, "Only for CI");
@@ -81,13 +81,5 @@ public class InfrastructrureApiTest : ApiTestBase
             .Should()
             .BeEquivalentTo(stored);
             //.BeEquivalentToEX(stored);
-    }
-
-    [Fact]
-    public async Task Test_Metrics()
-    {
-        var body = await Client.GetStringAsync("/metrics");
-
-        body.Should().Contain("dotnet_collection_count_total counter");
     }
 }

@@ -3,7 +3,7 @@ namespace Example.Tests;
 public class ExampleApiTest : ApiTestBase
 {
     [Fact]
-    public async Task Test_example_weatherforecast()
+    public async Task Weatherforecast_should_return()
     {
         // PREPARE
         _appFactory.FakeRandom.FakeNextInt = 2;

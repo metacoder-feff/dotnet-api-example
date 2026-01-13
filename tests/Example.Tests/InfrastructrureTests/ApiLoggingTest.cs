@@ -9,7 +9,7 @@ public class ApiLoggingTest(ITestOutputHelper testOutputHelper) : ApiTestBase
     [Fact(
         Skip = "need '[assembly: CaptureConsole]'"
     )]
-    public async Task Test_LogFormat()
+    public async Task Logs_should_be_written_to_stdout_in_jsonl()
     {
         // ACT
         // just start app
