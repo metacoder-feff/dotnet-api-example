@@ -19,8 +19,6 @@
 
 
 ## TODO:
-- lic
-- push
 - app-exception-log + test
 - auth/jwt + tests + swagger
 - db      + tests
