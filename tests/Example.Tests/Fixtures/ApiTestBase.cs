@@ -99,7 +99,6 @@ public class ApiTestBase: IAsyncDisposable
         }
     }
 
-
     public async ValueTask DisposeAsync()
     {
         await _appFactory.DisposeAsync();
