@@ -4,13 +4,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Time.Testing;
 
-using AwesomeAssertions;
-using AwesomeAssertions.Json;
-using Newtonsoft.Json.Linq;
-
-using Example.Utils;
-using Utils.Testing;
-
 namespace Example.Tests;
 
 public class TestClient : IDisposable

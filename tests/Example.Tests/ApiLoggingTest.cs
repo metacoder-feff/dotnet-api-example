@@ -1,9 +1,3 @@
-using AwesomeAssertions;
-using AwesomeAssertions.Json;
-using Newtonsoft.Json.Linq;
-
-using Utils.Testing;
-
 //TODO: for single test only
 // enable ITestOutputHelper
 //[assembly: CaptureConsole]
