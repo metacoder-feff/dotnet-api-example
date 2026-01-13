@@ -4,7 +4,7 @@
 
 namespace Example.Tests;
 
-public class ApiLoggingTest(ITestOutputHelper testOutputHelper) : ApiTestBase
+public class ConsoleLoggingTest(ITestOutputHelper testOutputHelper) : ApiTestBase
 {
     [Fact(
         Skip = "need '[assembly: CaptureConsole]'"
