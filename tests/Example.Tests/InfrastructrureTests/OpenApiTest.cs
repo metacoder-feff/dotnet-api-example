@@ -36,10 +36,9 @@ public class OpenApiTest : ApiTestBase
     /// If intended to change API, run this test locally and push updated "tests/Files/openapi.json" to repo.
     /// </summary>
     [Fact]
+    [SkipWhenCI("Only for local-dev")]
     public async Task OpenAPI_json__update()
     {
-//TODO: attribute, see tests/tmp/Ext.Exa/SupportedOS.cs        
-        Assert.SkipWhen(IsCI, "Only for local-dev");
         await AssertOrUpdateOpenAPI(false);
     }
 
@@ -49,10 +48,9 @@ public class OpenApiTest : ApiTestBase
     /// This patch would be reviewed at MR/PR.
     /// </summary>
     [Fact]
+    [SkipUnlessCI]
     public async Task OpenAPI_json__should_not_be_changed()
     {
-//TODO: attribute
-        Assert.SkipUnless(IsCI, "Only for CI");
         await AssertOrUpdateOpenAPI(true);
     }
 

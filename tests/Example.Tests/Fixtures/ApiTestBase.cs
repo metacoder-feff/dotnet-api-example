@@ -99,10 +99,6 @@ public class ApiTestBase: IAsyncDisposable
         }
     }
 
-    public static bool IsCI =>
-        Environment.GetEnvironmentVariable("IS_CI_TEST")?
-        .ToLowerInvariant()
-        == "true";
 
     public async ValueTask DisposeAsync()
     {
