@@ -30,13 +30,10 @@ public sealed class XUnitHttpClient : IDisposable
     }
 }
 
-public enum AspEnvironment { Development, Production };
 
-public class AppFactory : WebApplicationFactory<Program>
+public class WebApplicationFactoryEx<TEntryPoint> : WebApplicationFactory<TEntryPoint>
+where TEntryPoint: class
 {
-    public readonly FakeRandom        FakeRandom = new();
-    public readonly FakeTimeProvider  FakeTime   = new(new DateTimeOffset(2000, 1, 1, 0, 0, 0, 0, TimeSpan.Zero));
-
     private readonly List<Action<IWebHostBuilder>> _builderOverrides = [];
 
     public void OverrideBuilder(Action<IWebHostBuilder> action)
@@ -50,6 +47,17 @@ public class AppFactory : WebApplicationFactory<Program>
 
         foreach(var a in _builderOverrides)
             a(builder);
+    }
+}
+
+public class AppFactory : WebApplicationFactoryEx<Program>
+{
+    public readonly FakeRandom        FakeRandom = new();
+    public readonly FakeTimeProvider  FakeTime   = new(new DateTimeOffset(2000, 1, 1, 0, 0, 0, 0, TimeSpan.Zero));
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        base.ConfigureWebHost(builder);
 
         builder.ConfigureAppConfiguration((ctx, configBuilder) =>
         {
@@ -104,13 +112,12 @@ public class ApiTestBase: IAsyncDisposable
     }
 }
 
+public enum AspEnvironment { Development, Production };
+
 public static class WebApplicationFactoryExtention
 {
-    public static void OverrideAspEnvironment(this AppFactory factory, AspEnvironment env)
-
-    //TODO:
-    // public static void OverrideAspEnvironment<T>(this WebApplicationFactory<T> factory, AspEnvironment env)
-    // where T: class
+    public static void OverrideAspEnvironment<T>(this WebApplicationFactoryEx<T> factory, AspEnvironment env)
+    where T: class
     {
         factory.OverrideBuilder(
             b => b.UseEnvironment(env.ToString())
