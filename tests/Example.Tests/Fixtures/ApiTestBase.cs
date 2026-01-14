@@ -30,16 +30,25 @@ public sealed class XUnitHttpClient : IDisposable
     }
 }
 
+public interface IBuilderOverrider
+{
+    void AddBuilderOverride(Action<IWebHostBuilder> action);
+}
+
+internal class BuilderOverrideList : List<Action<IWebHostBuilder>>, IBuilderOverrider
+{
+    public void AddBuilderOverride(Action<IWebHostBuilder> action)
+    {
+        this.Add(action);
+    }
+}
 
 public class WebApplicationFactoryEx<TEntryPoint> : WebApplicationFactory<TEntryPoint>
 where TEntryPoint: class
 {
-    private readonly List<Action<IWebHostBuilder>> _builderOverrides = [];
+    private readonly BuilderOverrideList _builderOverrides = [];
 
-    public void OverrideBuilder(Action<IWebHostBuilder> action)
-    {
-        _builderOverrides.Add(action);
-    }
+    public IBuilderOverrider BuilderOverrider => _builderOverrides;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -116,10 +125,9 @@ public enum AspEnvironment { Development, Production };
 
 public static class WebApplicationFactoryExtention
 {
-    public static void OverrideAspEnvironment<T>(this WebApplicationFactoryEx<T> factory, AspEnvironment env)
-    where T: class
+    public static void UseAspEnvironment(this IBuilderOverrider factory, AspEnvironment env)
     {
-        factory.OverrideBuilder(
+        factory.AddBuilderOverride(
             b => b.UseEnvironment(env.ToString())
         );
     }
