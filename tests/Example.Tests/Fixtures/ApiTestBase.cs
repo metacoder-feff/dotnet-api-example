@@ -11,8 +11,6 @@ public class AppFactory : WebApplicationFactoryEx<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        base.ConfigureWebHost(builder);
-
         // WORKAROUND for linux error:
         //   "The configured user limit (128) on the number of inotify..."
         builder.UseSetting("DOTNET_hostBuilder:reloadConfigOnChange", "false");
@@ -23,6 +21,9 @@ public class AppFactory : WebApplicationFactoryEx<Program>
             services.TryReplaceSingleton<Random>(FakeRandom);
             services.TryReplaceSingleton<TimeProvider>(FakeTime);
         });
+
+        // override by delegates
+        base.ConfigureWebHost(builder);
     }
 }
 
