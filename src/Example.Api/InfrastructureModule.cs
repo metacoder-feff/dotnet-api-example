@@ -7,7 +7,7 @@ static class InfrastructureModule
 {
     public static void SetupServices(IServiceCollection services)
     {
-        services.AddStdJsonLogging();
+        services.AddStdCloudLogging();
 
         // Add services to the container.
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

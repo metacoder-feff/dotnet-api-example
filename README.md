@@ -6,7 +6,7 @@
 + TimeProvider
 + use openapi/swagger-ui only in DEV + test
 + use metrics + test
-+ docker-compatible logging (jsonl/stdout) + test
++ cloud-compatible logging (jsonl/stdout) + test
 + exceptions at 'app.Run()' are logged + test
 
 ## Testing

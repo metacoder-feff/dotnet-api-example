@@ -31,7 +31,15 @@ public static class ServiceCollectionExtention
         return services;
     }
 
-    public static IServiceCollection AddStdJsonLogging(this IServiceCollection services)
+    /// <summary>
+    /// Cloud-compatible logging:
+    /// - stdout
+    /// - json-lines
+    /// - timestamp
+    /// Also log scopes
+    /// </summary>
+    /// <param name="services"></param>
+    public static IServiceCollection AddStdCloudLogging(this IServiceCollection services)
     {
         services.AddLogging(
             l => l.AddJsonConsole(
