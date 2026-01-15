@@ -4,6 +4,7 @@
     <Project Path="src/Example.Api/Example.Api.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Example.Tests.Console/Example.Tests.Console.csproj" />
     <Project Path="tests/Example.Tests/Example.Tests.csproj" />
   </Folder>
 </Solution>
