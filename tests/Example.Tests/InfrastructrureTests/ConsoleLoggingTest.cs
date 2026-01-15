@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 //TODO: for single test only
 // enable ITestOutputHelper
-//[assembly: CaptureConsole]
+[assembly: CaptureConsole]
 
 namespace Example.Tests;
 
@@ -25,7 +25,7 @@ public class ConsoleLoggingTest(ITestOutputHelper testOutputHelper) : ApiTestBas
     /// 2. Exceptions at 'app.Run()' should be logged
     /// </summary>
     [Fact(
-        Skip = "need '[assembly: CaptureConsole]'"
+        //Skip = "need '[assembly: CaptureConsole]'"
     )]
     public async Task Loging_should_satisfy_some_objectives()
     {

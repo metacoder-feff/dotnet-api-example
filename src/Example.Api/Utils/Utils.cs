@@ -30,4 +30,24 @@ public static class ServiceCollectionExtention
 
         return services;
     }
+
+    public static IServiceCollection AddStdJsonLogging(this IServiceCollection services)
+    {
+        services.AddLogging(
+            l => l.AddJsonConsole(
+                j =>
+                {
+                    j.TimestampFormat = "yyyy-MM-ddTHH:mm:ss.ffffffZ";
+                    j.UseUtcTimestamp = true;
+                    j.IncludeScopes = true;
+                    j.UseUtcTimestamp = true;
+                    j.JsonWriterOptions = new System.Text.Json.JsonWriterOptions
+                    {
+                        Indented = false
+                    };
+                }
+            )
+        );
+        return services;
+    }
 }
