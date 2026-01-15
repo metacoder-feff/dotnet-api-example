@@ -21,7 +21,6 @@
 
 
 ## TODO:
-- xunit-parallel
 - logs-scopes+test
 - auth/jwt + tests + swagger
 - db      + tests
