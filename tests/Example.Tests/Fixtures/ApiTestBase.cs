@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;
 
 namespace Example.Tests;
@@ -129,6 +130,20 @@ public static class WebApplicationFactoryExtention
     {
         factory.AddBuilderOverride(
             b => b.UseEnvironment(env.ToString())
+        );
+    }
+
+    public static void ConfigureServices(this IBuilderOverrider factory, Action<IServiceCollection> configureServices)
+    {
+        factory.AddBuilderOverride(
+            b => b.ConfigureServices(configureServices)
+        );
+    }
+
+    public static void ConfigureServices(this IBuilderOverrider factory, Action<WebHostBuilderContext, IServiceCollection> configureServices)
+    {
+        factory.AddBuilderOverride(
+            b => b.ConfigureServices(configureServices)
         );
     }
 }

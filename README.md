@@ -4,9 +4,10 @@
 + Example-Api-Module
 + NodaTime
 + TimeProvider
-+ openapi/swagger-ui only in DEV + tests
-+ metrics + tests
-+ docker-compatible logging (jsonl/stdout)
++ use openapi/swagger-ui only in DEV + test
++ use metrics + test
++ docker-compatible logging (jsonl/stdout) + test
++ exceptions at 'app.Run()' are logged + test
 
 ## Testing
 + XUnit-3
@@ -20,7 +21,8 @@
 
 
 ## TODO:
-- app-exception-log + test
+- xunit-parallel
+- logs-scopes+test
 - auth/jwt + tests + swagger
 - db      + tests
 - docker
