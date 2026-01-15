@@ -6,7 +6,7 @@ public class ExampleApiTest : ApiTestBase
     public async Task Weatherforecast_should_return()
     {
         // PREPARE
-        _appFactory.FakeRandom.FakeNextInt = 2;
+        _appFactory.FakeRandom.IntStrategy = FakeRandom.ConstStrategy(2);
 
         // ACT
         var rStr = await Client.GetStringAsync("/weatherforecast");

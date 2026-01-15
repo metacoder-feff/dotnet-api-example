@@ -1,24 +1,40 @@
 namespace Utils.Testing;
 
-//TODO: renew
-// may be there is a better way to stub random...
+public interface IRandomStrategy<T>
+{
+    T Next();
+}
+/// <summary>
+/// The default strategy is "Constant seed"
+/// Additional strategies are:
+/// - ConstNext
+/// - AutoIncrementNext (TODO)
+/// - ListRoundRobin    (TODO)
+/// For types:
+/// - int
+/// - long      (not tested)
+/// - float     (not tested)
+/// - double    (not tested)
+/// - byte[]    (TODO)
+/// </summary>
 public class FakeRandom : Random
 {
-//TODO: split strategies
-//- NoFake
-//-AutoIncrement
-//-List
-//-Single
-    public bool AutoIncrementInt  { get; set; } = false;
-    public int? FakeNextInt { get; set; }
-
-    private int _idx = -1;
-    public List<int> FakeIntValues { get; set; } = [];
-
-    public double? FakeNextDouble { get; set; }
+    public IRandomStrategy<int>? IntStrategy { get; set; }
+    public IRandomStrategy<float>? SingleStrategy { get; set; }
+    public IRandomStrategy<double>? DoubleStrategy { get; set; }
 
     public FakeRandom() : base(1)
     {
+    }
+
+    #region  int
+    public override int Next()
+    {
+        var s = IntStrategy;
+        if(s == null)
+            return base.Next();
+
+        return s.Next();
     }
 
     public override int Next(int maxValue)
@@ -26,25 +42,7 @@ public class FakeRandom : Random
         //assert params
         _ = base.Next(maxValue);
 
-        if(FakeIntValues.Count > 0)
-        {
-            _idx++;
-            _idx %= FakeIntValues.Count;
-            return FakeIntValues[_idx] % maxValue;
-        }
-
-        if(AutoIncrementInt && FakeNextInt.HasValue == false)
-            FakeNextInt = 0;
-        else if(AutoIncrementInt && FakeNextInt == int.MaxValue)
-            FakeNextInt = int.MinValue;
-        else if(AutoIncrementInt && FakeNextInt.HasValue == true)
-            FakeNextInt++;
-        
-
-        if (FakeNextInt.HasValue)
-            return FakeNextInt.Value % maxValue;
-
-        return base.Next(maxValue);
+        return this.Next() % maxValue;
     }
 
     public override int Next(int minValue, int maxValue)
@@ -59,12 +57,88 @@ public class FakeRandom : Random
         var r = minValue + Next(d);
         return r;
     }
+    #endregion
+
+    #region  long
+    public override long NextInt64()
+    {
+        var s = IntStrategy;
+        if(s == null)
+            return base.NextInt64();
+
+        return s.Next();
+    }
+
+    public override long NextInt64(long maxValue)
+    {
+        //assert params
+        _ = base.NextInt64(maxValue);
+
+        return this.NextInt64() % maxValue;
+    }
+
+    public override long NextInt64(long minValue, long maxValue)
+    {
+        //assert params
+        _ = base.NextInt64(minValue, maxValue);
+
+        if (minValue == maxValue)
+            return minValue;
+
+        var d = maxValue - minValue;
+        var r = minValue + NextInt64(d);
+        return r;
+    }
+    #endregion
+
+    public override float NextSingle()
+    {
+        var s = SingleStrategy;
+        if(s == null)
+            return base.NextSingle();
+
+        return s.Next();
+    }
 
     public override double NextDouble()
     {
-        if (FakeNextDouble.HasValue)
-            return FakeNextDouble.Value;
+        var s = DoubleStrategy;
+        if(s == null)
+            return base.NextDouble();
 
-        return base.NextDouble();
+        return s.Next();
+    }
+
+    // List of methods to override
+    // public override long NextInt64() => throw new NotSupportedException();
+    // public override long NextInt64(long maxValue) => throw new NotSupportedException();
+    // public override long NextInt64(long minValue, long maxValue) => throw new NotSupportedException();
+
+    // public override void NextBytes(byte[] buffer) => throw new NotSupportedException();
+    // public override void NextBytes(Span<byte> buffer) => throw new NotSupportedException();
+    // protected override double Sample() => throw new NotSupportedException();
+
+    public static IRandomStrategy<int>? DefaultIntStrategy => null;
+    public static IRandomStrategy<float>? DefaultSingletrategy => null;
+    public static IRandomStrategy<double>? DefaultDoubleStrategy => null;
+
+    public static ConstRandomStrategy<T> ConstStrategy<T>(T value)
+    {
+        return new ConstRandomStrategy<T>(value);
+    }
+}
+
+public class ConstRandomStrategy<T> : IRandomStrategy<T>
+{
+    private readonly T _value;
+
+    public ConstRandomStrategy(T value)
+    {
+        _value = value;
+    }
+
+    public T Next()
+    {
+        return _value;
     }
 }
