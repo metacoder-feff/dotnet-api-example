@@ -7,6 +7,7 @@ public class ExampleApiTest : ApiTestBase
     {
         // PREPARE
         _appFactory.FakeRandom.IntStrategy = FakeRandom.ConstStrategy(2);
+        _appFactory.FakeTime.SetNow("2005-05-05T15:15:15Z");
 
         // ACT
         var rStr = await Client.GetStringAsync("/weatherforecast");
@@ -18,7 +19,7 @@ public class ExampleApiTest : ApiTestBase
             .BeEquivalentTo("""
             [
             {
-                "date":"2000-01-02",
+                "date":"2005-05-06",
                 "temperatureC":-18,
                 "summary":"Chilly",
                 "temperatureF":0
