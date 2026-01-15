@@ -13,20 +13,10 @@ public class AppFactory : WebApplicationFactoryEx<Program>
     {
         base.ConfigureWebHost(builder);
 
-        builder.ConfigureAppConfiguration((ctx, configBuilder) =>
-        {
-            //configBuilder.AddInMemoryCollection(AdditionalSettings);
-
-            // WORKAROUND for vscode error:
-            //   "The configured user limit (128) on the number of inotify..."
-            //Environment.SetEnvironmentVariable("DOTNET_hostBuilder:reloadConfigOnChange", "false");
-            var ccc = configBuilder.Sources.OfType<FileConfigurationSource>();
-            foreach (var x in ccc)
-            {
-                x.ReloadOnChange = false;
-            }
-        });
-
+        // WORKAROUND for linux error:
+        //   "The configured user limit (128) on the number of inotify..."
+        builder.UseSetting("DOTNET_hostBuilder:reloadConfigOnChange", "false");
+        // System ENV: DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE
         
         builder.ConfigureServices( (ctx, services) =>
         {
