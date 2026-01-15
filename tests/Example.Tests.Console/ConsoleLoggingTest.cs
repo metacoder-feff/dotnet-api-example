@@ -62,7 +62,7 @@ public class ConsoleLoggingTest(ITestOutputHelper testOutputHelper) : ApiTestBas
         line.Should()
             .ContainSubtree("""
             {
-                //"Timestamp": "2026-01-15T08:45:08.867427Z",
+                //"Timestamp": "2000-01-02T03:04:05.123456Z",
                 "EventId": 0,
                 "LogLevel": "Critical",
                 "Category": "Example.Api",
@@ -75,17 +75,19 @@ public class ConsoleLoggingTest(ITestOutputHelper testOutputHelper) : ApiTestBas
             }
             """);
 
-        line.Should().HaveElement("Timestamp").Which.Type.Should().Be(JTokenType.String);
+        //assert Exception exists
         line.Should().HaveElement("Exception").Which.Type.Should().Be(JTokenType.String);
+        var exception = line["Exception"]!.Value<string>();
+        exception.Should().NotBeNullOrEmpty();
 
-        var timestamp = line["Timestamp"]!;
-        var exception = line["Exception"]!;
+        //assert Timestamp exists
+        line.Should().HaveElement("Timestamp").Which.Type.Should().Be(JTokenType.String);
+        var timestamp = line["Timestamp"]!.Value<string>();
+        timestamp.Should().NotBeNullOrEmpty();
 
-        timestamp.Value<string>().Should().NotBeNullOrEmpty();
-        exception.Value<string>().Should().NotBeNullOrEmpty();
-
-//TODO: assert Timestamp format
-        // var timestr = line["Timestamp"]!.Value<string>();
+        //assert Timestamp format
+        var parsed = DateTimeOffset.TryParseExact(timestamp, "yyyy-MM-ddTHH:mm:ss.ffffffZ", null, System.Globalization.DateTimeStyles.None, out var _);
+        parsed.Should().BeTrue();
     }
 
     private static JToken GetErrorLogJson(string[] ll)
