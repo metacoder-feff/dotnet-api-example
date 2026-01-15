@@ -6,6 +6,7 @@
 + TimeProvider
 + use openapi/swagger-ui only in DEV + test
 + use metrics + test
++ use healthchecks (liveness) + tests
 + cloud-compatible logging (jsonl/stdout) + test
 + exceptions at 'app.Run()' are logged + test
 
@@ -21,13 +22,14 @@
 
 
 ## TODO:
+- api-json: ConfigureJsonSerializer
 - logs-scopes+test
 - auth/jwt + tests + swagger
 - db      + tests
 - docker
 - ci/github + new coverage + test results
 - logging + tests
-- health  + tests
+- health (liveness, overal) + tests
 - redis   + tests
 - s3      + tests
 - restructure
@@ -41,4 +43,7 @@
 - try: https://github.com/nrkno/Quibble.Xunit
 - try: https://github.com/awesomeassertions/awesomeassertions.json (patch this)
 - ...
-- better fake-random
+- better swagger + comments+noda,
+- refactor JsonHealthCheckWriter
+
+Noda+= serilizer integration +=openapi integration
