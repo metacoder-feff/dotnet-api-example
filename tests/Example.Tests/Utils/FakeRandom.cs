@@ -19,9 +19,9 @@ public interface IRandomStrategy<T>
 /// </summary>
 public class FakeRandom : Random
 {
-    public IRandomStrategy<int>? IntStrategy { get; set; }
-    public IRandomStrategy<float>? SingleStrategy { get; set; }
-    public IRandomStrategy<double>? DoubleStrategy { get; set; }
+    public IRandomStrategy<int>?    IntStrategy     { get; set; }
+    public IRandomStrategy<float>?  SingleStrategy  { get; set; }
+    public IRandomStrategy<double>? DoubleStrategy  { get; set; }
 
     public FakeRandom() : base(1)
     {
@@ -91,6 +91,7 @@ public class FakeRandom : Random
     }
     #endregion
 
+    #region float/double
     public override float NextSingle()
     {
         var s = SingleStrategy;
@@ -108,19 +109,16 @@ public class FakeRandom : Random
 
         return s.Next();
     }
+    #endregion
 
     // List of methods to override
-    // public override long NextInt64() => throw new NotSupportedException();
-    // public override long NextInt64(long maxValue) => throw new NotSupportedException();
-    // public override long NextInt64(long minValue, long maxValue) => throw new NotSupportedException();
-
     // public override void NextBytes(byte[] buffer) => throw new NotSupportedException();
     // public override void NextBytes(Span<byte> buffer) => throw new NotSupportedException();
     // protected override double Sample() => throw new NotSupportedException();
 
-    public static IRandomStrategy<int>? DefaultIntStrategy => null;
-    public static IRandomStrategy<float>? DefaultSingletrategy => null;
-    public static IRandomStrategy<double>? DefaultDoubleStrategy => null;
+    // public static IRandomStrategy<int>? DefaultIntStrategy => null;
+    // public static IRandomStrategy<float>? DefaultSingletrategy => null;
+    // public static IRandomStrategy<double>? DefaultDoubleStrategy => null;
 
     public static ConstRandomStrategy<T> ConstStrategy<T>(T value)
     {
