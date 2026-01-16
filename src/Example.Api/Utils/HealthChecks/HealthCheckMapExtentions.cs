@@ -4,8 +4,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Utils.HealthChecks;
 
-//TODO: Startup checks
-
+// No need to add "startup" check because it dublicates "liveness" waiting for a bit more time this is configured at cloud.
 public static class HealthCheckMapExtentions
 {
     /// <summary>

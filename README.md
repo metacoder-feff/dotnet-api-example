@@ -1,12 +1,21 @@
 # dotnet-api-example
 ## Features:
-+ Minimal Api: ConfigureJsonSerializer
 + NodaTime
 + TimeProvider
-+ use openapi/swagger-ui only in DEV + test
-+ use metrics + test
-+ use healthchecks (liveness) + tests
-+ cloud-compatible logging (jsonl/stdout) + test
++ Minimal Api: ConfigureJsonSerializer
+  + snake_case
+  + JsonStringEnumConverter
+  + NodaTime integration
++ openapi/swagger-ui only in DEV + test
++ metrics + test
++ cloud-compatible healthchecks + tests
+  + liveness
+  + readiness
+  + overal
++ cloud-compatible logging + test
+  + stdout
+  + json-lines
+  + timestamp format
 + exceptions at 'app.Run()' are logged + test
 
 + Api-Modules
@@ -24,13 +33,11 @@
 
 
 ## TODO:
-- logs-scopes+test
+- logs-scopes (auth) + test
 - auth/jwt + tests + swagger
 - db      + tests + health
 - docker
 - ci/github + new coverage + test results
-- logging + tests
-- health (liveness, overal) + tests
 - redis   + tests  + health
 - s3      + tests  + health
 - restructure
@@ -40,11 +47,5 @@
 - fake-http-client stub (for tests)
 - options validation - error message
 - ...
-- Object-diff / JSON-diff:
-- try: https://github.com/weichch/system-text-json-jsondiffpatch
-- try: https://github.com/nrkno/Quibble.Xunit
-- try: https://github.com/awesomeassertions/awesomeassertions.json (patch this)
-- ...
 - better swagger + comments+noda,
-
-Noda+= serilizer integration +=openapi integration
+- Noda+=openapi integration
