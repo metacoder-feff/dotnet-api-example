@@ -1,7 +1,10 @@
+using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Utils.HealthChecks;
+
+//TODO: Startup checks
 
 public static class HealthCheckMapExtentions
 {
@@ -11,42 +14,63 @@ public static class HealthCheckMapExtentions
     /// - Asp default status '503' makes cloud balacer (yandex) to stop a traffic immediately,
     /// - while status '500' should be repeated a number of times to stop the traffic.
     /// </summary>
-    private static readonly IReadOnlyDictionary<HealthStatus, int> StatusCodesMapping = new Dictionary<HealthStatus, int>
+    private static ReadOnlyDictionary<HealthStatus, int> GetStatusCodesMapping()
     {
-        {HealthStatus.Healthy  , StatusCodes.Status200OK},
-        {HealthStatus.Degraded , StatusCodes.Status200OK},
-        {HealthStatus.Unhealthy, StatusCodes.Status500InternalServerError},
-    };
+        return new Dictionary<HealthStatus, int>
+        {
+            {HealthStatus.Healthy  , StatusCodes.Status200OK},
+            {HealthStatus.Degraded , StatusCodes.Status200OK},
+            {HealthStatus.Unhealthy, StatusCodes.Status500InternalServerError},
+        }
+        .AsReadOnly();
+    }
 
-    public static bool IsLiveness(HealthCheckRegistration check)
-        => check.Tags.Contains(HealthCheckTag.Liveness);
-
-    public static bool IsReadiness(HealthCheckRegistration check)
-        => check.Tags.Contains(HealthCheckTag.Readiness);
-
-    public static void MapStdHealthChecks(this WebApplication app)
+    /// <summary>
+    /// Add standard healthchecks:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>"/health/liveness" - Only health checks tagged with the "Liveness" tag must pass for app to be considered alive.</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>"/health/readiness" - Only health checks tagged with the "Readiness" tag must pass for app to be considered ready to accept traffic after starting.</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>"/health/overal" - All health checks are exported for detaliled diagnostics.</description>
+    ///     </item>
+    /// </list>
+    /// Unhealthy status returns "HTTP-500". Json format is contolled by "services.ConfigureHttpJsonOptions".
+    /// </summary>
+    public static void MapStdHealthChecks(this IEndpointRouteBuilder app)
     {
+        var mapping = GetStatusCodesMapping();
+
         app.MapHealthChecks("/health/liveness", new HealthCheckOptions
         {
             Predicate = IsLiveness,
             ResponseWriter = WriteAsync,
-            ResultStatusCodes = new Dictionary<HealthStatus, int>(StatusCodesMapping),
+            ResultStatusCodes = mapping,
         });
 
         app.MapHealthChecks("/health/readiness", new HealthCheckOptions
         {
             Predicate = IsReadiness,
             ResponseWriter = WriteAsync,        
-            ResultStatusCodes = new Dictionary<HealthStatus, int>(StatusCodesMapping),
+            ResultStatusCodes = mapping,
         });
 
         app.MapHealthChecks("/health/overal", new HealthCheckOptions
         {
             // no Predicate => all
             ResponseWriter = WriteAsync,
-            ResultStatusCodes = new Dictionary<HealthStatus, int>(StatusCodesMapping),
+            ResultStatusCodes = mapping,
         });
     }
+
+    private static bool IsLiveness(HealthCheckRegistration check)
+        => check.Tags.Contains(HealthCheckTag.Liveness);
+
+    private static bool IsReadiness(HealthCheckRegistration check)
+        => check.Tags.Contains(HealthCheckTag.Readiness);
 
     private static async Task WriteAsync(HttpContext context, HealthReport report)
     {
@@ -71,10 +95,10 @@ public static class HealthCheckMapExtentions
                     .ToList()
         };
 
-// TODO: CancellationToken ??
+        var cancellationToken = context.RequestAborted;
 
         // uses 'SerializerOptions' from 'services.ConfigureHttpJsonOptions'
         // same as MinimalApi
-        await context.Response.WriteAsJsonAsync(obj);
+        await context.Response.WriteAsJsonAsync(obj, cancellationToken);
     }
 }

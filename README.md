@@ -26,13 +26,13 @@
 ## TODO:
 - logs-scopes+test
 - auth/jwt + tests + swagger
-- db      + tests
+- db      + tests + health
 - docker
 - ci/github + new coverage + test results
 - logging + tests
 - health (liveness, overal) + tests
-- redis   + tests
-- s3      + tests
+- redis   + tests  + health
+- s3      + tests  + health
 - restructure
 - make
 - bg/periodic
@@ -46,6 +46,5 @@
 - try: https://github.com/awesomeassertions/awesomeassertions.json (patch this)
 - ...
 - better swagger + comments+noda,
-- refactor JsonHealthCheckWriter
 
 Noda+= serilizer integration +=openapi integration
