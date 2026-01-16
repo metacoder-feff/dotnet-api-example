@@ -30,6 +30,10 @@
 + FakeRandom
 + FakeTimeProvider
 + "openapi.json" should not be changed
++ coverage
+  + exlude test-projects
+  + exclude GeneratedCode
+  + make vscode to use ".runsettings"
 
 
 ## TODO:
@@ -37,7 +41,7 @@
 - auth/jwt + tests + swagger
 - db      + tests + health
 - docker
-- ci/github + new coverage + test results
+- ci/github + new coverage + test results + bages
 - redis   + tests  + health
 - s3      + tests  + health
 - restructure
