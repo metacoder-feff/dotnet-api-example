@@ -31,7 +31,7 @@
 + FakeTimeProvider
 + "openapi.json" should not be changed
 + coverage
-  + exlude test-projects
+  + exclude test-projects
   + exclude GeneratedCode
   + make vscode to use ".runsettings"
 

@@ -35,8 +35,8 @@ static class ExampleApiModule
 
     internal static void SetupServices(IServiceCollection services)
     {
-        services.TryAddTimeProvider();
-        services.TryAddRandom();
+        services.AddTimeProvider();
+        services.AddRandom();
     }
 }
 

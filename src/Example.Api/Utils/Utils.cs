@@ -5,12 +5,12 @@ namespace Example.Utils;
 
 public static class ServiceCollectionExtention
 {
-    public static void TryAddTimeProvider(this IServiceCollection services)
+    public static void AddTimeProvider(this IServiceCollection services)
     {
         services.TryAddSingleton((_) => TimeProvider.System);
     }
 
-    public static void TryAddRandom(this IServiceCollection services)
+    public static void AddRandom(this IServiceCollection services)
     {
         services.TryAddSingleton((_) => Random.Shared);
     }

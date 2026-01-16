@@ -77,7 +77,6 @@ public static class HealthCheckMapExtentions
         {
             Status   = report.Status,
             Duration = report.TotalDuration,
-            // check = report.Entries.Value+name(==report.Entries.Key)
             Checks = report.Entries
                     .Select(e =>
                         new
