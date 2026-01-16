@@ -13,22 +13,11 @@ namespace Example.Api;
 
 static class InfrastructureModule
 {
-    /// <summary>
-    /// HealthStatus.Degraded: not needed for Liveness/Readiness.
-    /// HealthStatus.Unhealthy: 
-    /// - Asp default status '503' makes cloud balacer (yandex) to stop a traffic immediately,
-    /// - while status '500' should be repeated a number of times to stop the traffic.
-    /// </summary>
-    private static readonly IReadOnlyDictionary<HealthStatus, int> StatusCodesMapping = new Dictionary<HealthStatus, int>
-    {
-        {HealthStatus.Healthy  , StatusCodes.Status200OK},
-        {HealthStatus.Degraded , StatusCodes.Status200OK},
-        {HealthStatus.Unhealthy, StatusCodes.Status500InternalServerError},
-    };
     
     public static void SetupServices(IServiceCollection services)
     {
         services.AddStdCloudLogging();
+
         services.ConfigureHttpJsonOptions(o => 
             ConfigureJsonSerializer(o.SerializerOptions)
         );
@@ -65,27 +54,7 @@ static class InfrastructureModule
         // ref: https://github.com/prometheus-net/prometheus-net/blob/master/Sample.Web/Program.cs
         app.MapMetrics();
 
-        var healthCheckWriter = HealthCheckHelper.CreateWriter(ConfigureJsonSerializer);
-        app.MapHealthChecks("/health/liveness", new HealthCheckOptions
-        {
-            Predicate = HealthCheckHelper.IsLiveness,
-            ResponseWriter = healthCheckWriter
-        });
-     
-        app.MapHealthChecks("/health/readiness", new HealthCheckOptions
-        {
-            Predicate = HealthCheckHelper.IsReadiness,
-            ResponseWriter = healthCheckWriter,
-            // workaround: retry on yandex if 500
-            // 503 - immediately stops traffic           
-            ResultStatusCodes = new Dictionary<HealthStatus, int>(StatusCodesMapping),
-        });
-        
-        app.MapHealthChecks("/health/overal", new HealthCheckOptions
-        {
-            // no Predicate => all
-            ResponseWriter = healthCheckWriter
-        });
+        app.MapStdHealthChecks();
     }
 
     internal static void ConfigureJsonSerializer(JsonSerializerOptions o)
