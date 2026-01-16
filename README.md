@@ -1,7 +1,6 @@
 # dotnet-api-example
 ## Features:
-+ Api-Modules
-+ Example-Api-Module
++ Minimal Api: ConfigureJsonSerializer
 + NodaTime
 + TimeProvider
 + use openapi/swagger-ui only in DEV + test
@@ -9,6 +8,9 @@
 + use healthchecks (liveness) + tests
 + cloud-compatible logging (jsonl/stdout) + test
 + exceptions at 'app.Run()' are logged + test
+
++ Api-Modules
++ Example-Api-Module
 
 ## Testing
 + XUnit-3
@@ -22,7 +24,6 @@
 
 
 ## TODO:
-- api-json: ConfigureJsonSerializer
 - logs-scopes+test
 - auth/jwt + tests + swagger
 - db      + tests
@@ -37,6 +38,7 @@
 - bg/periodic
 - bg/offload
 - fake-http-client stub (for tests)
+- options validation - error message
 - ...
 - Object-diff / JSON-diff:
 - try: https://github.com/weichch/system-text-json-jsondiffpatch

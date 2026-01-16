@@ -39,7 +39,7 @@
       "WeatherForecast": {
         "required": [
           "date",
-          "temperatureC",
+          "temperature_c",
           "summary"
         ],
         "type": "object",
@@ -48,7 +48,7 @@
             "type": "string",
             "format": "date"
           },
-          "temperatureC": {
+          "temperature_c": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
@@ -62,7 +62,7 @@
               "string"
             ]
           },
-          "temperatureF": {
+          "temperature_f": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",

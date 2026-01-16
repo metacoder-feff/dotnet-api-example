@@ -18,12 +18,12 @@ public class ExampleApiTest : ApiTestBase
             .Should()
             .BeEquivalentTo("""
             [
-            {
-                "date":"2005-05-06",
-                "temperatureC":-18,
-                "summary":"Chilly",
-                "temperatureF":0
-            }
+              {
+                "date": "2005-05-06",
+                "temperature_c": -18,
+                "summary": "Chilly",
+                "temperature_f": 0
+              }
             ]
             """);
     }
