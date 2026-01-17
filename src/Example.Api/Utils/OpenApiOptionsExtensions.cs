@@ -43,7 +43,7 @@ public static class OpenApiOptionsExtensions
         options.MapInlinedString<Period>("duration");
 
         //TODO: not tested
-        // not compatible with TimeSpan in general
+        // not fully compatible with TimeSpan (see days)
         options.MapDuration();
 
         //TODO: refactor?
@@ -61,8 +61,7 @@ public static class OpenApiOptionsExtensions
     private static void MapDuration(this OpenApiOptions options)
     {
         // HINTS:
-        // 1. Timespan 'Day' delimiter is '.' while Duration 'Day' delimiter is ':'
-        //    so they are not interchangable
+        // 1. Timespan 'Day' delimiter is '.' 
         //
         // 2. Duration can store nanoseconds - has more digits in fraction
         //    so they are not interchangable
@@ -77,12 +76,15 @@ public static class OpenApiOptionsExtensions
         //
         // 5. Duration may be serialized without 'Day'
         //   "dr": "511:55:11.999999999",
+        //    j: Round-trip pattern used by NodaTime.Serialization.JsonNet, which always uses the invariant culture and a pattern string of -H:mm:ss.FFFFFFFFF
+        //    https://nodatime.org/3.2.x/userguide/duration-patterns#:~:text=This%20is%20the%20default%20format%20pattern.%20j,invariant%20culture%20and%20a%20pattern%20string%20of
 
         options.AddSingleSchemaTransformer<Duration>((schema, _) =>
         {
             schema.Type = JsonSchemaType.String;
             schema.Metadata?["x-schema-id"] = ""; // set inlined
-            schema.Pattern = "^-?(\\d+:)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,9})?$";
+            schema.Pattern = "^-?\\d*:\\d{2}:\\d{2}(\\.\\d{1,9})?$";
+            schema.Example = "12:34:56.123456789";
         });
     }
 
