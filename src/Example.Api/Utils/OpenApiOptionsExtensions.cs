@@ -43,14 +43,14 @@ public static class OpenApiOptionsExtensions
         options.MapInlinedString<Period>("duration");
         
         //TODO: refactor?
-        MapInterval(options);
+        options.MapInterval();
+        options.MapDateInterval();
 
         //TODO: other types
         //Offset
         //OffsetDate
         //ZonedDateTime
         //Duration
-        //DateInterval
 
         // HINTS:
 
@@ -66,8 +66,46 @@ public static class OpenApiOptionsExtensions
         return options;
     }
 
+    private static void MapDateInterval(this OpenApiOptions options)
+    {
+        options.AddSingleSchemaTransformer<DateInterval>((schema, context) =>
+        {
+            var js = context.ApplicationServices.GetService<IOptions<JsonOptions>>();
+            var nn = js?.Value?.SerializerOptions?.PropertyNamingPolicy;
 
-    private static void MapInterval(OpenApiOptions options)
+            var nStart = nameof(DateInterval.Start);
+            var nEnd = nameof(DateInterval.End);
+            if(nn != null)
+            {
+                nStart = nn.ConvertName(nStart);
+                nEnd = nn.ConvertName(nEnd);
+            }
+
+            schema.Type = JsonSchemaType.Object;
+            schema.Description = "Represents a time interval between two 'date' values, expressed with start and end.";
+            schema.Properties = new Dictionary<string, IOpenApiSchema>
+            {
+                {
+                    nameof(Interval.Start),
+                    new OpenApiSchema
+                    {
+                        Type = JsonSchemaType.String,
+                        Format = "date",
+                    }
+                },
+                {
+                    nameof(Interval.End),
+                    new OpenApiSchema
+                    {
+                        Type = JsonSchemaType.String,
+                        Format = "date",
+                    }
+                }
+            };
+        });
+    }
+
+    private static void MapInterval(this OpenApiOptions options)
     {
         options.AddSingleSchemaTransformer<Interval>((schema, context) =>
         {
