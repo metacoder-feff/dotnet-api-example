@@ -7,6 +7,7 @@
   + JsonStringEnumConverter
   + NodaTime integration
 + openapi/swagger-ui only in DEV + test
+  + NodaTime integration
 + metrics + test
 + cloud-compatible healthchecks + tests
   + liveness
@@ -38,7 +39,6 @@
 
 ## TODO:
 - better openapi + comments,
-- Noda+=openapi integration
 - options += fluentvalidation
 - test migrations
 - test db optimizations

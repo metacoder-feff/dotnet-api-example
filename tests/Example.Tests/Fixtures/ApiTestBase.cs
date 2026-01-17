@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Time.Testing;
 
 namespace Example.Tests;

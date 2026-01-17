@@ -41,6 +41,7 @@ public static class OpenApiOptionsExtensions
         options.MapToString<Period>("duration");
 
 //TODO: other types
+        //Offset
         //OffsetDate
         //ZonedDateTime
         //Duration
