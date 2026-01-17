@@ -36,18 +36,6 @@
   },
   "components": {
     "schemas": {
-      "Instant": {
-        "type": "string",
-        "description": "Represents an instant in time (UTC) without time zone information.",
-        "format": "date-time",
-        "example": "2000-01-02T01:16:51.888888888Z"
-      },
-      "LocalDate": {
-        "type": "string",
-        "description": "A date without a time component or time zone.",
-        "format": "date",
-        "example": "2000-01-02"
-      },
       "WeatherForecast": {
         "required": [
           "timestamp",
@@ -58,10 +46,12 @@
         "type": "object",
         "properties": {
           "timestamp": {
-            "$ref": "#/components/schemas/Instant"
+            "type": "string",
+            "format": "date-time"
           },
           "date": {
-            "$ref": "#/components/schemas/LocalDate"
+            "type": "string",
+            "format": "date"
           },
           "temperature_c": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",

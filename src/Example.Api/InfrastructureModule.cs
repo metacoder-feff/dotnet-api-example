@@ -31,7 +31,7 @@ static class InfrastructureModule
 
     private static void ConfigureOpenApi(OpenApiOptions o)
     {
-        o.ConfigureNodaTime(Instant.FromUtc(2000, 01, 02, 01, 02, 03).PlusNanoseconds(888888888888), ConfigureJsonSerializer);
+        o.ConfigureNodaTime();
     }
 
     public static void SetupPipeline(WebApplication app)
