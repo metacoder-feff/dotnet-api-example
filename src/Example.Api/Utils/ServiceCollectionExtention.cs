@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using static Example.Utils.ThrowHelper;
 
-namespace Example.Utils;
+namespace Utils;
 
 public static class ServiceCollectionExtention
 {
@@ -23,7 +22,7 @@ public static class ServiceCollectionExtention
         if (oldD == null)
             return services;
 
-        Assert(oldD.Lifetime == ServiceLifetime.Singleton);
+        ThrowHelper.Assert(oldD.Lifetime == ServiceLifetime.Singleton);
 
         var sdNew = new ServiceDescriptor(srcType, instance);
         services.Replace(sdNew);

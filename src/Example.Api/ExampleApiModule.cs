@@ -1,7 +1,7 @@
 using NodaTime;
 using NodaTime.Extensions;
 
-using Example.Utils;
+using Utils;
 
 namespace Example.Api;
 

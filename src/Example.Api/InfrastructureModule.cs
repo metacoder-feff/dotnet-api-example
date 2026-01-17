@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.OpenApi;
 using NodaTime.Serialization.SystemTextJson;
 using Prometheus;
 
-using Example.Utils;
+using Utils;
 using Utils.HealthChecks;
 
 namespace Example.Api;

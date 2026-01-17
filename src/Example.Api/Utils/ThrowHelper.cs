@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-namespace Example.Utils;
+namespace Utils;
 
 public static class ThrowHelper
 {

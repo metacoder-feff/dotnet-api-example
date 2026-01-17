@@ -4,5 +4,5 @@ global using Newtonsoft.Json.Linq;
 
 global using Utils.Testing;
 
-global using Example.Utils;
+global using Utils;
 global using NodaTime;
