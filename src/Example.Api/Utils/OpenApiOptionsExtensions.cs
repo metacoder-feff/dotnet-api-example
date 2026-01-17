@@ -41,7 +41,11 @@ public static class OpenApiOptionsExtensions
         // The duration format represents a duration as defined by duration - RFC3339.
         // https://www.rfc-editor.org/rfc/rfc3339.html#appendix-A
         options.MapInlinedString<Period>("duration");
-        
+
+        //TODO: not tested
+        // not compatible with TimeSpan in general
+        options.MapDuration();
+
         //TODO: refactor?
         options.MapInterval();
         options.MapDateInterval();
@@ -50,20 +54,36 @@ public static class OpenApiOptionsExtensions
         //Offset
         //OffsetDate
         //ZonedDateTime
-        //Duration
 
+        return options;
+    }
+
+    private static void MapDuration(this OpenApiOptions options)
+    {
         // HINTS:
-
-        // TimeSpan is mapped inlined as:
+        // 1. Timespan 'Day' delimiter is '.' while Duration 'Day' delimiter is ':'
+        //    so they are not interchangable
+        //
+        // 2. Duration can store nanoseconds - has more digits in fraction
+        //    so they are not interchangable
+        //
+        // 3. TimeSpan is mapped inlined as:
         //   "ts": {
         //     "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
         //     "type": "string"
         //   },
-
-        // Duration is serialized without 'Day'
+        // 4. Duration C# regexp is:
+        //      private const string DurationPattern = @"-?[0-9]{1,8}:[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]{1,9})?";
+        //
+        // 5. Duration may be serialized without 'Day'
         //   "dr": "511:55:11.999999999",
 
-        return options;
+        options.AddSingleSchemaTransformer<Duration>((schema, _) =>
+        {
+            schema.Type = JsonSchemaType.String;
+            schema.Metadata?["x-schema-id"] = ""; // set inlined
+            schema.Pattern = "^-?(\\d+:)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,9})?$";
+        });
     }
 
     private static void MapDateInterval(this OpenApiOptions options)
@@ -155,6 +175,7 @@ public static class OpenApiOptionsExtensions
         });
         return options;
     }
+
     public static OpenApiOptions AddSingleSchemaTransformer<T>(this OpenApiOptions options, Action<OpenApiSchema, OpenApiSchemaTransformerContext> action)
     {
         options.AddSchemaTransformer((schema, context, _) =>
