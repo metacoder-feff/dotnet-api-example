@@ -40,13 +40,13 @@
         "type": "string",
         "description": "Represents an instant in time (UTC) without time zone information.",
         "format": "date-time",
-        "example": "2026-01-17T11:56:28.3295017Z"
+        "example": "2000-01-02T01:16:51.888888888Z"
       },
       "LocalDate": {
         "type": "string",
         "description": "A date without a time component or time zone.",
         "format": "date",
-        "example": "2026-01-17"
+        "example": "2000-01-02"
       },
       "WeatherForecast": {
         "required": [

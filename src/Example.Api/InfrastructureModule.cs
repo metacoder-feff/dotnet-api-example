@@ -3,11 +3,10 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.OpenApi;
 
 using NodaTime.Serialization.SystemTextJson;
-using OpenApi.NodaTime.Extensions;
 using Prometheus;
 
-using Utils;
 using Utils.HealthChecks;
+using Utils.OpenApi;
 
 namespace Example.Api;
 
@@ -32,10 +31,7 @@ static class InfrastructureModule
 
     private static void ConfigureOpenApi(OpenApiOptions o)
     {
-//TODO: 'Interval' schema invalid
-//TODO: use JsonSerializerOptions for generating examples ('Interval')
-//TODO: customize example instant
-        o.ConfigureNodaTime();
+        o.ConfigureNodaTime(Instant.FromUtc(2000, 01, 02, 01, 02, 03).PlusNanoseconds(888888888888), ConfigureJsonSerializer);
     }
 
     public static void SetupPipeline(WebApplication app)
