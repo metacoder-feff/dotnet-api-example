@@ -15,30 +15,49 @@ public static class OpenApiOptionsExtensions
         // based on RFC3339
         // https://www.rfc-editor.org/rfc/rfc3339#section-5.6
 
-        // RFC "date-time"
-        // the requires allows time offset or Z
+        // RFC for "date-time" requires 'time-offset' or 'Z'
         // ZonedDateTime: RFC does not allow ZONE
-        // LocalDateTime: RFC does not allow missing offset
         options.MapToString<Instant>("date-time");
         options.MapToString<OffsetDateTime>("date-time");
+        
+        // https://spec.openapis.org/registry/format/date-time-local.html
+        options.MapToString<LocalDateTime>("date-time-local");
 
-        // OpenAPI "time"
         // The time format represents a time as defined by full-time - RFC3339.
-        // LocalTime: RFC does not allow missing offset
         options.MapToString<OffsetTime>("time");
 
-        // OpenAPI "date"
-        // The date format represents a date as defined by full-date - RFC3339. 
+        // https://spec.openapis.org/registry/format/time-local.html
+        options.MapToString<LocalTime>("time-local");
+
+        // The date format represents a date as defined by full-date - RFC3339.
+        // OffsetDate: RFC does not allow to add offset to a date
+        // it is already localized
         options.MapToString<LocalDate>("date");
 
+        // OpenAPI "duration"
+        // https://spec.openapis.org/registry/format/duration
+        // The duration format represents a duration as defined by duration - RFC3339.
+        // https://www.rfc-editor.org/rfc/rfc3339.html#appendix-A
+        options.MapToString<Period>("duration");
+
 //TODO: other types
-        //LocalTime
-        //LocalDateTime
+        //OffsetDate
         //ZonedDateTime
-        //Period
         //Duration
         //Interval
         //DateInterval
+
+        // HINTS:
+
+        // TimeSpan is mapped inlined as:
+        //   "ts": {
+        //     "pattern": "^-?(\\d+\\.)?\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,7})?$",
+        //     "type": "string"
+        //   },
+
+        // Duration is serialized without 'Day'
+        //   "dr": "511:55:11.999999999",
+
         return options;
     }
 
