@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.OpenApi;
 
 using NodaTime.Serialization.SystemTextJson;
+using OpenApi.NodaTime.Extensions;
 using Prometheus;
 
 using Utils;
@@ -31,7 +32,10 @@ static class InfrastructureModule
 
     private static void ConfigureOpenApi(OpenApiOptions o)
     {
-        //o.AddSchemaTransformer()
+//TODO: 'Interval' schema invalid
+//TODO: use JsonSerializerOptions for generating examples ('Interval')
+//TODO: customize example instant
+        o.ConfigureNodaTime();
     }
 
     public static void SetupPipeline(WebApplication app)
@@ -43,6 +47,7 @@ static class InfrastructureModule
 
             app.UseSwaggerUI(options =>
             {
+                options.EnableDeepLinking();
                 options.SwaggerEndpoint("/openapi/v1.json", "v1");
             });
         }

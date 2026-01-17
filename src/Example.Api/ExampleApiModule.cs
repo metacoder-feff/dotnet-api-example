@@ -23,7 +23,7 @@ static class ExampleApiModule
                 new WeatherForecast
                 (
                     now,
-                    (todayUtc + Period.FromDays(index)).ToDateOnly(),
+                    todayUtc + Period.FromDays(index),
                     rand.Next(-20, 55),
                     summaries[rand.Next(summaries.Length)]
                 ))
@@ -40,7 +40,7 @@ static class ExampleApiModule
     }
 }
 
-record WeatherForecast(Instant Timestamp, DateOnly Date, int TemperatureC, string? Summary)
+record WeatherForecast(Instant Timestamp, LocalDate Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }

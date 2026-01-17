@@ -23,7 +23,7 @@ public class ExampleApiTest : ApiTestBase
                 "date": "2005-05-06",
                 "temperature_c": -18,
                 "summary": "Chilly",
-                "temperature_f": 0
+                "temperature_f": 0,
               }
             ]
             """);

@@ -11,6 +11,17 @@
           "Microsoft.OpenApi": "2.0.0"
         }
       },
+      "MMonrad.OpenApi.NodaTime": {
+        "type": "Direct",
+        "requested": "[0.0.27, )",
+        "resolved": "0.0.27",
+        "contentHash": "SPOU1vhtGjUexyexYvXtkpsEj7cwJiLGe7drMijCcFc+5CSS/w4jN+niIIZD3jceAV6UxTImqU1uGiw0GWz9+w==",
+        "dependencies": {
+          "MMonrad.OpenApi.Extensions": "0.0.27",
+          "Microsoft.AspNetCore.OpenApi": "10.0.0",
+          "NodaTime.Serialization.SystemTextJson": "1.3.0"
+        }
+      },
       "NodaTime": {
         "type": "Direct",
         "requested": "[3.3.0, )",
@@ -45,6 +56,14 @@
         "type": "Transitive",
         "resolved": "2.0.0",
         "contentHash": "GGYLfzV/G/ct80OZ45JxnWP7NvMX1BCugn/lX7TH5o0lcVaviavsLMTxmFV2AybXWjbi3h6FF1vgZiTK6PXndw=="
+      },
+      "MMonrad.OpenApi.Extensions": {
+        "type": "Transitive",
+        "resolved": "0.0.27",
+        "contentHash": "D4pAcUI8S424VeEcfO/9IqlSMIYwYNeShUSUnMw+/Q4zDGmUICpBmvzn7eSIuXglMxkZ3QuczbR7+ksX8Dn7LA==",
+        "dependencies": {
+          "Microsoft.AspNetCore.OpenApi": "10.0.0"
+        }
       },
       "prometheus-net": {
         "type": "Transitive",

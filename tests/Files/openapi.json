@@ -36,7 +36,18 @@
   },
   "components": {
     "schemas": {
-      "Instant": { },
+      "Instant": {
+        "type": "string",
+        "description": "Represents an instant in time (UTC) without time zone information.",
+        "format": "date-time",
+        "example": "2026-01-17T11:56:28.3295017Z"
+      },
+      "LocalDate": {
+        "type": "string",
+        "description": "A date without a time component or time zone.",
+        "format": "date",
+        "example": "2026-01-17"
+      },
       "WeatherForecast": {
         "required": [
           "timestamp",
@@ -50,8 +61,7 @@
             "$ref": "#/components/schemas/Instant"
           },
           "date": {
-            "type": "string",
-            "format": "date"
+            "$ref": "#/components/schemas/LocalDate"
           },
           "temperature_c": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",

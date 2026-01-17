@@ -1,9 +1,8 @@
 using Example.Api;
 
 var builder = WebApplication.CreateBuilder(args);
-//TODO: setup logger
 
-//TODO: log errors?
+//TODO: log errors until build completes?
 InfrastructureModule.SetupServices(builder.Services);
 ExampleApiModule.SetupServices(builder.Services);
 
@@ -18,6 +17,5 @@ try
 }
 catch(Exception e)
 {
-//TODO: test??   
     app.Logger.LogCritical(e, "Error at 'App Setup/Run' stage.");
 }
