@@ -17,28 +17,28 @@ public static class OpenApiOptionsExtensions
 
         // RFC for "date-time" requires 'time-offset' or 'Z'
         // ZonedDateTime: RFC does not allow ZONE
-        options.MapToString<Instant>("date-time");
-        options.MapToString<OffsetDateTime>("date-time");
+        options.MapInlinedString<Instant>("date-time");
+        options.MapInlinedString<OffsetDateTime>("date-time");
         
         // https://spec.openapis.org/registry/format/date-time-local.html
-        options.MapToString<LocalDateTime>("date-time-local");
+        options.MapInlinedString<LocalDateTime>("date-time-local");
 
         // The time format represents a time as defined by full-time - RFC3339.
-        options.MapToString<OffsetTime>("time");
+        options.MapInlinedString<OffsetTime>("time");
 
         // https://spec.openapis.org/registry/format/time-local.html
-        options.MapToString<LocalTime>("time-local");
+        options.MapInlinedString<LocalTime>("time-local");
 
         // The date format represents a date as defined by full-date - RFC3339.
         // OffsetDate: RFC does not allow to add offset to a date
         // it is already localized
-        options.MapToString<LocalDate>("date");
+        options.MapInlinedString<LocalDate>("date");
 
         // OpenAPI "duration"
         // https://spec.openapis.org/registry/format/duration
         // The duration format represents a duration as defined by duration - RFC3339.
         // https://www.rfc-editor.org/rfc/rfc3339.html#appendix-A
-        options.MapToString<Period>("duration");
+        options.MapInlinedString<Period>("duration");
 
 //TODO: other types
         //Offset
@@ -63,16 +63,24 @@ public static class OpenApiOptionsExtensions
     }
 
     // Use builtin primitive 'string' instead of ref to a new type
-    public static OpenApiOptions MapToString<T>(this OpenApiOptions options, string format)
+    public static OpenApiOptions MapInlinedString<T>(this OpenApiOptions options, string format)
+    {
+        options.AddSingleSchemaTransformer<T>((schema, context) =>
+        {
+            schema.Type = JsonSchemaType.String;
+            schema.Format = format;
+            schema.Metadata?["x-schema-id"] = ""; // set inlined
+        });
+        return options;
+    }
+    public static OpenApiOptions AddSingleSchemaTransformer<T>(this OpenApiOptions options, Action<OpenApiSchema, OpenApiSchemaTransformerContext> action)
     {
         options.AddSchemaTransformer((schema, context, _) =>
         {
             if (IsCurrentType<T>(context) == false)
                 return Task.CompletedTask;
             
-            schema.Type =  JsonSchemaType.String;
-            schema.Format = format;
-            schema.Metadata?["x-schema-id"] = "";
+            action(schema, context);
 
             return Task.CompletedTask;
         });
