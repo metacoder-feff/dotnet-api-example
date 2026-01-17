@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.OpenApi;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 
 namespace Utils.OpenApi;
@@ -19,7 +21,7 @@ public static class OpenApiOptionsExtensions
         // ZonedDateTime: RFC does not allow ZONE
         options.MapInlinedString<Instant>("date-time");
         options.MapInlinedString<OffsetDateTime>("date-time");
-        
+
         // https://spec.openapis.org/registry/format/date-time-local.html
         options.MapInlinedString<LocalDateTime>("date-time-local");
 
@@ -39,13 +41,15 @@ public static class OpenApiOptionsExtensions
         // The duration format represents a duration as defined by duration - RFC3339.
         // https://www.rfc-editor.org/rfc/rfc3339.html#appendix-A
         options.MapInlinedString<Period>("duration");
+        
+        //TODO: refactor?
+        MapInterval(options);
 
-//TODO: other types
+        //TODO: other types
         //Offset
         //OffsetDate
         //ZonedDateTime
         //Duration
-        //Interval
         //DateInterval
 
         // HINTS:
@@ -62,10 +66,50 @@ public static class OpenApiOptionsExtensions
         return options;
     }
 
+
+    private static void MapInterval(OpenApiOptions options)
+    {
+        options.AddSingleSchemaTransformer<Interval>((schema, context) =>
+        {
+            var js = context.ApplicationServices.GetService<IOptions<JsonOptions>>();
+            var nn = js?.Value?.SerializerOptions?.PropertyNamingPolicy;
+
+            var nStart = nameof(Interval.Start);
+            var nEnd = nameof(Interval.End);
+            if(nn != null)
+            {
+                nStart = nn.ConvertName(nStart);
+                nEnd = nn.ConvertName(nEnd);
+            }
+
+            schema.Type = JsonSchemaType.Object;
+            schema.Description = "Represents a time interval between two 'date-time' values, expressed with start and end.";
+            schema.Properties = new Dictionary<string, IOpenApiSchema>
+            {
+                {
+                    nameof(Interval.Start),
+                    new OpenApiSchema
+                    {
+                        Type = JsonSchemaType.String,
+                        Format = "date-time",
+                    }
+                },
+                {
+                    nameof(Interval.End),
+                    new OpenApiSchema
+                    {
+                        Type = JsonSchemaType.String,
+                        Format = "date-time",
+                    }
+                }
+            };
+        });
+    }
+
     // Use builtin primitive 'string' instead of ref to a new type
     public static OpenApiOptions MapInlinedString<T>(this OpenApiOptions options, string format)
     {
-        options.AddSingleSchemaTransformer<T>((schema, context) =>
+        options.AddSingleSchemaTransformer<T>((schema, _) =>
         {
             schema.Type = JsonSchemaType.String;
             schema.Format = format;
