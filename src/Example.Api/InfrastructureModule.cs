@@ -1,7 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.OpenApi;
 
 using NodaTime.Serialization.SystemTextJson;
 using Prometheus;
@@ -13,7 +12,6 @@ namespace Example.Api;
 
 static class InfrastructureModule
 {
-    
     public static void SetupServices(IServiceCollection services)
     {
         services.AddStdCloudLogging();
@@ -24,11 +22,16 @@ static class InfrastructureModule
 
         // Add services to the container.
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-        services.AddOpenApi();
+        services.AddOpenApi(ConfigureOpenApi);
 
         services.AddHealthChecks()
                 .AddSimpleLivenessCheck()
                 ;
+    }
+
+    private static void ConfigureOpenApi(OpenApiOptions o)
+    {
+        //o.AddSchemaTransformer()
     }
 
     public static void SetupPipeline(WebApplication app)

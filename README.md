@@ -22,7 +22,7 @@
 + Example-Api-Module
 
 ## Testing
-+ XUnit-3
++ XUnit v3
 + AwesomeAssertions (FluentAssertion)
 + AwesomeAssertions.Json 
 + WebApplicationFactory
@@ -37,9 +37,16 @@
 
 
 ## TODO:
-- logs-scopes (auth) + test
+- better openapi + comments,
+- Noda+=openapi integration
+- options += fluentvalidation
+- test migrations
+- test db optimizations
+- logs-scopes example (auth) + test
 - auth/jwt + tests + swagger
 - db      + tests + health
+- migration-test
+- optimistic concurrency
 - docker
 - ci/github + new coverage + test results + bages
 - redis   + tests  + health
@@ -51,5 +58,3 @@
 - fake-http-client stub (for tests)
 - options validation - error message
 - ...
-- better swagger + comments+noda,
-- Noda+=openapi integration

@@ -22,11 +22,11 @@ static class ExampleApiModule
             var forecast =  Enumerable.Range(1, 5).Select(index =>
                 new WeatherForecast
                 (
+                    now,
                     (todayUtc + Period.FromDays(index)).ToDateOnly(),
                     rand.Next(-20, 55),
                     summaries[rand.Next(summaries.Length)]
                 ))
-                .Take(1)
                 .ToArray();
             return forecast;
         })
@@ -40,7 +40,7 @@ static class ExampleApiModule
     }
 }
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+record WeatherForecast(Instant Timestamp, DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }

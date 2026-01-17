@@ -36,14 +36,19 @@
   },
   "components": {
     "schemas": {
+      "Instant": { },
       "WeatherForecast": {
         "required": [
+          "timestamp",
           "date",
           "temperature_c",
           "summary"
         ],
         "type": "object",
         "properties": {
+          "timestamp": {
+            "$ref": "#/components/schemas/Instant"
+          },
           "date": {
             "type": "string",
             "format": "date"
