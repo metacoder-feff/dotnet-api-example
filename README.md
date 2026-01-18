@@ -45,6 +45,7 @@
 - logs-scopes example (auth) + test
 - auth/jwt + tests + swagger
 - db      + tests + health
+- postgress+=node
 - migration-test
 - optimistic concurrency
 - docker

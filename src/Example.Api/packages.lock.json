@@ -50,6 +50,9 @@
         "type": "Transitive",
         "resolved": "8.2.1",
         "contentHash": "3wVgdEPOCBF752s2xps5T+VH+c9mJK8S8GKEDg49084P6JZMumTZI5Te6aJ9MQpX0sx7om6JOnBpIi7ZBmmiDQ=="
+      },
+      "feff.extentions": {
+        "type": "Project"
       }
     }
   }

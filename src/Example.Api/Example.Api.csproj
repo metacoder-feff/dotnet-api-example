@@ -28,4 +28,8 @@
      <InternalsVisibleTo Include="Example.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../../lib/FEFF.Extentions/src/FEFF.Extentions/FEFF.Extentions.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -4,8 +4,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Example.Tests</RootNamespace>
+    <RootNamespace>FEFF.Extentions.Tests</RootNamespace>
     <TargetFramework>net10.0</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!--
     This template uses native xUnit.net command line options when using 'dotnet run' and
     VSTest by default when using 'dotnet test'. For more information on how to enable support
@@ -23,18 +24,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AwesomeAssertions" Version="9.3.0" />
-    <PackageReference Include="AwesomeAssertions.Json" Version="9.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.2" />
-    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="10.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageReference Include="xunit.v3" Version="3.2.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../lib/FEFF.Extentions/src/FEFF.Extentions.Testing/FEFF.Extentions.Testing.csproj" />
-    <ProjectReference Include="../../src/Example.Api/Example.Api.csproj" />
+    <ProjectReference Include="../../src/FEFF.Extentions.Testing/FEFF.Extentions.Testing.csproj" />
   </ItemGroup>
 
 </Project>
