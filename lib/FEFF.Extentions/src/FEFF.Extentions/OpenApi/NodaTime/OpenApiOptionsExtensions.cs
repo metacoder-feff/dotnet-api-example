@@ -42,11 +42,11 @@ public static class OpenApiOptionsExtensions
         // https://www.rfc-editor.org/rfc/rfc3339.html#appendix-A
         options.MapInlinedString<Period>("duration");
 
-        //TODO: not tested
         // not fully compatible with TimeSpan (see days)
         options.MapDuration();
 
         //TODO: refactor?
+        //TODO: different converters
         options.MapInterval();
         options.MapDateInterval();
 
@@ -84,10 +84,21 @@ public static class OpenApiOptionsExtensions
         options.AddSingleSchemaTransformer<Duration>((schema, _) =>
         {
             schema.Type = JsonSchemaType.String;
-            schema.Description = "An elapsed time measured in nanoseconds.";
+            schema.Description = "An elapsed time measured in nanoseconds. Format: '-H:mm:ss.FFFFFFFFF'";
             schema.Pattern = "^-?\\d*:\\d{2}:\\d{2}(\\.\\d{1,9})?$";
-            schema.Example = "123:45:67.123456789";
+            schema.Example = "123:12:12.123456789";
+
+            AddNodaExternalDocs(schema);
         });
+    }
+
+    private static void AddNodaExternalDocs(OpenApiSchema schema)
+    {
+        schema.ExternalDocs = new OpenApiExternalDocs()
+        {
+            Description = "Noda Time: Core types quick reference",
+            Url = new Uri("https://nodatime.org/3.3.x/userguide/core-types"),
+        };
     }
 
     private static void MapDateInterval(this OpenApiOptions options)
@@ -126,6 +137,7 @@ public static class OpenApiOptionsExtensions
                     }
                 }
             };
+            AddNodaExternalDocs(schema);
         });
     }
 
@@ -165,6 +177,7 @@ public static class OpenApiOptionsExtensions
                     }
                 }
             };
+            AddNodaExternalDocs(schema);
         });
     }
 
@@ -202,3 +215,45 @@ public static class OpenApiOptionsExtensions
         return type == typeof(T);
     }
 }
+
+//TODO: check converter
+/*
+NodaTime default converters:
+https://github.com/nodatime/nodatime.serialization/blob/main/src/NodaTime.Serialization.SystemTextJson/NodaJsonSettings.cs
+
+    internal void AddConverters(IList<JsonConverter> converters)
+    {
+        MaybeAdd(InstantConverter);
+        MaybeAdd(IntervalConverter);
+        MaybeAdd(LocalDateConverter);
+        MaybeAdd(LocalDateTimeConverter);
+        MaybeAdd(LocalTimeConverter);
+        MaybeAdd(AnnualDateConverter);
+        MaybeAdd(DateIntervalConverter);
+        MaybeAdd(OffsetConverter);
+        MaybeAdd(DateTimeZoneConverter);
+        MaybeAdd(DurationConverter);
+        MaybeAdd(PeriodConverter);
+        MaybeAdd(OffsetDateTimeConverter);
+        MaybeAdd(OffsetDateConverter);
+        MaybeAdd(OffsetTimeConverter);
+        MaybeAdd(ZonedDateTimeConverter);
+
+        void MaybeAdd(JsonConverter converter)
+        {
+            if (converter is not null)
+            {
+                converters.Add(converter);
+            }
+        }
+    }
+
+NodaTime optional converters:
+https://github.com/nodatime/nodatime.serialization/blob/main/src/NodaTime.Serialization.SystemTextJson/Extensions.cs
+
+...
+            ReplaceExistingConverters<Interval>(options.Converters, NodaConverters.IsoIntervalConverter);
+...
+            ReplaceExistingConverters<DateInterval>(options.Converters, NodaConverters.IsoDateIntervalConverter);
+
+*/
