@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Utils.Testing;
+namespace FEFF.Extentions.Testing;
 
 public class JTokenParseOptions
 {

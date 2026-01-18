@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Time.Testing;
 
-namespace Utils.Testing;
+namespace FEFF.Extentions.Testing;
 
 public static class FakeTimeExtensions
 {

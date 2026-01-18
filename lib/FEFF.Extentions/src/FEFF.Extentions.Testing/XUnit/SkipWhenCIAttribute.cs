@@ -1,8 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+
 using Xunit.v3;
 
-namespace Utils.Testing;
+namespace FEFF.Extentions.Testing;
 
 public sealed class SkipUnlessCIAttribute(string? msg = null) :
     BeforeAfterTestAttribute

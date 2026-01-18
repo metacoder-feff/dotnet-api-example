@@ -1,4 +1,4 @@
-namespace Utils.Testing;
+namespace FEFF.Extentions.Testing;
 
 public interface IRandomStrategy<T>
 {

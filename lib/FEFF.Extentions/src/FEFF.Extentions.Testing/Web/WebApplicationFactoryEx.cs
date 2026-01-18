@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Utils.Testing;
+using Xunit;
 
+namespace FEFF.Extentions.Testing;
+
+//TODO: extention method?
 public sealed class XUnitHttpClient : IDisposable
 {
     private readonly HttpClient _client;
