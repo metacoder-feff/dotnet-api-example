@@ -58,6 +58,8 @@ public static class OpenApiOptionsExtensions
         return options;
     }
 
+    // Do not inline because OpenApi has no format for this type.
+    // Add description instead.
     private static void MapDuration(this OpenApiOptions options)
     {
         // HINTS:
@@ -82,9 +84,9 @@ public static class OpenApiOptionsExtensions
         options.AddSingleSchemaTransformer<Duration>((schema, _) =>
         {
             schema.Type = JsonSchemaType.String;
-            schema.Metadata?["x-schema-id"] = ""; // set inlined
+            schema.Description = "An elapsed time measured in nanoseconds.";
             schema.Pattern = "^-?\\d*:\\d{2}:\\d{2}(\\.\\d{1,9})?$";
-            schema.Example = "12:34:56.123456789";
+            schema.Example = "123:45:67.123456789";
         });
     }
 
@@ -104,7 +106,7 @@ public static class OpenApiOptionsExtensions
             }
 
             schema.Type = JsonSchemaType.Object;
-            schema.Description = "Represents a time interval between two 'date' values, expressed with start and end.";
+            schema.Description = "Represents a time interval between two 'date' (without zone information) values, expressed with start and end.";
             schema.Properties = new Dictionary<string, IOpenApiSchema>
             {
                 {
@@ -143,7 +145,7 @@ public static class OpenApiOptionsExtensions
             }
 
             schema.Type = JsonSchemaType.Object;
-            schema.Description = "Represents a time interval between two 'date-time' values, expressed with start and end.";
+            schema.Description = "Represents a time interval between two 'date-time' (with zone information) values, expressed with start and end.";
             schema.Properties = new Dictionary<string, IOpenApiSchema>
             {
                 {
@@ -166,7 +168,8 @@ public static class OpenApiOptionsExtensions
         });
     }
 
-    // Use builtin primitive 'string' instead of ref to a new type
+    // Use builtin primitive 'string' instead of ref to a new type.
+    // Description and example of a type "T" are parts of OpenApi spec and are defined by "format" parameter
     public static OpenApiOptions MapInlinedString<T>(this OpenApiOptions options, string format)
     {
         options.AddSingleSchemaTransformer<T>((schema, _) =>
