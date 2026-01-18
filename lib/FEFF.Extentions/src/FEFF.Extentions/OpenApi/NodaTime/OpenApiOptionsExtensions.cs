@@ -47,45 +47,45 @@ public static class OpenApiOptionsExtensions
         // not fully compatible with TimeSpan (see days)
         options.MapDuration();
 
-        options.AddSingleSchemaTransformer<Offset>((schema, _) =>
-        {
-            schema.Type = JsonSchemaType.String;
-            schema.Description = "An offset from UTC in seconds. A positive value means that the local time is ahead of UTC (e.g. for Europe); a negative value means that the local time is behind UTC (e.g. for America).";
-            //TODO: schema.Pattern = ""
-            //TODO: schema.Example = "";
-            AddNodaExternalDocs(schema);
-        });
-        options.AddSingleSchemaTransformer<OffsetDate>((schema, _) =>
-        {
-            schema.Type = JsonSchemaType.String;
-            //TODO: add patter to description
-            //TODO: schema.Description = "";
-            //TODO: schema.Pattern = ""
-            //TODO: schema.Example = "";
-            AddNodaExternalDocs(schema);
-        });
-        options.AddSingleSchemaTransformer<ZonedDateTime>((schema, _) =>
-        {
-            schema.Type = JsonSchemaType.String;
-            //TODO: add patter to description
-            schema.Description = "A ZonedDateTime is a LocalDateTime within a specific time zone - with the added information of the exact Offset, in case of ambiguity. (During daylight saving transitions, the same local date/time can occur twice.)";
-            //TODO: schema.Pattern = ""
-            //TODO: schema.Example = "";
-            AddNodaExternalDocs(schema);
-        });
-        options.AddSingleSchemaTransformer<AnnualDate>((schema, _) =>
-        {
-            schema.Type = JsonSchemaType.String;
-            //TODO: add patter to description
-            schema.Description = "Represents an annual date (month and day) in the ISO calendar but without a specific year, typically for recurrent events such as birthdays, anniversaries, and deadlines.";
-            //TODO: schema.Pattern = ""
-            //TODO: schema.Example = "";
-            AddNodaExternalDocs(schema);
-        });
+//TODO: add noda-pattern to description
+//TODO: schema.Pattern
+//TODO: schema.Example
+        options.MapRefString<Offset>(
+            "An offset from UTC in seconds. A positive value means that the local time is ahead of UTC (e.g. for Europe); a negative value means that the local time is behind UTC (e.g. for America).",
+            null,
+            null
+            );
+
+//TODO: add noda-pattern to description
+//TODO: schema.Pattern
+//TODO: schema.Example
+        options.MapRefString<OffsetDate>(
+            "'date' (local) + Offset",
+            null,
+            null
+            );
+
+//TODO: add noda-pattern to description
+//TODO: schema.Pattern
+//TODO: schema.Example
+        options.MapRefString<ZonedDateTime>(
+            "A ZonedDateTime is a LocalDateTime within a specific time zone - with the added information of the exact Offset, in case of ambiguity. (During daylight saving transitions, the same local date/time can occur twice.)",
+            null,
+            null
+            );
+
+//TODO: add noda-pattern to description
+//TODO: schema.Pattern
+//TODO: schema.Example
+        options.MapRefString<AnnualDate>(
+            "Represents an annual date (month and day) in the ISO calendar but without a specific year, typically for recurrent events such as birthdays, anniversaries, and deadlines.",
+            null,
+            null
+            );
 
         // complex types
-        //TODO: refactor?
-        //TODO: different converters
+//TODO: refactor?
+//TODO: different converters
         options.MapInterval();
         options.MapDateInterval();
 
@@ -117,12 +117,22 @@ public static class OpenApiOptionsExtensions
         //    j: Round-trip pattern used by NodaTime.Serialization.JsonNet, which always uses the invariant culture and a pattern string of -H:mm:ss.FFFFFFFFF
         //    https://nodatime.org/3.2.x/userguide/duration-patterns#:~:text=This%20is%20the%20default%20format%20pattern.%20j,invariant%20culture%20and%20a%20pattern%20string%20of
 
-        options.AddSingleSchemaTransformer<Duration>((schema, _) =>
+        options.MapRefString<Duration>(
+            "An elapsed time measured in nanoseconds. Format: '-H:mm:ss.FFFFFFFFF'",
+            "^-?\\d*:\\d{2}:\\d{2}(\\.\\d{1,9})?$",
+            "123:12:12.123456789"
+            );
+    }
+    
+//TODO: pattern from object
+    internal static void MapRefString<T>(this OpenApiOptions options, string description, string? pattern, string? example)
+    {
+        options.AddSingleSchemaTransformer<T>((schema, _) =>
         {
             schema.Type = JsonSchemaType.String;
-            schema.Description = "An elapsed time measured in nanoseconds. Format: '-H:mm:ss.FFFFFFFFF'";
-            schema.Pattern = "^-?\\d*:\\d{2}:\\d{2}(\\.\\d{1,9})?$";
-            schema.Example = "123:12:12.123456789";
+            schema.Description = description;
+            schema.Pattern = pattern;
+            schema.Example = example;
 
             AddNodaExternalDocs(schema);
         });
