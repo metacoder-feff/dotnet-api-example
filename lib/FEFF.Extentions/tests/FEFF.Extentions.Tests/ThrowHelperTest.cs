@@ -1,4 +1,4 @@
-namespace Utils.Tests;
+namespace FEFF.Extentions.Tests;
 
 public class ThrowHelperTest
 {

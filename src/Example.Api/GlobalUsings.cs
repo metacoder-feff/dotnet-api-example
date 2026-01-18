@@ -1,2 +1,3 @@
-﻿global using FEFF.Extentions;
-global using NodaTime;
+﻿global using NodaTime;
+
+global using FEFF.Extentions;
