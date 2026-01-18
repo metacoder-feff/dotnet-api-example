@@ -1,4 +1,4 @@
-namespace Utils.HealthChecks;
+namespace FEFF.Extentions.HealthChecks;
 
 public static class HealthCheckTag 
 {

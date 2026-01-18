@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 
-namespace Utils.OpenApi;
+namespace FEFF.Extentions.OpenApi.NodaTime;
 
 // see also: MMonrad.OpenApi.NodaTime
 public static class OpenApiOptionsExtensions

@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Utils.HealthChecks;
+namespace FEFF.Extentions.HealthChecks;
 
 // No need to add "startup" check because it dublicates "liveness" waiting for a bit more time this is configured at cloud.
 public static class HealthCheckMapExtentions

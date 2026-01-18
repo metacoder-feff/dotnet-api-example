@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Utils;
+namespace FEFF.Extentions;
 
 public static class ServiceCollectionExtention
 {

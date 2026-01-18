@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.OpenApi;
 using NodaTime.Serialization.SystemTextJson;
 using Prometheus;
 
-using Utils.HealthChecks;
-using Utils.OpenApi;
+using FEFF.Extentions.HealthChecks;
+using FEFF.Extentions.OpenApi.NodaTime;
 
 namespace Example.Api;
 

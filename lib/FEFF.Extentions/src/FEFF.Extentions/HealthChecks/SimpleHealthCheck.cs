@@ -1,7 +1,7 @@
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Utils.HealthChecks;
+namespace FEFF.Extentions.HealthChecks;
 
 public class SimpleHealthCheck : IHealthCheck
 {

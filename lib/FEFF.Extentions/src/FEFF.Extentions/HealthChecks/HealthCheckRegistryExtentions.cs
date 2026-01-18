@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Utils.HealthChecks;
+namespace FEFF.Extentions.HealthChecks;
 
 public static class HealthCheckRegistryExtentions
 {

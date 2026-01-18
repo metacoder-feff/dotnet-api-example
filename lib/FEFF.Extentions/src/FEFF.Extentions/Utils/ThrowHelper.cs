@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-namespace Utils;
+namespace FEFF.Extentions;
 
 public static class ThrowHelper
 {
