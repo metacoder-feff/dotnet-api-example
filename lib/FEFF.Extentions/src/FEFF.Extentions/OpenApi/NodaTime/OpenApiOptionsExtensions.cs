@@ -42,18 +42,54 @@ public static class OpenApiOptionsExtensions
         // https://www.rfc-editor.org/rfc/rfc3339.html#appendix-A
         options.MapInlinedString<Period>("duration");
 
+        // Other string-like types are not inlined because they have no standard format in OpenAPI specs
+
         // not fully compatible with TimeSpan (see days)
         options.MapDuration();
 
+        options.AddSingleSchemaTransformer<Offset>((schema, _) =>
+        {
+            schema.Type = JsonSchemaType.String;
+            schema.Description = "An offset from UTC in seconds. A positive value means that the local time is ahead of UTC (e.g. for Europe); a negative value means that the local time is behind UTC (e.g. for America).";
+            //TODO: schema.Pattern = ""
+            //TODO: schema.Example = "";
+            AddNodaExternalDocs(schema);
+        });
+        options.AddSingleSchemaTransformer<OffsetDate>((schema, _) =>
+        {
+            schema.Type = JsonSchemaType.String;
+            //TODO: add patter to description
+            //TODO: schema.Description = "";
+            //TODO: schema.Pattern = ""
+            //TODO: schema.Example = "";
+            AddNodaExternalDocs(schema);
+        });
+        options.AddSingleSchemaTransformer<ZonedDateTime>((schema, _) =>
+        {
+            schema.Type = JsonSchemaType.String;
+            //TODO: add patter to description
+            schema.Description = "A ZonedDateTime is a LocalDateTime within a specific time zone - with the added information of the exact Offset, in case of ambiguity. (During daylight saving transitions, the same local date/time can occur twice.)";
+            //TODO: schema.Pattern = ""
+            //TODO: schema.Example = "";
+            AddNodaExternalDocs(schema);
+        });
+        options.AddSingleSchemaTransformer<AnnualDate>((schema, _) =>
+        {
+            schema.Type = JsonSchemaType.String;
+            //TODO: add patter to description
+            schema.Description = "Represents an annual date (month and day) in the ISO calendar but without a specific year, typically for recurrent events such as birthdays, anniversaries, and deadlines.";
+            //TODO: schema.Pattern = ""
+            //TODO: schema.Example = "";
+            AddNodaExternalDocs(schema);
+        });
+
+        // complex types
         //TODO: refactor?
         //TODO: different converters
         options.MapInterval();
         options.MapDateInterval();
 
-        //TODO: other types
-        //Offset
-        //OffsetDate
-        //ZonedDateTime
+//TODO: DateTimeZone
 
         return options;
     }
