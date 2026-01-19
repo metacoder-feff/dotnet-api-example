@@ -11,10 +11,19 @@ namespace FEFF.Extentions.OpenApi.NodaTime;
 public static class OpenApiOptionsExtensions
 {
     /// <summary>
-    /// Adds OpenAPI schema for 'NodaTime' types that use custom 'JsonConverter's. Well known OpenAPI formats e.g. 'date-time' are inlined as string+format.
-    /// For all other types 'Refs' containig description, pattern and example are created.
+    /// Adds OpenAPI schema for 'NodaTime' types serialized by custom 'JsonConverter'.
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>Well known OpenAPI formats e.g. 'date-time' are inlined as string+format.</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>For all other types create 'Refs' containig description, pattern and example.</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>Using minimal-api JsonSerializerOptions (see ConfigureHttpJsonOptions) including 'NamingPolicy'.</description>
+    ///     </item>
+    /// </list>
     /// </summary>
-    /// <param name="options"></param>
     public static OpenApiOptions ConfigureNodaTime(this OpenApiOptions options)
     {
         // OpenAPI specs:
@@ -62,7 +71,7 @@ public static class OpenApiOptionsExtensions
 
 //TODO: add noda-pattern to description
 //TODO: schema.Pattern
-        options.MapRefString(
+        options.MapRefString<Offset>(
             "An offset from UTC in seconds. A positive value means that the local time is ahead of UTC (e.g. for Europe); a negative value means that the local time is behind UTC (e.g. for America).",
             null,
             offset
@@ -70,16 +79,15 @@ public static class OpenApiOptionsExtensions
 
 //TODO: add noda-pattern to description
 //TODO: schema.Pattern
-        options.MapRefString(
+        options.MapRefString<OffsetDate>(
             "'date' (local) + Offset",
             null,
             offsetDate
             );
 
-
 //TODO: add noda-pattern to description
 //TODO: schema.Pattern
-        options.MapRefString(
+        options.MapRefString<AnnualDate>(
             "Represents an annual date (month and day) in the ISO calendar but without a specific year, typically for recurrent events such as birthdays, anniversaries, and deadlines.",
             null,
             annualDate
@@ -157,37 +165,64 @@ public static class OpenApiOptionsExtensions
 
     private static void MapInterval(this OpenApiOptions options)
     {
-        options.AddSingleSchemaTransformer<Interval>((schema, context) =>
-        {
-            var (nStart, nEnd) = ConvertNames(context, nameof(Interval.Start), nameof(Interval.End));
-
-            SetIntervalSchema(
-                schema,
-                nStart,
-                nEnd,
-                "Represents a time interval between two 'date-time' (with zone information) values, expressed with start and end.",
-                "date-time"
-            );
-        });
+        options.MapInterval<Interval>(
+            nameof(Interval.Start), 
+            nameof(Interval.End),
+            "Represents a time interval between two 'date-time' (with zone information) values, expressed with start and end.",
+            "date-time"
+        );
     }
 
     private static void MapDateInterval(this OpenApiOptions options)
     {
-        options.AddSingleSchemaTransformer<DateInterval>((schema, context) =>
-        {
-            var (nStart, nEnd) = ConvertNames(context, nameof(DateInterval.Start), nameof(DateInterval.End));
+        options.MapInterval<DateInterval>(
+            nameof(DateInterval.Start), 
+            nameof(DateInterval.End),
+            "Represents a time interval between two 'date' (without zone information) values, expressed with start and end.",
+            "date"
+        );
+    }
 
-            SetIntervalSchema(
-                schema,
-                nStart,
-                nEnd,
-                "Represents a time interval between two 'date' (without zone information) values, expressed with start and end.",
-                "date"
-            );
+    private static void MapInterval<T>(this OpenApiOptions options, string nameStart, string nameEnd, string description, string format)
+    {
+//TODO: force invoke defult schema creator inspite of custom JsonConverter ??
+//TODO: different converters ??
+        options.AddSingleSchemaTransformer<T>((schema, context) =>
+        {
+            var js = context.ApplicationServices.GetService<IOptions<JsonOptions>>();
+            var nn = js?.Value?.SerializerOptions?.PropertyNamingPolicy;
+
+            if (nn != null)
+            {
+                nameStart = nn.ConvertName(nameStart);
+                nameEnd = nn.ConvertName(nameEnd);
+            }
+
+            schema.Type = JsonSchemaType.Object;
+            schema.Description = description;
+            schema.Properties = new Dictionary<string, IOpenApiSchema>
+            {
+                {
+                    nameStart,
+                    new OpenApiSchema
+                    {
+                        Type = JsonSchemaType.String,
+                        Format = format,
+                    }
+                },
+                {
+                    nameEnd,
+                    new OpenApiSchema
+                    {
+                        Type = JsonSchemaType.String,
+                        Format = format,
+                    }
+                }
+            };
+            AddNodaExternalDocs(schema);
         });
     }
     
-//TODO: pattern from object
     internal static void MapRefString<T>(this OpenApiOptions options, string description, string? pattern, string? example)
     {
         options.AddSingleSchemaTransformer<T>((schema, _) =>
@@ -229,46 +264,6 @@ public static class OpenApiOptionsExtensions
             Description = "Noda Time: Core types quick reference",
             Url = new Uri("https://nodatime.org/userguide/core-types"),
         };
-    }
-
-    private static (string, string) ConvertNames(OpenApiSchemaTransformerContext context, string nStart, string nEnd)
-    {
-        var js = context.ApplicationServices.GetService<IOptions<JsonOptions>>();
-        var nn = js?.Value?.SerializerOptions?.PropertyNamingPolicy;
-
-        if (nn != null)
-        {
-            nStart = nn.ConvertName(nStart);
-            nEnd = nn.ConvertName(nEnd);
-        }
-
-        return (nStart, nEnd);
-    }
-
-    private static void SetIntervalSchema(OpenApiSchema schema, string nameStart, string nameEnd, string description, string format)
-    {
-        schema.Type = JsonSchemaType.Object;
-        schema.Description = description;
-        schema.Properties = new Dictionary<string, IOpenApiSchema>
-        {
-            {
-                nameStart,
-                new OpenApiSchema
-                {
-                    Type = JsonSchemaType.String,
-                    Format = format,
-                }
-            },
-            {
-                nameEnd,
-                new OpenApiSchema
-                {
-                    Type = JsonSchemaType.String,
-                    Format = format,
-                }
-            }
-        };
-        AddNodaExternalDocs(schema);
     }
 
     // Use builtin primitive 'string' instead of ref to a new type.
