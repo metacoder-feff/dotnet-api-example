@@ -57,4 +57,22 @@ public static class ServiceCollectionExtention
         );
         return services;
     }
+
+    //TODO: split class IServiceProviderExtention
+    //TODO: refactor??
+    public static string GetRequiredConnectionString(this IServiceProvider src, string connectionStringName)
+    {
+        var configuration = src.GetRequiredService<IConfiguration>();
+        return configuration.GetRequiredConnectionString(connectionStringName);
+    }
+
+    public static string GetRequiredConnectionString(this IConfiguration configuration, string connectionStringName)
+    {
+        var r = configuration.GetConnectionString(connectionStringName);
+
+        if (r == null)
+            throw new InvalidOperationException($"ConnectionString not found: '{connectionStringName}'");
+
+        return r;
+    }
 }

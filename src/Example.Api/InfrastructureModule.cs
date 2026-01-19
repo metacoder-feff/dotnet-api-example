@@ -1,8 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.OpenApi;
-
+using Microsoft.EntityFrameworkCore;
 using NodaTime.Serialization.SystemTextJson;
+using Npgsql;
 using Prometheus;
 
 using FEFF.Extentions.HealthChecks;
@@ -26,7 +27,34 @@ static class InfrastructureModule
 
         services.AddHealthChecks()
                 .AddSimpleLivenessCheck()
+                // readiness
+                .AddDbContextCheck<WeatherContext>(tags: [HealthCheckTag.Readiness])
+                // overal
+                // .AddCheck<RedisHealthCheck>("Redis");
                 ;
+
+        /*------------------------------------------------*/
+        // DB
+        /*------------------------------------------------*/
+        //services.AddTransient<UpdatedAtInterceptor>();
+        services.AddDbContext<WeatherContext>((sp, opt) =>
+        {
+            //opt.SetupContextOptions(pgConnectionStringName, sp, "primary");
+            //opt.SetupContextOptions(pgConnectionStringName, sp, null);
+
+            var pgConnectionStringName = "PgDb";
+
+            var connstr = sp.GetRequiredConnectionString(pgConnectionStringName);
+            opt.UseNpgsql(
+                connstr,
+                o => o
+                    .UseNodaTime()
+                    //.ConfigureWith(WeatherContext.MapEnums)
+            );
+
+            //var i = sp.GetRequiredService<UpdatedAtInterceptor>();
+            //opt.AddInterceptors(i);
+        });
     }
 
     private static void ConfigureOpenApi(OpenApiOptions o)

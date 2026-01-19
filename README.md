@@ -48,6 +48,7 @@
 - postgress+=node
 - migration-test
 - optimistic concurrency
+- db updated at
 - docker
 - ci/github + new coverage + test results + bages
 - redis   + tests  + health
