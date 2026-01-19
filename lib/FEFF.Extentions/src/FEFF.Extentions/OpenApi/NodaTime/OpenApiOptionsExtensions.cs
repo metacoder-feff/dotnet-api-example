@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Options;
@@ -8,6 +9,11 @@ namespace FEFF.Extentions.OpenApi.NodaTime;
 // see also: MMonrad.OpenApi.NodaTime
 public static class OpenApiOptionsExtensions
 {
+    /// <summary>
+    /// Adds OpenAPI schema for 'NodaTime' types. Well known OpenAPI formats e.g. 'date-time' are inlined as string+format.
+    /// For all other types 'Refs' containig description, pattern and example are created.
+    /// </summary>
+    /// <param name="options"></param>
     public static OpenApiOptions ConfigureNodaTime(this OpenApiOptions options)
     {
         // OpenAPI specs:
@@ -47,40 +53,44 @@ public static class OpenApiOptionsExtensions
         // not fully compatible with TimeSpan (see days)
         options.MapDuration();
 
+        //examples
+        var offset = Offset.FromHoursAndMinutes(-3, 30);
+        var offsetDate = new OffsetDate(new LocalDate(2000, 01, 01), offset);
+        var zonedDateTime = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Africa/Johannesburg")
+                    ?.AtLeniently(new LocalDateTime(2000, 01, 01, 12, 13, 14, 100));
+        var annualDate = new AnnualDate(10, 05);
+
 //TODO: add noda-pattern to description
 //TODO: schema.Pattern
-//TODO: schema.Example
-        options.MapRefString<Offset>(
+        options.MapRefString(
             "An offset from UTC in seconds. A positive value means that the local time is ahead of UTC (e.g. for Europe); a negative value means that the local time is behind UTC (e.g. for America).",
             null,
-            null
+            offset
             );
 
 //TODO: add noda-pattern to description
 //TODO: schema.Pattern
-//TODO: schema.Example
-        options.MapRefString<OffsetDate>(
+        options.MapRefString(
             "'date' (local) + Offset",
             null,
-            null
+            offsetDate
             );
 
 //TODO: add noda-pattern to description
 //TODO: schema.Pattern
-//TODO: schema.Example
+//TODO: check zonedDateTime == null
         options.MapRefString<ZonedDateTime>(
             "A ZonedDateTime is a LocalDateTime within a specific time zone - with the added information of the exact Offset, in case of ambiguity. (During daylight saving transitions, the same local date/time can occur twice.)",
             null,
-            null
+            zonedDateTime!.Value
             );
 
 //TODO: add noda-pattern to description
 //TODO: schema.Pattern
-//TODO: schema.Example
-        options.MapRefString<AnnualDate>(
+        options.MapRefString(
             "Represents an annual date (month and day) in the ISO calendar but without a specific year, typically for recurrent events such as birthdays, anniversaries, and deadlines.",
             null,
-            null
+            annualDate
             );
 
         // complex types
@@ -112,15 +122,18 @@ public static class OpenApiOptionsExtensions
         // 4. Duration C# regexp is:
         //      private const string DurationPattern = @"-?[0-9]{1,8}:[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]{1,9})?";
         //
-        // 5. Duration may be serialized without 'Day'
+        // 5. Duration is serialized without 'Day'
         //   "dr": "511:55:11.999999999",
         //    j: Round-trip pattern used by NodaTime.Serialization.JsonNet, which always uses the invariant culture and a pattern string of -H:mm:ss.FFFFFFFFF
         //    https://nodatime.org/3.2.x/userguide/duration-patterns#:~:text=This%20is%20the%20default%20format%20pattern.%20j,invariant%20culture%20and%20a%20pattern%20string%20of
 
-        options.MapRefString<Duration>(
+
+        var example = Duration.FromHours(-123.333);
+
+        options.MapRefString(
             "An elapsed time measured in nanoseconds. Format: '-H:mm:ss.FFFFFFFFF'",
             "^-?\\d*:\\d{2}:\\d{2}(\\.\\d{1,9})?$",
-            "123:12:12.123456789"
+            example
             );
     }
     
@@ -129,13 +142,34 @@ public static class OpenApiOptionsExtensions
     {
         options.AddSingleSchemaTransformer<T>((schema, _) =>
         {
-            schema.Type = JsonSchemaType.String;
-            schema.Description = description;
-            schema.Pattern = pattern;
-            schema.Example = example;
-
-            AddNodaExternalDocs(schema);
+            SetRefString(schema, description, pattern, example);
         });
+    }
+
+    internal static void MapRefString<T>(this OpenApiOptions options, string description, string? pattern, T example)
+    {
+        options.AddSingleSchemaTransformer<T>((schema, ctx) =>
+        {
+            var js = ctx.ApplicationServices.GetService<IOptions<JsonOptions>>()
+                    ?.Value
+                    ?.SerializerOptions;
+
+            var exStr = JsonSerializer.Serialize(example, js);
+            if (exStr.StartsWith('"') && exStr.EndsWith('"'))
+                exStr = exStr.Substring(1, exStr.Length - 2);
+
+            SetRefString(schema, description, pattern, exStr);
+        });
+    }
+
+    private static void SetRefString(OpenApiSchema schema, string description, string? pattern, string? example)
+    {
+        schema.Type = JsonSchemaType.String;
+        schema.Description = description;
+        schema.Pattern = pattern;
+        schema.Example = example;
+
+        AddNodaExternalDocs(schema);
     }
 
     private static void AddNodaExternalDocs(OpenApiSchema schema)
