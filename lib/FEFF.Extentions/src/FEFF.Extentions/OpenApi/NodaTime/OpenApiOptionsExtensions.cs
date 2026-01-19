@@ -294,9 +294,13 @@ public static class OpenApiOptionsExtensions
 
     private static bool IsCurrentType<T>(OpenApiSchemaTransformerContext context)
     {
+        var type = typeof(T);
+        var type1 = Nullable.GetUnderlyingType(type) ?? type;
+
         var jsonType = context.JsonTypeInfo.Type;
-        var type = Nullable.GetUnderlyingType(jsonType) ?? jsonType;
-        return type == typeof(T);
+        var type2 = Nullable.GetUnderlyingType(jsonType) ?? jsonType;
+        
+        return type1 == type2;
     }
 }
 
