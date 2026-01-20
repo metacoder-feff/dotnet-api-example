@@ -1,7 +1,7 @@
 using Example.Api;
 
 // setup ulimit otherwise
-// to overcome linux exception:
+// to fix linux exception:
 //   "The configured user limit (128) on the number of inotify..."
 EnvironmentHelper.DisableReloadConfigByDefault();
 
@@ -10,6 +10,9 @@ EnvironmentHelper.DisableReloadConfigByDefault();
 // At that moment ConfigurationManager is set only from Environment 
 // by: EnvironmentVariablesExtensions.AddEnvironmentVariables(this ..., string? prefix)
 var builder = WebApplication.CreateBuilder(args);
+
+//reload check
+//var reload = builder.Configuration.GetReloadConfigOnChangeValue();
 
 //TODO: log errors until build completes?
 InfrastructureModule.SetupServices(builder.Services);

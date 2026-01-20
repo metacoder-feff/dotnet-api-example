@@ -109,7 +109,7 @@ public static class EnvironmentHelper
         // At that moment ConfigurationManager is set only from Environment 
         // by: EnvironmentVariablesExtensions.AddEnvironmentVariables(this ..., string? prefix)
 
-        var reloadConfigOnChangeKey = "DOTNET_hostBuilder__reloadConfigOnChange";
+        var reloadConfigOnChangeKey = "DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE";
         if(Environment.GetEnvironmentVariable(reloadConfigOnChangeKey) == null)
         {
             Environment.SetEnvironmentVariable(reloadConfigOnChangeKey, "false");

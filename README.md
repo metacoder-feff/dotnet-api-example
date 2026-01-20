@@ -17,6 +17,7 @@
   + json-lines
   + timestamp format
 + exceptions at 'app.Run()' are logged + tests
++ DisableReloadConfigByDefault (exception: "The configured user limit (128) on the number of inotify...")
 
 + Api-Modules
 + Example-Api-Module
@@ -39,6 +40,8 @@
 
 
 ## TODO:
+- test DisableReloadConfigByDefault
+- secrets.json
 - healthcheck overal - rename
 - postgress + tests
   + NodaTime integration
