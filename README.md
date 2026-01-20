@@ -1,23 +1,22 @@
 # dotnet-api-example
 ## Features:
 + NodaTime
-+ TimeProvider
 + Minimal Api: ConfigureJsonSerializer
   + snake_case
   + JsonStringEnumConverter
   + NodaTime integration
-+ openapi/swagger-ui only in DEV + test
++ openapi/swagger-ui only in DEV + tests
   + NodaTime integration
 + metrics + test
 + cloud-compatible healthchecks + tests
   + liveness
-  + readiness
+  + readiness (db)
   + overal
-+ cloud-compatible logging + test
++ cloud-compatible logging + tests
   + stdout
   + json-lines
   + timestamp format
-+ exceptions at 'app.Run()' are logged + test
++ exceptions at 'app.Run()' are logged + tests
 
 + Api-Modules
 + Example-Api-Module
@@ -27,7 +26,9 @@
 + AwesomeAssertions (FluentAssertion)
 + AwesomeAssertions.Json 
 + WebApplicationFactory
-+ TestClient
+  + Override app setup
++ Example API tests
++ Infrastructure API tests
 + FakeRandom
 + FakeTimeProvider
 + "openapi.json" should not be changed
@@ -38,25 +39,31 @@
 
 
 ## TODO:
-- better openapi + comments,
+- healthcheck overal - rename
+- postgress + tests
+  + NodaTime integration
+  + HealthCheck (readiness)
+  + optimistic concurrency
+  + db updated at
++ AwesomeAssertions.Json - Parse options
 - options += fluentvalidation
-- test migrations
+- options validation - error message
+- test db migrations
 - test db optimizations
 - logs-scopes example (auth) + test
 - auth/jwt + tests + swagger
-- db      + tests + health
-- postgress+=node
-- migration-test
-- optimistic concurrency
-- db updated at
-- docker
+- docker: build image
 - ci/github + new coverage + test results + bages
-- redis   + tests  + health
-- s3      + tests  + health
+- redis   + tests
+  + HealthCheck (overal)
+- s3      + tests
+  + HealthCheck (overal)
 - restructure
 - make
 - bg/periodic
 - bg/offload
 - fake-http-client stub (for tests)
-- options validation - error message
+- better openapi + comments,
+- SignalR vs SSE &
+  + auth
 - ...

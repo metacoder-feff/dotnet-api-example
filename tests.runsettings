@@ -19,7 +19,7 @@ https://gist.github.com/osmyn/affc8841111283dc8b3ca1a95ace0dc2
               <!-- <Source>\.generated\.cs$</Source> -->
 
               <!-- Exclude all integration test projects -->
-                <Source>$tests/</Source>
+                <Source>/tests/</Source>
               </Exclude>
             </Sources>
            
