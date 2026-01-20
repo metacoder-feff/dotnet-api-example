@@ -53,11 +53,6 @@ public class ApiTestBase: IAsyncDisposable
     {
         _scope = new(() => Factory.Services.CreateAsyncScope());
         Factory.BuilderOverrider.ConfigureServices(ReconfigureFactory);
-        
-//TODO: devcontainer settings, dockerfile ENV & CI job env??
-        // WORKAROUND for linux error:
-        //   "The configured user limit (128) on the number of inotify..."
-        Factory.BuilderOverrider.UseSetting("DOTNET_hostBuilder:reloadConfigOnChange", "false");
     }
 
     private void ReconfigureFactory(WebHostBuilderContext ctx, IServiceCollection services)
