@@ -11,8 +11,8 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 
-    <!-- Text for Swagger -->
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Text for Swagger 
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>-->
     <NoWarn>$(NoWarn);1591</NoWarn> <!-- Missing XML comment ... -->
   </PropertyGroup>
 

@@ -10,7 +10,7 @@ public class ExampleApiTest : ApiTestBase
         _appFactory.FakeTime.SetNow("2005-05-05T15:15:15Z");
 
         // ACT
-        var rStr = await Client.GetStringAsync("/weatherforecast");
+        var rStr = await Client.TestGetStringAsync("/weatherforecast");
         
         // ASSERT
         rStr

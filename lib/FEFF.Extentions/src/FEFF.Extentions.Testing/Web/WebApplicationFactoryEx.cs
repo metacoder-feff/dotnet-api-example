@@ -1,36 +1,8 @@
-using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
-using Xunit;
-
 namespace FEFF.Extentions.Testing;
-
-//TODO: extention method?
-public sealed class XUnitHttpClient : IDisposable
-{
-    private readonly HttpClient _client;
-
-    public XUnitHttpClient(HttpClient client)
-    {
-        _client = client;
-    }
-
-    public void Dispose()
-    {
-        _client.Dispose();
-    }
-
-    public async Task<string> GetStringAsync(string requestUri, HttpStatusCode expectedStatus = HttpStatusCode.OK)
-    {
-        var resp = await _client.GetAsync(requestUri, TestContext.Current.CancellationToken);
-        var body = await resp.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        resp.StatusCode
-            .Should().Be(expectedStatus, body);
-        return body;
-    }
-}
 
 public interface IBuilderOverrider
 {
@@ -58,12 +30,6 @@ where TEntryPoint: class
 
         foreach(var a in _builderOverrides)
             a(builder);
-    }
-
-    public XUnitHttpClient CreateTestClient()
-    {
-        var httpClient = CreateClient();
-        return new XUnitHttpClient(httpClient);
     }
 }
 

@@ -34,11 +34,11 @@ public class ApiTestBase: IAsyncDisposable
     /// <summary>
     /// Runs AppFactory, creates, memoizes and returns Client.
     /// </summary>
-    protected XUnitHttpClient Client
+    protected HttpClient Client
     {
         get
         {
-            field ??= _appFactory.CreateTestClient();
+            field ??= _appFactory.CreateClient();
             return field;
         }
     }

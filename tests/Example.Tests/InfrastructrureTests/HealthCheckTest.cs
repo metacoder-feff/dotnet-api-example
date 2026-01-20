@@ -106,12 +106,15 @@ public class HealthCheckTest : ApiTestBase
     
     private async Task<string> GetProbeAsync(string uri, double timeout = 1.5, HttpStatusCode expected = HttpStatusCode.OK)
     {
-// TODO: warmup
-        //_ = await Client.GetAsync(uri);
+        // warmup
+        if(expected == HttpStatusCode.OK)
+            _ = await Client.GetAsync(uri);
+
+//TODO: add timeout to TestGetStringAsync ??
 
         var sw = new Stopwatch();
         sw.Start();
-        var body = await Client.GetStringAsync(uri, expected);
+        var body = await Client.TestGetStringAsync(uri, expected);
         sw.Stop();
 
         sw.Elapsed

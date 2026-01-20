@@ -11,7 +11,7 @@ public class OpenApiTest : ApiTestBase
     {
         _appFactory.BuilderOverrider.UseAspEnvironment(env);
 
-        var body = await Client.GetStringAsync("/swagger", res);
+        var body = await Client.TestGetStringAsync("/swagger", res);
 
         if (env == AspEnvironment.Development)
             body.Should().Contain("""
@@ -26,7 +26,7 @@ public class OpenApiTest : ApiTestBase
     {
         _appFactory.BuilderOverrider.UseAspEnvironment(env);
 
-        var body = await Client.GetStringAsync("/openapi/v1.json", res);
+        var body = await Client.TestGetStringAsync("/openapi/v1.json", res);
 
         if (env == AspEnvironment.Development)
             body.Should().Contain("openapi");
@@ -56,7 +56,7 @@ public class OpenApiTest : ApiTestBase
 
     private async Task AssertOrUpdateOpenAPI(bool isCI)
     {
-        var body = await Client.GetStringAsync("/openapi/v1.json");
+        var body = await Client.TestGetStringAsync("/openapi/v1.json");
 
         var targetFile = "../../../../Files/openapi.json";
         var changesFile = targetFile + ".modified.json";
