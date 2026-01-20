@@ -1,9 +1,8 @@
 using System.Diagnostics;
-using System.Net;
 
-namespace Example.Tests;
+namespace Example.Tests.InfrastructrureTests;
 
-public class HealthCheckTest : ApiTestBase
+public class HealthCheckApiTest : ApiTestBase
 {
     private const string LivenesstUri = "/health/liveness";
     private const string ReadinessUri = "/health/readiness";

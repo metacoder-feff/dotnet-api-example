@@ -1,6 +1,4 @@
-using System.Net;
-
-namespace Example.Tests;
+namespace Example.Tests.InfrastructrureTests;
 
 public class OpenApiTest : ApiTestBase
 {
