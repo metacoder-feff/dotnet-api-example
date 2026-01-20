@@ -37,6 +37,13 @@ public enum AspEnvironment { Development, Production };
 
 public static class WebApplicationFactoryExtention
 {
+    public static void UseSetting(this IBuilderOverrider factory, string key, string? value)
+    {
+        factory.AddBuilderOverride(
+            b => b.UseSetting(key, value)
+        );
+    }
+
     public static void UseAspEnvironment(this IBuilderOverrider factory, AspEnvironment env)
     {
         factory.AddBuilderOverride(

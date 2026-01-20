@@ -8,38 +8,16 @@ using Example.Api;
 
 namespace Example.Tests;
 
-//TODO: to ApiTestBase
-public class AppFactory : WebApplicationFactoryEx<Program>
+//TODO: disposable pattern/DI of 'AppFactory' 
+public class ApiTestBase: IAsyncDisposable
 {
     public readonly FakeRandom        FakeRandom = new();
     public readonly FakeTimeProvider  FakeTime   = new(new DateTimeOffset(2000, 1, 1, 0, 0, 0, 0, TimeSpan.Zero));
 
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-//TODO: devcontainer settings, dockerfile ENV & CI job env??
-        // WORKAROUND for linux error:
-        //   "The configured user limit (128) on the number of inotify..."
-        builder.UseSetting("DOTNET_hostBuilder:reloadConfigOnChange", "false");
-        // System ENV: DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE
-        
-        builder.ConfigureServices( (ctx, services) =>
-        {
-            services.TryReplaceSingleton<Random>(FakeRandom);
-            services.TryReplaceSingleton<TimeProvider>(FakeTime);
-        });
-
-        // override by delegates
-        base.ConfigureWebHost(builder);
-    }
-}
-
-//TODO: disposable pattern/DI of 'AppFactory' 
-public class ApiTestBase: IAsyncDisposable
-{
     private readonly Lazy<AsyncServiceScope> _scope;
-    public readonly string DbName = $"Weather-test-{Guid.NewGuid()}"; //.NewGuid().ToString();
+    public readonly string DbName = $"Weather-test-{Guid.NewGuid()}";
 
-    protected AppFactory Factory {get; } = new();
+    protected WebApplicationFactoryEx<Program> Factory {get; } = new();
 
     /// <summary>
     /// Runs AppFactory, creates, memoizes and returns Client.
@@ -75,15 +53,23 @@ public class ApiTestBase: IAsyncDisposable
     {
         _scope = new(() => Factory.Services.CreateAsyncScope());
         Factory.BuilderOverrider.ConfigureServices(ReconfigureFactory);
+        
+//TODO: devcontainer settings, dockerfile ENV & CI job env??
+        // WORKAROUND for linux error:
+        //   "The configured user limit (128) on the number of inotify..."
+        Factory.BuilderOverrider.UseSetting("DOTNET_hostBuilder:reloadConfigOnChange", "false");
     }
 
     private void ReconfigureFactory(WebHostBuilderContext ctx, IServiceCollection services)
     {
-            var config = (ConfigurationManager)ctx.Configuration;
+        services.TryReplaceSingleton<Random>(FakeRandom);
+        services.TryReplaceSingleton<TimeProvider>(FakeTime);
+        
+        var config = (ConfigurationManager)ctx.Configuration;
 //TODO: const
-            //var key = "ConnectionStrings:" + Setup.ConfigNames.PgConnectionString;
-            var key = "ConnectionStrings:" + "PgDb";
-            ChangeDbName(config, key);
+        //var key = "ConnectionStrings:" + Setup.ConfigNames.PgConnectionString;
+        var key = "ConnectionStrings:" + "PgDb";
+        ChangeDbName(config, key);
     }
     
     private void ChangeDbName(ConfigurationManager config, string key)

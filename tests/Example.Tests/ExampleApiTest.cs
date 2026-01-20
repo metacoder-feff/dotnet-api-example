@@ -6,8 +6,8 @@ public class ExampleApiTest : ApiTestBase
     public async Task Weatherforecast_should_contain_data()
     {
         // PREPARE
-        Factory.FakeRandom.IntStrategy = FakeRandom.ConstStrategy(2);
-        Factory.FakeTime.SetNow("2005-05-05T15:15:15Z");
+        FakeRandom.IntStrategy = FakeRandom.ConstStrategy(2);
+        FakeTime.SetNow("2005-05-05T15:15:15Z");
 
         // ACT
         var rStr = await Client.TestGetStringAsync("/weatherforecast");

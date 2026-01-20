@@ -6,7 +6,7 @@ public class SelfTests : ApiTestBase
     [Fact]
     public void FakeTime__should_be__set_before_test()
     {
-        Factory.FakeTime.GetInstant().ToString()
+        FakeTime.GetInstant().ToString()
             .Should().Be("2000-01-01T00:00:00Z");
 
         var tp = GetRequiredService<TimeProvider>();
