@@ -9,7 +9,7 @@ public class HealthCheckApiTest : ApiTestBase
     private const string HealthAllUri = "/health/overal";
 
     [Fact]
-    public async Task Health_Liveness_should_be_ok()
+    public async Task Liveness_should_be_ok()
     {
         var body = await GetProbeAsync(LivenesstUri);      
 
@@ -35,9 +35,11 @@ public class HealthCheckApiTest : ApiTestBase
     }
     
     [Fact]
-    public async Task Health_Readiness__should_be__ok()
+    public async Task Readiness__should_be__ok()
     {
         // await SetupHealth();
+        await DbCtx.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
+
         var body = await GetProbeAsync(ReadinessUri);
 
         body.ParseJToken()
@@ -60,15 +62,47 @@ public class HealthCheckApiTest : ApiTestBase
         """);
     }
 
-    // [Fact]
-    // public async Task Health_Readiness__should_be__500_unhealthy_db()
-    // {
-    // }
+    [Theory]
+    [InlineData(true, HttpStatusCode.OK)]
+    [InlineData(false, HttpStatusCode.InternalServerError)]
+    public async Task Readiness__should__depend_on_db(bool dbHealthy, HttpStatusCode heathResult)
+    {
+        if(dbHealthy)
+            await DbCtx.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
+
+        var body = await GetProbeAsync(ReadinessUri, expected: heathResult);
+
+        if(dbHealthy)
+            return;
+        
+        // Assert Error Body
+
+        body.ParseJToken()
+            .ReplaceValue("duration", "00:00:00.555")
+            .ReplaceValue("checks[*].duration", "00:00:00.555")       // remove randomness
+            .Sort("checks")
+            .Should().BeEquivalentTo("""
+        {
+            "status": "unhealthy",
+            "duration": "00:00:00.555",
+            "checks": [
+                {
+                "name": "WeatherContext",
+                "duration": "00:00:00.555",
+                "status": "unhealthy",
+                "data": {}
+                },
+            ]
+        }
+        """);
+    }
     
     [Fact]
     public async Task Health_Overal__should_be__ok()
     {
         // await SetupHealth();
+        await DbCtx.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
+
         var body = await GetProbeAsync(HealthAllUri);
 
         body.ParseJToken()
@@ -96,6 +130,17 @@ public class HealthCheckApiTest : ApiTestBase
             ]
         }
         """);
+    }
+
+    [Theory]
+    [InlineData(true, HttpStatusCode.OK)]
+    [InlineData(false, HttpStatusCode.InternalServerError)]
+    public async Task Health_Overal__should__depend_on_db(bool dbHealthy, HttpStatusCode heathResult)
+    {
+        if(dbHealthy)
+            await DbCtx.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
+
+        _ = await GetProbeAsync(HealthAllUri, expected: heathResult);
     }
 
     // [Fact]

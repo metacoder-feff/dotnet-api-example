@@ -7,7 +7,7 @@ public class OpenApiTest : ApiTestBase
     [InlineData(AspEnvironment.Production , HttpStatusCode.NotFound)]
     public async Task Swagger_ui_should_be_enabled_if(AspEnvironment env, HttpStatusCode res)
     {
-        _appFactory.BuilderOverrider.UseAspEnvironment(env);
+        Factory.BuilderOverrider.UseAspEnvironment(env);
 
         var body = await Client.TestGetStringAsync("/swagger", res);
 
@@ -22,7 +22,7 @@ public class OpenApiTest : ApiTestBase
     [InlineData(AspEnvironment.Production , HttpStatusCode.NotFound)]
     public async Task OpenAPI_should_be_enabled_if(AspEnvironment env, HttpStatusCode res)
     {
-        _appFactory.BuilderOverrider.UseAspEnvironment(env);
+        Factory.BuilderOverrider.UseAspEnvironment(env);
 
         var body = await Client.TestGetStringAsync("/openapi/v1.json", res);
 

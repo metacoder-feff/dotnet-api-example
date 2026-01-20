@@ -1,5 +1,10 @@
+using System.Data.Common;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;
+
+using Example.Api;
 
 namespace Example.Tests;
 
@@ -29,7 +34,10 @@ public class AppFactory : WebApplicationFactoryEx<Program>
 //TODO: disposable pattern/DI of 'AppFactory' 
 public class ApiTestBase: IAsyncDisposable
 {
-    protected readonly AppFactory _appFactory = new();
+    private readonly Lazy<AsyncServiceScope> _scope;
+    public readonly string DbName = $"Weather-test-{Guid.NewGuid()}"; //.NewGuid().ToString();
+
+    protected AppFactory Factory {get; } = new();
 
     /// <summary>
     /// Runs AppFactory, creates, memoizes and returns Client.
@@ -38,13 +46,67 @@ public class ApiTestBase: IAsyncDisposable
     {
         get
         {
-            field ??= _appFactory.CreateClient();
+            field ??= Factory.CreateClient();
             return field;
         }
     }
 
+    /// <summary>
+    /// Runs AppFactory, creates, memoizes and returns ServiceScope.
+    /// </summary>
+    protected AsyncServiceScope Scope => _scope.Value;
+    
+    /// <summary>
+    /// Runs AppFactory, creates, memoizes and returns Client.
+    /// </summary>
+    protected WeatherContext DbCtx
+    {
+        get
+        {
+            field ??= GetScopedRequiredService<WeatherContext>();
+            return field;
+        }
+    }
+
+    public ApiTestBase()
+    {
+        _scope = new(() => Factory.Services.CreateAsyncScope());
+        Factory.BuilderOverrider.ConfigureServices(ReconfigureFactory);
+    }
+
+    private void ReconfigureFactory(WebHostBuilderContext ctx, IServiceCollection services)
+    {
+            var config = (ConfigurationManager)ctx.Configuration;
+//TODO: const
+            //var key = "ConnectionStrings:" + Setup.ConfigNames.PgConnectionString;
+            var key = "ConnectionStrings:" + "PgDb";
+            ChangeDbName(config, key);
+    }
+    
+    private void ChangeDbName(ConfigurationManager config, string key)
+    {
+        var cs = config[key];
+        var csb = new DbConnectionStringBuilder
+        {
+            ConnectionString = cs
+        };
+
+        csb["Database"] = DbName;
+        var newCs = csb.ConnectionString;
+        config[key] = newCs;
+    }
+
     public async ValueTask DisposeAsync()
     {
-        await _appFactory.DisposeAsync();
+        if (_scope.IsValueCreated)
+            await _scope.Value.DisposeAsync();
+
+        await Factory.DisposeAsync();
     }
+    
+    public T GetScopedRequiredService<T>() where T : notnull =>
+        Scope.ServiceProvider.GetRequiredService<T>();
+
+    public T GetRequiredService<T>() where T : notnull =>
+        Factory.Services.GetRequiredService<T>();
 }

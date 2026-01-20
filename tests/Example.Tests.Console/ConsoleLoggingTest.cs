@@ -31,7 +31,7 @@ public class ConsoleLoggingTest(ITestOutputHelper testOutputHelper) : ApiTestBas
     {
         // PREPARE
         // this config throws exception  at 'app.Run()'
-        _appFactory.BuilderOverrider.ConfigureServices(
+        Factory.BuilderOverrider.ConfigureServices(
             b => b.AddOptions<TetsOpts>()
                 .Validate(_ => false)
                 .ValidateOnStart()
@@ -42,7 +42,7 @@ public class ConsoleLoggingTest(ITestOutputHelper testOutputHelper) : ApiTestBas
         // use try-catch because app cannot be started
         try
         {
-            _appFactory.StartServer();
+            Factory.StartServer();
         }
         catch { }
 
