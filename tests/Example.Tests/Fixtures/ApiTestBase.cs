@@ -8,6 +8,7 @@ using Example.Api;
 
 namespace Example.Tests;
 
+//TODO: to ApiTestBase
 public class AppFactory : WebApplicationFactoryEx<Program>
 {
     public readonly FakeRandom        FakeRandom = new();
@@ -15,6 +16,7 @@ public class AppFactory : WebApplicationFactoryEx<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+//TODO: devcontainer settings, dockerfile ENV & CI job env??
         // WORKAROUND for linux error:
         //   "The configured user limit (128) on the number of inotify..."
         builder.UseSetting("DOTNET_hostBuilder:reloadConfigOnChange", "false");
@@ -61,6 +63,7 @@ public class ApiTestBase: IAsyncDisposable
     /// </summary>
     protected WeatherContext DbCtx
     {
+//TODO: SingleFixture        
         get
         {
             field ??= GetScopedRequiredService<WeatherContext>();
@@ -98,12 +101,27 @@ public class ApiTestBase: IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        await TryDeleteDatabaseAsync();
+
+        //TODO: (warning) multithreaded error
         if (_scope.IsValueCreated)
             await _scope.Value.DisposeAsync();
 
         await Factory.DisposeAsync();
     }
-    
+
+    private async Task TryDeleteDatabaseAsync()
+    {
+//TODO: (optimization) check if app is started
+
+        // e.g. App cannot be started in a negative test
+        try
+        {
+            await DbCtx.Database.EnsureDeletedAsync();
+        }
+        catch { }
+    }
+
     public T GetScopedRequiredService<T>() where T : notnull =>
         Scope.ServiceProvider.GetRequiredService<T>();
 
