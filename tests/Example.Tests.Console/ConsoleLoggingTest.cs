@@ -27,7 +27,7 @@ public class ConsoleLoggingTest(ITestOutputHelper testOutputHelper) : ApiTestBas
     [Fact(
         //Skip = "need '[assembly: CaptureConsole]'"
     )]
-    public async Task Loging_should_satisfy_some_objectives()
+    public async Task Loging__should__satisfy_a_number_of_objectives()
     {
         // PREPARE
         // this config throws exception  at 'app.Run()'

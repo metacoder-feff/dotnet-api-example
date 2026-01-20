@@ -87,7 +87,10 @@ public class ApiTestBase: IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        await TryDeleteDatabaseAsync();
+        // need to delete at all ?
+        // or just leave ?
+        // or intellegent backround batch delete after a number of tests finished?
+        //await TryDeleteDatabaseAsync();
 
         //TODO: (warning) multithreaded error
         if (_scope.IsValueCreated)
