@@ -4,7 +4,7 @@ namespace Example.Tests.InfrastructrureTests;
 public class MetricsApiTest : ApiTestBase
 {
     [Fact]
-    public async Task Metrics_should_return()
+    public async Task Metrics__should__return_counter()
     {
         var body = await Client.TestGetStringAsync("/metrics");
 
