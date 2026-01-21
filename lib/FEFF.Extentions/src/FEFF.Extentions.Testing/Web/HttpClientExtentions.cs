@@ -7,7 +7,9 @@ public static class HttpClientExtentions
 {
     public static async Task<string> TestGetStringAsync(this HttpClient client, string requestUri, HttpStatusCode expectedStatus = HttpStatusCode.OK)
     {
-        var resp = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
+//TODO: stopwatch
+//TODO: FluentAseertions.Web?
+        using var resp = await client.GetAsync(requestUri, TestContext.Current.CancellationToken);
         var body = await resp.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         resp.StatusCode
             .Should().Be(expectedStatus, body);
