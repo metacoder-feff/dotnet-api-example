@@ -10,31 +10,36 @@ using Env = FrozenDictionary<string, string>;
 public sealed class RestoreProcessEnvironmentAfterTestAttribute :
     BeforeAfterTestAttribute
 {
-    private volatile Env? _oldEnv;
+    private readonly static object __lockObj = new();
+    private static volatile Env? __oldEnv;
 
     public override void Before(MethodInfo methodUnderTest, IXunitTest test)
     {
-        //Disallow parallel run
-//TODO: interlocked transaction
-//TODO: error??
-        if (_oldEnv != null)
-            throw new InvalidOperationException("Can't restore process environment in parallel tests. Consider using [Collection] attribute to all the test classes that will be part of a collection. Tests within the same collection run sequentially.");
-            
-        _oldEnv = EnvironmentHelper.GetEnvironmentVariables();
+        lock(__lockObj)
+        {
+            //Disallow parallel run
+//TODO: correct error??
+            if (__oldEnv != null)
+                throw new InvalidOperationException("Can't restore process environment in parallel tests. Consider using [Collection] attribute to all the test classes that will be part of a collection. Tests within the same collection run sequentially.");
+                
+            __oldEnv = EnvironmentHelper.GetEnvironmentVariables();
+        }
     }
 
     public override void After(MethodInfo methodUnderTest, IXunitTest test)
     {
-//TODO: interlocked transaction
-        if(_oldEnv == null)
-            return;
+        lock(__lockObj)
+        {
+            if(__oldEnv == null)
+                return;
 
-        var newEnv = EnvironmentHelper.GetEnvironmentVariables();
+            var newEnv = EnvironmentHelper.GetEnvironmentVariables();
 
-        RevertOldValues(_oldEnv, newEnv);
-        RemoveNewValues(_oldEnv, newEnv);
+            RevertOldValues(__oldEnv, newEnv);
+            RemoveNewValues(__oldEnv, newEnv);
 
-        _oldEnv = null;
+            __oldEnv = null;
+        }
     }
 
     private static void RevertOldValues(Env oldEnv, Env newEnv)
