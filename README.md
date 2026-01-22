@@ -65,7 +65,7 @@
 - bg/offload
 - fake-http-client stub (for tests)
 - better openapi + comments,
-- SignalR vs SSE &
+- SignalR vs SSE ?
   + auth
 - DisableReloadConfigByDefault (exception: "The configured user limit (128) on the number of inotify...") - enable + tests
 - ...

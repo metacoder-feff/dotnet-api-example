@@ -43,7 +43,7 @@ public class ApiTestBase: IAsyncDisposable
 //TODO: SingleFixture        
         get
         {
-            field ??= GetScopedRequiredService<WeatherContext>();
+            field ??= GetRequiredService<WeatherContext>();
             return field;
         }
     }
@@ -106,9 +106,6 @@ public class ApiTestBase: IAsyncDisposable
         catch { }
     }
 
-    public T GetScopedRequiredService<T>() where T : notnull =>
-        Scope.ServiceProvider.GetRequiredService<T>();
-
     public T GetRequiredService<T>() where T : notnull =>
-        Factory.Services.GetRequiredService<T>();
+        Scope.ServiceProvider.GetRequiredService<T>();
 }
