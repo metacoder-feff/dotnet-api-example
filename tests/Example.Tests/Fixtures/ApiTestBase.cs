@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;
 
 using Example.Api;
+using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Example.Tests;
 
@@ -13,10 +14,16 @@ public class ApiTestBase: IAsyncDisposable
     public readonly FakeRandom        FakeRandom = new();
     public readonly FakeTimeProvider  FakeTime   = new(new DateTimeOffset(2000, 1, 1, 0, 0, 0, 0, TimeSpan.Zero));
 
-    private readonly Lazy<AsyncServiceScope> _scope;
+    private readonly Lazy<AsyncServiceScope> _appServiceScope;
+    private readonly Lazy<WebApplicationFactory<Program>> _app;
     public readonly string DbName = $"Weather-test-{Guid.NewGuid()}";
 
-    protected WebApplicationFactoryEx<Program> Factory {get; } = new();
+    protected TestingAppBuilder AppBuilder {get; } = new();
+
+    /// <summary>
+    /// Creates, memoizes and returns App. The App may be started.
+    /// </summary>
+    protected WebApplicationFactory<Program> App => _app.Value;
 
     /// <summary>
     /// Runs AppFactory, creates, memoizes and returns Client.
@@ -25,7 +32,7 @@ public class ApiTestBase: IAsyncDisposable
     {
         get
         {
-            field ??= Factory.CreateClient();
+            field ??= App.CreateClient();
             return field;
         }
     }
@@ -33,7 +40,7 @@ public class ApiTestBase: IAsyncDisposable
     /// <summary>
     /// Runs AppFactory, creates, memoizes and returns ServiceScope.
     /// </summary>
-    protected AsyncServiceScope Scope => _scope.Value;
+    protected AsyncServiceScope Scope => _appServiceScope.Value;
     
     /// <summary>
     /// Runs AppFactory, creates, memoizes and returns Client.
@@ -50,8 +57,11 @@ public class ApiTestBase: IAsyncDisposable
 
     public ApiTestBase()
     {
-        _scope = new(() => Factory.Services.CreateAsyncScope());
-        Factory.BuilderOverrider.ConfigureServices(ReconfigureFactory);
+        _app = new (() =>AppBuilder.CreateApp<Program>());
+        // cannot remove lambda expression because acces to 'App.Services' starts an app
+        // but we only need to register callback
+        _appServiceScope = new(() => App.Services.CreateAsyncScope()); 
+        AppBuilder.ConfigureServices(ReconfigureFactory);
     }
 
     private void ReconfigureFactory(WebHostBuilderContext ctx, IServiceCollection services)
@@ -88,23 +98,24 @@ public class ApiTestBase: IAsyncDisposable
         //await TryDeleteDatabaseAsync();
 
         //TODO: (warning) multithreaded error
-        if (_scope.IsValueCreated)
-            await _scope.Value.DisposeAsync();
+        if (_appServiceScope.IsValueCreated)
+            await _appServiceScope.Value.DisposeAsync();
 
-        await Factory.DisposeAsync();
+        if (_app.IsValueCreated)
+            await _app.Value.DisposeAsync();
     }
 
-    private async Task TryDeleteDatabaseAsync()
-    {
-//TODO: (optimization) check if app is started
-
-        // e.g. App cannot be started in a negative test
-        try
-        {
-            await DbCtx.Database.EnsureDeletedAsync();
-        }
-        catch { }
-    }
+//TODO: delete without DbCtx
+//     private async Task TryDeleteDatabaseAsync()
+//     {
+// //TODO: (optimization) check if app is started
+//         // e.g. App cannot be started in a negative test
+//         try
+//         {
+//             await DbCtx.Database.EnsureDeletedAsync();
+//         }
+//         catch { }
+//     }
 
     public T GetRequiredService<T>() where T : notnull =>
         Scope.ServiceProvider.GetRequiredService<T>();
