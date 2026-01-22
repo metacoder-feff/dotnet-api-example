@@ -7,31 +7,32 @@ namespace FEFF.Extentions.Testing;
 
 public interface ITestingAppBuilder
 {
-    void AddOverride(Action<IWebHostBuilder> action);
+    void ConfigureWebHost(Action<IWebHostBuilder> action);
 }
 
 public class TestingAppBuilder : ITestingAppBuilder
 {
     private readonly List<Action<IWebHostBuilder>> _builderOverrides = [];
 
-    public void AddOverride(Action<IWebHostBuilder> action)
+    public void ConfigureWebHost(Action<IWebHostBuilder> action)
     {
         _builderOverrides.Add(action);
     }
 
-    public WebApplicationFactory<TEntryPoint> CreateApp<TEntryPoint>()
+    //TODO: encapsulate TestingApp->WebApplicationFactory
+    public WebApplicationFactory<TEntryPoint> Build<TEntryPoint>()
     where TEntryPoint: class
     {
-        return new TestingWebApplication<TEntryPoint>(_builderOverrides);
+        return new OverridenWebApplication<TEntryPoint>(_builderOverrides);
     }
 }
 
-public class TestingWebApplication<TEntryPoint> : WebApplicationFactory<TEntryPoint>
+internal class OverridenWebApplication<TEntryPoint> : WebApplicationFactory<TEntryPoint>
 where TEntryPoint: class
 {
     private FrozenSet<Action<IWebHostBuilder>> _builderOverrides;
 
-    public TestingWebApplication(List<Action<IWebHostBuilder>> builderOverrides)
+    public OverridenWebApplication(List<Action<IWebHostBuilder>> builderOverrides)
     {
         _builderOverrides = builderOverrides.ToFrozenSet();
     }
@@ -47,32 +48,32 @@ where TEntryPoint: class
 
 public enum AspEnvironment { Development, Production };
 
-public static class WebApplicationFactoryExtention
+public static class TestingAppBuilderExtention
 {
     public static void UseSetting(this ITestingAppBuilder builder, string key, string? value)
     {
-        builder.AddOverride(
+        builder.ConfigureWebHost(
             b => b.UseSetting(key, value)
         );
     }
 
     public static void UseAspEnvironment(this ITestingAppBuilder builder, AspEnvironment env)
     {
-        builder.AddOverride(
+        builder.ConfigureWebHost(
             b => b.UseEnvironment(env.ToString())
         );
     }
 
     public static void ConfigureServices(this ITestingAppBuilder builder, Action<IServiceCollection> configureServices)
     {
-        builder.AddOverride(
+        builder.ConfigureWebHost(
             b => b.ConfigureServices(configureServices)
         );
     }
 
     public static void ConfigureServices(this ITestingAppBuilder builder, Action<WebHostBuilderContext, IServiceCollection> configureServices)
     {
-        builder.AddOverride(
+        builder.ConfigureWebHost(
             b => b.ConfigureServices(configureServices)
         );
     }

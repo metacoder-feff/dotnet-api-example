@@ -27,10 +27,10 @@
 + AwesomeAssertions.Json 
 + WebApplicationFactory
   + Override app setup
+  + FakeRandom
+  + FakeTimeProvider
 + Example API tests
 + Infrastructure API tests
-+ FakeRandom
-+ FakeTimeProvider
 + "openapi.json" should not be changed
 + coverage
   + exclude test-projects

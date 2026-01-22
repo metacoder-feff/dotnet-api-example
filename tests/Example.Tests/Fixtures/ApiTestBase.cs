@@ -57,7 +57,7 @@ public class ApiTestBase: IAsyncDisposable
 
     public ApiTestBase()
     {
-        _app = new (() =>AppBuilder.CreateApp<Program>());
+        _app = new (() =>AppBuilder.Build<Program>());
         // cannot remove lambda expression because acces to 'App.Services' starts an app
         // but we only need to register callback
         _appServiceScope = new(() => App.Services.CreateAsyncScope()); 
