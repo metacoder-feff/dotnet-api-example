@@ -7,6 +7,12 @@ namespace FEFF.Extentions.Testing;
 using Env = FrozenDictionary<string, string>;
 
 //TODO: test
+/// <summary>
+/// Reverts ProcessEnvironment changes After Test.
+/// Those tests should not be run in parallel otherwise the exception would be thrown.
+/// Consider using [Collection] attribute to all the test classes that will be part of a collection.
+/// Tests within the same collection run sequentially.
+/// </summary>
 public sealed class RestoreProcessEnvironmentAfterTestAttribute :
     BeforeAfterTestAttribute
 {
