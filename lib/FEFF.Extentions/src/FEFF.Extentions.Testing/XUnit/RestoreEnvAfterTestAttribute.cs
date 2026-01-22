@@ -1,27 +1,31 @@
 using System.Collections.Frozen;
 using System.Reflection;
-
 using Xunit.v3;
 
 namespace FEFF.Extentions.Testing;
 
+using Env = FrozenDictionary<string, string>;
+
 //TODO: test
-public sealed class RestoreProcessEnvironmentAfterTestAttribute() :
+public sealed class RestoreProcessEnvironmentAfterTestAttribute :
     BeforeAfterTestAttribute
 {
-    private FrozenDictionary<string, string>? _oldEnv;
+    private volatile Env? _oldEnv;
 
     public override void Before(MethodInfo methodUnderTest, IXunitTest test)
     {
-//TODO: BeforeAfterTestAttribute is instantiated only once
-//Use Test Context
+        //Disallow parallel run
+//TODO: interlocked transaction
+//TODO: error??
         if (_oldEnv != null)
-            return;
+            throw new InvalidOperationException("Can't restore process environment in parallel tests. Consider using [Collection] attribute to all the test classes that will be part of a collection. Tests within the same collection run sequentially.");
+            
         _oldEnv = EnvironmentHelper.GetEnvironmentVariables();
     }
 
     public override void After(MethodInfo methodUnderTest, IXunitTest test)
     {
+//TODO: interlocked transaction
         if(_oldEnv == null)
             return;
 
@@ -33,18 +37,18 @@ public sealed class RestoreProcessEnvironmentAfterTestAttribute() :
         _oldEnv = null;
     }
 
-    private static void RevertOldValues(FrozenDictionary<string, string> oldEnv, FrozenDictionary<string, string> newEnv)
+    private static void RevertOldValues(Env oldEnv, Env newEnv)
     {
         foreach(var oldKvp in oldEnv)
         {
-            string? newValue = newEnv.TryGetNotNull(oldKvp.Key);
+            string? newValue = newEnv.TryGetOrNull(oldKvp.Key);
 
             if (oldKvp.Value != newValue)
                 Environment.SetEnvironmentVariable(oldKvp.Key, oldKvp.Value);
         }
     }
 
-    private static void RemoveNewValues(FrozenDictionary<string, string> oldEnv, FrozenDictionary<string, string> newEnv)
+    private static void RemoveNewValues(Env oldEnv, Env newEnv)
     {
         foreach(var k in newEnv.Keys)
         {
