@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Frozen;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace FEFF.Extentions;
@@ -115,5 +117,65 @@ public static class EnvironmentHelper
             Environment.SetEnvironmentVariable(reloadConfigOnChangeKey, "false");
         }
     }
+
+    /// <summary>
+    /// Typed version of Environment.GetEnvironmentVariables().
+    /// Skips env records when key or value is null, that typically should not occur.
+    /// </summary>
+    public static FrozenDictionary<string, string> GetEnvironmentVariables()
+    {
+        return Environment
+                    .GetEnvironmentVariables()
+                    .Cast<DictionaryEntry>()
+                    .Select(TryMakeTyped<string, string>)
+                    .WhereNotNull()
+                    .ToFrozenDictionary();
+    }
+
+    private static KeyValuePair<TKey, TVal>? TryMakeTyped<TKey, TVal>(DictionaryEntry src)
+    {
+        if(src.Key is TKey k == false)
+            return null;
+
+        if(src.Value is TVal v == false)
+            return null;
+
+        return new KeyValuePair<TKey, TVal>(k, v);
+    }
+
+//TODO: test
+    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> sequence)
+    where T : struct
+    {
+        // return enumerable.Where(e => e != null).Select(e => e!);
+        foreach (var item in sequence)
+        {
+            if (item == null)
+                continue;
+            yield return item.Value;
+        }
+    }
+
+//TODO: test
+    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> sequence)
+    where T : notnull
+    {
+        // return enumerable.Where(e => e != null).Select(e => e!);
+        foreach (var item in sequence)
+        {
+            if (item == null)
+                continue;
+            yield return item;
+        }
+    }
     
+//TODO: test
+    public static TVal? TryGetNotNull<TKey, TVal>(this IDictionary<TKey, TVal>src, TKey key)
+    where TVal : notnull
+    {
+        var b = src.TryGetValue(key, out var value);
+        if (b == false)
+            return default;
+        return value;
+    }
 }
