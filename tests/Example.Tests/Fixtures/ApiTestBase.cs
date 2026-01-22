@@ -9,39 +9,32 @@ using Example.Api;
 
 namespace Example.Tests;
 
-public class ApiTestBase: IAsyncDisposable
+
+public class DbContextFixture
 {
     private readonly string DbName = $"Weather-test-{Guid.NewGuid()}";
-    private readonly WebApplicationFixture<Program> _appFixture = new();
-    public readonly FakeRandom        FakeRandom = new();
-    public readonly FakeTimeProvider  FakeTime   = new(new DateTimeOffset(2000, 1, 1, 0, 0, 0, 0, TimeSpan.Zero));
+    private readonly WebApplicationFixture<Program> _appFixture;
 
-    protected TestingAppBuilder AppBuilder => _appFixture.AppBuilder;
-    protected WebApplicationFactory<Program> App => _appFixture.LazyApp;
-    protected HttpClient Client => _appFixture.LazyClient;
-    
     /// <summary>
     /// Runs AppFactory, creates, memoizes and returns Client.
     /// </summary>
-    protected WeatherContext DbCtx
+    public WeatherContext DbCtx
     {
-//TODO: SingleFixture        
         get
         {
-            field ??= GetRequiredService<WeatherContext>();
+            field ??= _appFixture.LazyScopeServiceProvider.GetRequiredService<WeatherContext>();
             return field;
         }
     }
 
-    public ApiTestBase()
+    public DbContextFixture(WebApplicationFixture<Program> appFixture)
     {
-        AppBuilder.ConfigureServices(ReconfigureFactory);
+        _appFixture = appFixture;
+        _appFixture.AppBuilder.ConfigureServices(ReconfigureFactory);
     }
 
-    private void ReconfigureFactory(WebHostBuilderContext ctx, IServiceCollection services)
+    private void ReconfigureFactory(WebHostBuilderContext ctx, IServiceCollection _)
     {
-        services.TryReplaceSingleton<Random>(FakeRandom);
-        services.TryReplaceSingleton<TimeProvider>(FakeTime);
         
         var config = (ConfigurationManager)ctx.Configuration;
 //TODO: const
@@ -63,17 +56,14 @@ public class ApiTestBase: IAsyncDisposable
         config[key] = newCs;
     }
 
-//TODO: disposable pattern/DI of 'AppFactory' 
-    public async ValueTask DisposeAsync()
-    {
+    // public async ValueTask DisposeAsync()
+    // {
         // need to delete at all ?
         // or just leave ?
         // or intellegent backround batch delete after a number of tests finished?
         //await TryDeleteDatabaseAsync();
-
-        await _appFixture.DisposeAsync();
-    }
-
+    // }
+    
 //TODO: delete without DbCtx
 //     private async Task TryDeleteDatabaseAsync()
 //     {
@@ -85,6 +75,37 @@ public class ApiTestBase: IAsyncDisposable
 //         }
 //         catch { }
 //     }
+}
+
+public class ApiTestBase: IAsyncDisposable
+{
+    private readonly WebApplicationFixture<Program> _appFixture = new();
+    private readonly DbContextFixture _dbFixture;
+    public readonly FakeRandom        FakeRandom = new();
+    public readonly FakeTimeProvider  FakeTime   = new(new DateTimeOffset(2000, 1, 1, 0, 0, 0, 0, TimeSpan.Zero));
+
+    protected TestingAppBuilder AppBuilder => _appFixture.AppBuilder;
+    protected WebApplicationFactory<Program> App => _appFixture.LazyApp;
+    protected HttpClient Client => _appFixture.LazyClient;
+    protected WeatherContext DbCtx => _dbFixture.DbCtx;
+
+    public ApiTestBase()
+    {
+        _dbFixture = new(_appFixture);
+        AppBuilder.ConfigureServices(ReconfigureFactory);
+    }
+
+    private void ReconfigureFactory(IServiceCollection services)
+    {
+        services.TryReplaceSingleton<Random>(FakeRandom);
+        services.TryReplaceSingleton<TimeProvider>(FakeTime);
+    }
+
+//TODO: disposable pattern/DI of 'AppFactory' 
+    public async ValueTask DisposeAsync()
+    {
+        await _appFixture.DisposeAsync();
+    }
 
     public T GetRequiredService<T>() where T : notnull =>
         _appFixture.LazyScopeServiceProvider.GetRequiredService<T>();
