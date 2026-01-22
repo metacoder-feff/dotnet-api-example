@@ -13,6 +13,8 @@ public sealed class RestoreProcessEnvironmentAfterTestAttribute() :
 
     public override void Before(MethodInfo methodUnderTest, IXunitTest test)
     {
+//TODO: BeforeAfterTestAttribute is instantiated only once
+//Use Test Context
         if (_oldEnv != null)
             return;
         _oldEnv = EnvironmentHelper.GetEnvironmentVariables();
@@ -27,6 +29,8 @@ public sealed class RestoreProcessEnvironmentAfterTestAttribute() :
 
         RevertOldValues(_oldEnv, newEnv);
         RemoveNewValues(_oldEnv, newEnv);
+
+        _oldEnv = null;
     }
 
     private static void RevertOldValues(FrozenDictionary<string, string> oldEnv, FrozenDictionary<string, string> newEnv)

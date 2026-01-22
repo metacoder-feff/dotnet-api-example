@@ -8,7 +8,6 @@ using Example.Api;
 
 namespace Example.Tests;
 
-//TODO: disposable pattern/DI of 'AppFactory' 
 public class ApiTestBase: IAsyncDisposable
 {
     public readonly FakeRandom        FakeRandom = new();
@@ -80,6 +79,7 @@ public class ApiTestBase: IAsyncDisposable
         config[key] = newCs;
     }
 
+//TODO: disposable pattern/DI of 'AppFactory' 
     public async ValueTask DisposeAsync()
     {
         // need to delete at all ?
