@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FEFF.Extentions.Testing;
@@ -6,7 +5,7 @@ namespace FEFF.Extentions.Testing;
 public sealed class WebApplicationFixture<TEntryPoint> : IAsyncDisposable
 where TEntryPoint: class
 {
-    private readonly Lazy<WebApplicationFactory<TEntryPoint>> _app;
+    private readonly Lazy<ITestApplication> _app;
     private readonly Lazy<AsyncServiceScope> _appServiceScope;
 
     //public TestingAppBuilder AppBuilder {get; } = new();
@@ -14,7 +13,7 @@ where TEntryPoint: class
     /// <summary>
     /// Creates, memoizes and returns App. The App may be started.
     /// </summary>
-    public WebApplicationFactory<TEntryPoint> LazyApp => _app.Value;
+    public ITestApplication LazyApp => _app.Value;
 
     /// <summary>
     /// Runs AppFactory, creates, memoizes and returns Client.
@@ -33,9 +32,9 @@ where TEntryPoint: class
     /// </summary>
     public IServiceProvider LazyScopeServiceProvider => _appServiceScope.Value.ServiceProvider;
 
-    public WebApplicationFixture(TestingAppBuilder appBuilder)
+    public WebApplicationFixture(ITestApplicationBuilder appBuilder)
     {
-        _app = new (() =>appBuilder.Build<TEntryPoint>());
+        _app = new (() => appBuilder.Build());
         // cannot remove lambda expression because acces to 'App.Services' starts an app
         // but we only need to register callback
         _appServiceScope = new(() => LazyApp.Services.CreateAsyncScope()); 

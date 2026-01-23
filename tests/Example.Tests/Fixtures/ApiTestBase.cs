@@ -1,6 +1,5 @@
 using System.Data.Common;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;
@@ -13,7 +12,7 @@ public class RandomDbNameFixture
 {
     private readonly string DbName = $"Weather-test-{Guid.NewGuid()}";
 
-    public RandomDbNameFixture(TestingAppBuilder appBuilder)
+    public RandomDbNameFixture(ITestApplicationBuilder appBuilder)
     {
         appBuilder.ConfigureServices(ReconfigureFactory);
     }
@@ -64,17 +63,18 @@ public class RandomDbNameFixture
 
 public class ApiTestBase: IAsyncDisposable
 {
-    protected TestingAppBuilder AppBuilder {get; } = new();
+    protected ITestApplicationBuilder AppBuilder {get; }
     private readonly WebApplicationFixture<Program> _appFixture;
     private readonly RandomDbNameFixture _dbFixture;
     public readonly FakeRandom        FakeRandom = new();
     public readonly FakeTimeProvider  FakeTime   = new(new DateTimeOffset(2000, 1, 1, 0, 0, 0, 0, TimeSpan.Zero));
 
-    protected WebApplicationFactory<Program> App => _appFixture.LazyApp;
+    protected ITestApplication App => _appFixture.LazyApp;
     protected HttpClient Client => _appFixture.LazyClient;
 
     public ApiTestBase()
     {
+        AppBuilder = new TestApplicationBuilder<Program>();
         _appFixture = new(AppBuilder);
         _dbFixture = new(AppBuilder);
         AppBuilder.ConfigureServices(ReconfigureFactory);
