@@ -9,25 +9,28 @@ public class ApiTestBase: IAsyncDisposable
 {
     private readonly string DbName = $"Weather-test-{Guid.NewGuid()}";
 
+    // fixures
     protected ITestApplicationBuilder AppBuilder {get; }
     private readonly TestApplicationFixture _appFixture;
     private readonly TestDbFixture _dbFixture;
-    public readonly FakeRandom        FakeRandom = new();
-    public readonly FakeTimeProvider  FakeTime   = new(new DateTimeOffset(2000, 1, 1, 0, 0, 0, 0, TimeSpan.Zero));
+    private readonly FakeServicesFixture _fakes;
 
+    // props from fixtures
     protected ITestApplication App => _appFixture.LazyApp;
     protected HttpClient Client => _appFixture.LazyClient;
+    protected FakeRandom FakeRandom => _fakes.FakeRandom;
+    protected FakeTimeProvider  FakeTime => _fakes.FakeTime;
 
     public ApiTestBase()
     {
         AppBuilder = new TestApplicationBuilder<Program>();
         _appFixture = new(AppBuilder);
         _dbFixture = new(AppBuilder, DbName, InfrastructureModule.PgConnectionStringName);
-        AppBuilder.ConfigureServices(ReconfigureFactory);
+        _fakes = new FakeServicesFixture(AppBuilder);
     }
 
     /// <summary>
-    /// Runs AppFactory, creates, memoizes and returns Client.
+    /// Runs AppFactory, creates, memoizes and returns DbContext.
     /// </summary>
     public WeatherContext DbCtx
     {
@@ -36,12 +39,6 @@ public class ApiTestBase: IAsyncDisposable
             field ??= _appFixture.LazyScopeServiceProvider.GetRequiredService<WeatherContext>();
             return field;
         }
-    }
-
-    private void ReconfigureFactory(IServiceCollection services)
-    {
-        services.TryReplaceSingleton<Random>(FakeRandom);
-        services.TryReplaceSingleton<TimeProvider>(FakeTime);
     }
 
 //TODO: disposable pattern/DI of 'AppFactory' 

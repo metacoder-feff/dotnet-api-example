@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.TestHost;
 
 namespace FEFF.Extentions.Testing;
 
+/// <summary>
+/// This abstraction layer is needed to reuse and combinate TestFixtures - 'TestApp extentions'.
+/// </summary>
 public interface ITestApplicationBuilder
 {
     void ConfigureWebHost(Action<IWebHostBuilder> action);
