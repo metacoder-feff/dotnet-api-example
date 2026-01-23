@@ -15,22 +15,20 @@ public class ApiTestBase: IAsyncDisposable
     private readonly TestDbFixture _dbFixture;
     private readonly FakeServicesFixture _fakes;
 
-    // props from fixtures
-    protected ITestApplication App => _appFixture.LazyApp;
-    protected HttpClient Client => _appFixture.LazyClient;
+    // props from fixtures for smart access
+    protected ITestApplication TestApplication => _appFixture.LazyTestApplication;
+    
     protected FakeRandom FakeRandom => _fakes.FakeRandom;
+
     protected FakeTimeProvider  FakeTime => _fakes.FakeTime;
 
-    public ApiTestBase()
-    {
-        AppBuilder = new TestApplicationBuilder<Program>();
-        _appFixture = new(AppBuilder);
-        _dbFixture = new(AppBuilder, DbName, InfrastructureModule.PgConnectionStringName);
-        _fakes = new FakeServicesFixture(AppBuilder);
-    }
+    /// <summary>
+    /// Run TestApp, create, memoize and return HttpClient connected to TestApp.
+    /// </summary>
+    protected HttpClient Client => _appFixture.LazyClient;
 
     /// <summary>
-    /// Runs AppFactory, creates, memoizes and returns DbContext.
+    /// Run TestApp, get, memoize and return DbContext instance form TestApp.
     /// </summary>
     public WeatherContext DbCtx
     {
@@ -41,12 +39,24 @@ public class ApiTestBase: IAsyncDisposable
         }
     }
 
+    public ApiTestBase()
+    {
+        // build fixtures tree
+        AppBuilder = new TestApplicationBuilder<Program>();
+        _appFixture = new(AppBuilder);
+        _dbFixture = new(AppBuilder, DbName, InfrastructureModule.PgConnectionStringName);
+        _fakes = new FakeServicesFixture(AppBuilder);
+    }
+
 //TODO: disposable pattern/DI of 'AppFactory' 
     public async ValueTask DisposeAsync()
     {
         await _appFixture.DisposeAsync();
     }
 
-    public T GetRequiredService<T>() where T : notnull =>
-        _appFixture.LazyScopeServiceProvider.GetRequiredService<T>();
+    /// <summary>
+    /// Run TestApp, get, memoize and return TService instance form TestApp.
+    /// </summary>
+    public TService GetRequiredService<TService>() where TService : notnull =>
+        _appFixture.LazyScopeServiceProvider.GetRequiredService<TService>();
 }

@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 namespace FEFF.Extentions.Testing;
 
 //TODO: own ITestApplicationBuilder ???
+//TODO: async StartServerAsync-> OnStartedHandlerAsync[]
+//  e.g. DB.Create
 public sealed class TestApplicationFixture : IAsyncDisposable
 {
     private readonly Lazy<ITestApplication> _app;
@@ -13,7 +15,7 @@ public sealed class TestApplicationFixture : IAsyncDisposable
     /// <summary>
     /// Creates, memoizes and returns App. The App may be started.
     /// </summary>
-    public ITestApplication LazyApp => _app.Value;
+    public ITestApplication LazyTestApplication => _app.Value;
 
     /// <summary>
     /// Runs AppFactory, creates, memoizes and returns Client.
@@ -22,7 +24,7 @@ public sealed class TestApplicationFixture : IAsyncDisposable
     {
         get
         {
-            field ??= LazyApp.CreateClient();
+            field ??= LazyTestApplication.CreateClient();
             return field;
         }
     }
@@ -37,7 +39,7 @@ public sealed class TestApplicationFixture : IAsyncDisposable
         _app = new (() => appBuilder.Build());
         // cannot remove lambda expression because acces to 'App.Services' starts an app
         // but we only need to register callback
-        _appServiceScope = new(() => LazyApp.Services.CreateAsyncScope()); 
+        _appServiceScope = new(() => LazyTestApplication.Services.CreateAsyncScope()); 
     }
 
     public async ValueTask DisposeAsync()

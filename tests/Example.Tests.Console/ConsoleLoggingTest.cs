@@ -42,7 +42,7 @@ public class ConsoleLoggingTest(ITestOutputHelper testOutputHelper) : ApiTestBas
         // use try-catch because app cannot be started
         try
         {
-            App.StartServer();
+            TestApplication.StartServer();
         }
         catch { }
 
