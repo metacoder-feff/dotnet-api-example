@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace FEFF.Extentions.Testing;
 
 //TODO: own ITestApplicationBuilder ???
-public sealed class WebApplicationFixture : IAsyncDisposable
+public sealed class TestApplicationFixture : IAsyncDisposable
 {
     private readonly Lazy<ITestApplication> _app;
     private readonly Lazy<AsyncServiceScope> _appServiceScope;
@@ -32,7 +32,7 @@ public sealed class WebApplicationFixture : IAsyncDisposable
     /// </summary>
     public IServiceProvider LazyScopeServiceProvider => _appServiceScope.Value.ServiceProvider;
 
-    public WebApplicationFixture(ITestApplicationBuilder appBuilder)
+    public TestApplicationFixture(ITestApplicationBuilder appBuilder)
     {
         _app = new (() => appBuilder.Build());
         // cannot remove lambda expression because acces to 'App.Services' starts an app

@@ -10,7 +10,7 @@ public class ApiTestBase: IAsyncDisposable
     private readonly string DbName = $"Weather-test-{Guid.NewGuid()}";
 
     protected ITestApplicationBuilder AppBuilder {get; }
-    private readonly WebApplicationFixture _appFixture;
+    private readonly TestApplicationFixture _appFixture;
     private readonly TestDbFixture _dbFixture;
     public readonly FakeRandom        FakeRandom = new();
     public readonly FakeTimeProvider  FakeTime   = new(new DateTimeOffset(2000, 1, 1, 0, 0, 0, 0, TimeSpan.Zero));
