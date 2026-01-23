@@ -35,18 +35,18 @@ where TEntryPoint: class
 
     public ITestApplication Build()
     {
-        return new OverridenWebApplication<TEntryPoint>(_builderOverrides);
+        return new OverridenWebApplicationFactory<TEntryPoint>(_builderOverrides.ToFrozenSet());
     }
 }
 
-internal class OverridenWebApplication<TEntryPoint> : WebApplicationFactory<TEntryPoint>, ITestApplication
+internal class OverridenWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint>, ITestApplication
 where TEntryPoint: class
 {
     private FrozenSet<Action<IWebHostBuilder>> _builderOverrides;
 
-    public OverridenWebApplication(List<Action<IWebHostBuilder>> builderOverrides)
+    public OverridenWebApplicationFactory(FrozenSet<Action<IWebHostBuilder>> builderOverrides)
     {
-        _builderOverrides = builderOverrides.ToFrozenSet();
+        _builderOverrides = builderOverrides;
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
