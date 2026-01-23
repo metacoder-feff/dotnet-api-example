@@ -2,8 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FEFF.Extentions.Testing;
 
-public sealed class WebApplicationFixture<TEntryPoint> : IAsyncDisposable
-where TEntryPoint: class
+//TODO: own ITestApplicationBuilder ???
+public sealed class WebApplicationFixture : IAsyncDisposable
 {
     private readonly Lazy<ITestApplication> _app;
     private readonly Lazy<AsyncServiceScope> _appServiceScope;

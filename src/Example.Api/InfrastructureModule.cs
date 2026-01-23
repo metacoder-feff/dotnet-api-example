@@ -13,6 +13,8 @@ namespace Example.Api;
 
 static class InfrastructureModule
 {
+    public const string PgConnectionStringName = "PgDb";
+
     public static void SetupServices(IServiceCollection services)
     {
         services.AddStdCloudLogging();
@@ -42,9 +44,7 @@ static class InfrastructureModule
             //opt.SetupContextOptions(pgConnectionStringName, sp, "primary");
             //opt.SetupContextOptions(pgConnectionStringName, sp, null);
 
-            var pgConnectionStringName = "PgDb";
-
-            var connstr = sp.GetRequiredConnectionString(pgConnectionStringName);
+            var connstr = sp.GetRequiredConnectionString(PgConnectionStringName);
             opt.UseNpgsql(
                 connstr,
                 o => o
