@@ -9,28 +9,13 @@ using Example.Api;
 
 namespace Example.Tests;
 
-
-public class DbContextFixture
+public class RandomDbNameFixture
 {
     private readonly string DbName = $"Weather-test-{Guid.NewGuid()}";
-    private readonly WebApplicationFixture<Program> _appFixture;
 
-    /// <summary>
-    /// Runs AppFactory, creates, memoizes and returns Client.
-    /// </summary>
-    public WeatherContext DbCtx
+    public RandomDbNameFixture(TestingAppBuilder appBuilder)
     {
-        get
-        {
-            field ??= _appFixture.LazyScopeServiceProvider.GetRequiredService<WeatherContext>();
-            return field;
-        }
-    }
-
-    public DbContextFixture(WebApplicationFixture<Program> appFixture)
-    {
-        _appFixture = appFixture;
-        _appFixture.AppBuilder.ConfigureServices(ReconfigureFactory);
+        appBuilder.ConfigureServices(ReconfigureFactory);
     }
 
     private void ReconfigureFactory(WebHostBuilderContext ctx, IServiceCollection _)
@@ -79,20 +64,33 @@ public class DbContextFixture
 
 public class ApiTestBase: IAsyncDisposable
 {
-    private readonly WebApplicationFixture<Program> _appFixture = new();
-    private readonly DbContextFixture _dbFixture;
+    protected TestingAppBuilder AppBuilder {get; } = new();
+    private readonly WebApplicationFixture<Program> _appFixture;
+    private readonly RandomDbNameFixture _dbFixture;
     public readonly FakeRandom        FakeRandom = new();
     public readonly FakeTimeProvider  FakeTime   = new(new DateTimeOffset(2000, 1, 1, 0, 0, 0, 0, TimeSpan.Zero));
 
-    protected TestingAppBuilder AppBuilder => _appFixture.AppBuilder;
     protected WebApplicationFactory<Program> App => _appFixture.LazyApp;
     protected HttpClient Client => _appFixture.LazyClient;
-    protected WeatherContext DbCtx => _dbFixture.DbCtx;
 
     public ApiTestBase()
     {
-        _dbFixture = new(_appFixture);
+        _appFixture = new(AppBuilder);
+        _dbFixture = new(AppBuilder);
         AppBuilder.ConfigureServices(ReconfigureFactory);
+    }
+    
+
+    /// <summary>
+    /// Runs AppFactory, creates, memoizes and returns Client.
+    /// </summary>
+    public WeatherContext DbCtx
+    {
+        get
+        {
+            field ??= _appFixture.LazyScopeServiceProvider.GetRequiredService<WeatherContext>();
+            return field;
+        }
     }
 
     private void ReconfigureFactory(IServiceCollection services)

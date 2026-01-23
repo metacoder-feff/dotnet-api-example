@@ -9,7 +9,7 @@ where TEntryPoint: class
     private readonly Lazy<WebApplicationFactory<TEntryPoint>> _app;
     private readonly Lazy<AsyncServiceScope> _appServiceScope;
 
-    public TestingAppBuilder AppBuilder {get; } = new();
+    //public TestingAppBuilder AppBuilder {get; } = new();
 
     /// <summary>
     /// Creates, memoizes and returns App. The App may be started.
@@ -33,9 +33,9 @@ where TEntryPoint: class
     /// </summary>
     public IServiceProvider LazyScopeServiceProvider => _appServiceScope.Value.ServiceProvider;
 
-    public WebApplicationFixture()
+    public WebApplicationFixture(TestingAppBuilder appBuilder)
     {
-        _app = new (() =>AppBuilder.Build<TEntryPoint>());
+        _app = new (() =>appBuilder.Build<TEntryPoint>());
         // cannot remove lambda expression because acces to 'App.Services' starts an app
         // but we only need to register callback
         _appServiceScope = new(() => LazyApp.Services.CreateAsyncScope()); 
