@@ -48,16 +48,25 @@ public class ApiTestBase: IAsyncLifetime
         _fakes = new FakeServicesFixture(AppBuilder);
     }
 
+    #region IAsyncLifetime
     public virtual ValueTask InitializeAsync()
     {
         return ValueTask.CompletedTask;
     }
 
-//TODO: disposable pattern/DI of 'AppFactory' 
-    public virtual async ValueTask DisposeAsync()
+    // Public implementation of Dispose pattern callable by consumers.
+    public async ValueTask DisposeAsync()
     {
-        await _appFixture.DisposeAsync();
+        await DisposeAsyncCore().ConfigureAwait(false);
+        GC.SuppressFinalize(this);
     }
+
+    // Protected implementation of Dispose pattern.
+    protected async Task DisposeAsyncCore()
+    {
+        await _appFixture.DisposeAsync().ConfigureAwait(false);
+    }
+    #endregion
 
     /// <summary>
     /// Run TestApp, get, memoize and return TService instance form TestApp.
