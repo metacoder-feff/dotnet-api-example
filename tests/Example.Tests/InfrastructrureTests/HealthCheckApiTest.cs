@@ -6,7 +6,7 @@ public class HealthCheckApiTest : ApiTestBase
 {
     private const string LivenesstUri = "/health/liveness";
     private const string ReadinessUri = "/health/readiness";
-    private const string HealthAllUri = "/health/overal";
+    private const string HealthAllUri = "/health/overview";
 
     [Fact]
     public async Task Liveness_should_be_ok()
@@ -98,7 +98,7 @@ public class HealthCheckApiTest : ApiTestBase
     }
     
     [Fact]
-    public async Task Health_Overal__should_be__ok()
+    public async Task Overview__should_be__ok()
     {
         // await SetupHealth();
         await DbCtx.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
@@ -135,7 +135,7 @@ public class HealthCheckApiTest : ApiTestBase
     [Theory]
     [InlineData(true, HttpStatusCode.OK)]
     [InlineData(false, HttpStatusCode.InternalServerError)]
-    public async Task Health_Overal__should__depend_on_db(bool dbHealthy, HttpStatusCode heathResult)
+    public async Task Overview__should__depend_on_db(bool dbHealthy, HttpStatusCode heathResult)
     {
         if(dbHealthy)
             await DbCtx.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
@@ -144,7 +144,7 @@ public class HealthCheckApiTest : ApiTestBase
     }
 
     // [Fact]
-    // public async Task Health_Overal__should_be__500_unhealthy_redis()
+    // public async Task Overview__should_be__500_unhealthy_redis()
     // {
     // }
     

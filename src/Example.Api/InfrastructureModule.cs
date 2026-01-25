@@ -31,7 +31,7 @@ static class InfrastructureModule
                 .AddSimpleLivenessCheck()
                 // readiness
                 .AddDbContextCheck<WeatherContext>(tags: [HealthCheckTag.Readiness])
-                // overal
+                // overview
                 // .AddCheck<RedisHealthCheck>("Redis");
                 ;
 

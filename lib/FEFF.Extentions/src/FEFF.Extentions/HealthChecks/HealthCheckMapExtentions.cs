@@ -34,7 +34,7 @@ public static class HealthCheckMapExtentions
     ///         <description>"/health/readiness" - Only health checks tagged with the "Readiness" tag must pass for app to be considered ready to accept traffic after starting.</description>
     ///     </item>
     ///     <item>
-    ///         <description>"/health/overal" - All health checks are exported for detaliled diagnostics.</description>
+    ///         <description>"/health/overview" - All health checks are exported for detaliled diagnostics.</description>
     ///     </item>
     /// </list>
     /// Unhealthy status returns "HTTP-500". Json format is contolled by "services.ConfigureHttpJsonOptions".
@@ -57,7 +57,7 @@ public static class HealthCheckMapExtentions
             ResultStatusCodes = mapping,
         });
 
-        app.MapHealthChecks("/health/overal", new HealthCheckOptions
+        app.MapHealthChecks("/health/overview", new HealthCheckOptions
         {
             // no Predicate => all
             ResponseWriter = WriteAsync,

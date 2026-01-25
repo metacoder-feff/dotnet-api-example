@@ -11,7 +11,7 @@
 + cloud-compatible healthchecks + tests
   + liveness
   + readiness (db)
-  + overal
+  + overview
 + cloud-compatible logging + tests
   + stdout
   + json-lines
@@ -40,7 +40,6 @@
 
 ## TODO:
 - secrets.json
-- healthcheck overal - rename
 - postgress + tests
   + NodaTime integration
   + HealthCheck (readiness)
@@ -56,10 +55,10 @@
 - docker: build image
 - ci/github + new coverage + test results + bages
 - redis   + tests
-  + HealthCheck (overal)
+  + HealthCheck (overview)
 - s3      + tests
-  + HealthCheck (overal)
-- restructure
+  + HealthCheck (overview)
+- app layer - restructure
 - make
 - bg/periodic
 - bg/offload
@@ -68,4 +67,6 @@
 - SignalR vs SSE ?
   + auth
 - DisableReloadConfigByDefault (exception: "The configured user limit (128) on the number of inotify...") - enable + tests
+- Test: CaseFixture
+  + CreateDb
 - ...
