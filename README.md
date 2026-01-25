@@ -5,12 +5,16 @@
   + snake_case
   + JsonStringEnumConverter
   + NodaTime integration
++ postgress + tests
+  + NodaTime integration
+  + HealthCheck (readiness)
+  + Optimistic lock (concurrency exception)
 + openapi/swagger-ui only in DEV + tests
   + NodaTime integration
-+ metrics + test
++ prometheus metrics + test
 + cloud-compatible healthchecks + tests
   + liveness
-  + readiness (db)
+  + readiness
   + overview
 + cloud-compatible logging + tests
   + stdout
@@ -41,9 +45,6 @@
 ## TODO:
 - secrets.json
 - postgress + tests
-  + NodaTime integration
-  + HealthCheck (readiness)
-  + optimistic concurrency
   + db updated at
 + AwesomeAssertions.Json - Parse options
 - options += fluentvalidation
@@ -69,4 +70,6 @@
 - DisableReloadConfigByDefault (exception: "The configured user limit (128) on the number of inotify...") - enable + tests
 - Test: CaseFixture
   + CreateDb
+- RetryHelper
+  + optimistic concurrency
 - ...

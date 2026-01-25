@@ -5,7 +5,7 @@ using Example.Api;
 
 namespace Example.Tests;
 
-public class ApiTestBase: IAsyncDisposable
+public class ApiTestBase: IAsyncLifetime
 {
     private readonly string DbName = $"Weather-test-{Guid.NewGuid()}";
 
@@ -48,8 +48,13 @@ public class ApiTestBase: IAsyncDisposable
         _fakes = new FakeServicesFixture(AppBuilder);
     }
 
+    public virtual ValueTask InitializeAsync()
+    {
+        return ValueTask.CompletedTask;
+    }
+
 //TODO: disposable pattern/DI of 'AppFactory' 
-    public async ValueTask DisposeAsync()
+    public virtual async ValueTask DisposeAsync()
     {
         await _appFixture.DisposeAsync();
     }
