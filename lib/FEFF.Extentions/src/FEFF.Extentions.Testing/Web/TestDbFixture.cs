@@ -13,6 +13,8 @@ public class TestDbFixture
 {
     private readonly string _newDbName;
     private readonly string _connectionStringName;
+    private string? _oldCs;
+    private string? _newCs;
 
     public TestDbFixture(ITestApplicationBuilder appBuilder, string newDbName, string connectionStringName)
     {
@@ -43,6 +45,9 @@ public class TestDbFixture
         csb["Database"] = _newDbName;
         var newCs = csb.ConnectionString;
         config[key] = newCs;
+
+        _oldCs = cs;
+        _newCs = newCs;
     }
 
     // public async ValueTask DisposeAsync()

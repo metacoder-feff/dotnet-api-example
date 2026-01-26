@@ -4,7 +4,7 @@ using Example.Api;
 
 namespace Example.Tests.InfrastructrureTests;
 
-public class OptimisticConcurrencyTest :ApiTestBase
+public class OptimisticConcurrencyTest : ApiTestBase
 {
     private const int ItemId = 1;
 
@@ -64,11 +64,11 @@ public class OptimisticConcurrencyTest :ApiTestBase
         DbCtx.ChangeTracker.Clear();
     }
 
-    public async override ValueTask InitializeAsync()
-    {
-        await base.InitializeAsync();
-        await InitializeDbAsync();
-    }
+    // public async override ValueTask InitializeAsync()
+    // {
+    //     await base.InitializeAsync();
+    //     await InitializeDbAsync();
+    // }
 
     private async Task InitializeDbAsync()
     {
