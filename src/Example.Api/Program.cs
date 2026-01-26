@@ -11,10 +11,8 @@ using Example.Api;
 // by: EnvironmentVariablesExtensions.AddEnvironmentVariables(this ..., string? prefix)
 var builder = WebApplication.CreateBuilder(args);
 
-//reload check
-//var reload = builder.Configuration.GetReloadConfigOnChangeValue();
-
 //TODO: log errors until build completes?
+InfrastructureModule.SetupConfiguration(builder.Configuration, builder.Environment);
 InfrastructureModule.SetupServices(builder.Services);
 ExampleApiModule.SetupServices(builder.Services);
 

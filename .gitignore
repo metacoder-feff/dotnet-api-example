@@ -3,7 +3,9 @@
 ###########################################################################
 
 **/tmp/
-
+*[Ss]ecrets.json
+*[Ss]ecrets.env
+tests/Files/openapi.json.modified.json
 
 # Multiple sources ...
 # 1. FROM: gitlab .Net template

@@ -21,6 +21,7 @@
   + json-lines
   + timestamp format
 + exceptions at 'app.Run()' are logged + tests
++ appsettings.secrets.json + gitignore
 
 + Api-Modules
 + Example-Api-Module
@@ -43,7 +44,6 @@
 
 
 ## TODO:
-- secrets.json
 - postgress + tests
   + db updated at
 + AwesomeAssertions.Json - Parse options
@@ -63,13 +63,21 @@
 - make
 - bg/periodic
 - bg/offload
-- fake-http-client stub (for tests)
+- fake-http-client stub (for tests) + CaseFixture
 - better openapi + comments,
-- SignalR vs SSE ?
+- SignalR vs SSE ? + tests + CaseFixture
   + auth
-- DisableReloadConfigByDefault (exception: "The configured user limit (128) on the number of inotify...") - enable + tests
+- DisableReloadConfigByDefault (exception: "The configured user limit (128) on the number of inotify...") - enable (+tests?)
 - Test: CaseFixture
-  + CreateDb
+  + CreateDb/DeleteDb+ on/off
 - RetryHelper
   + optimistic concurrency
 - ...
+
+admin:
+-post_s3_url
+-save_to_redis_list
+-read_from_s3_in_bg
+
+public:
+-get_from_db
