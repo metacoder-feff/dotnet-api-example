@@ -6,6 +6,7 @@ using NodaTime.Serialization.SystemTextJson;
 using Npgsql;
 using Prometheus;
 
+using FEFF.Extentions.EntityFrameworkCore;
 using FEFF.Extentions.HealthChecks;
 using FEFF.Extentions.OpenApi.NodaTime;
 
@@ -48,7 +49,8 @@ static class InfrastructureModule
         /*------------------------------------------------*/
         // DB
         /*------------------------------------------------*/
-        //services.AddTransient<UpdatedAtInterceptor>();
+        services.AddTimeProvider(); // for CreatedAtUpdatedAtInterceptor
+        services.AddTransient<CreatedAtUpdatedAtInterceptor>();
         services.AddDbContext<WeatherContext>((sp, opt) =>
         {
             //opt.SetupContextOptions(pgConnectionStringName, sp, "primary");
@@ -62,8 +64,8 @@ static class InfrastructureModule
                     //.ConfigureWith(WeatherContext.MapEnums)
             );
 
-            //var i = sp.GetRequiredService<UpdatedAtInterceptor>();
-            //opt.AddInterceptors(i);
+            var i = sp.GetRequiredService<CreatedAtUpdatedAtInterceptor>();
+            opt.AddInterceptors(i);
         });
     }
 

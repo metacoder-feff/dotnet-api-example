@@ -5,10 +5,11 @@
   + snake_case
   + JsonStringEnumConverter
   + NodaTime integration
-+ postgress + tests
++ DB: postgress + tests
   + NodaTime integration
   + HealthCheck (readiness)
   + Optimistic lock (concurrency exception)
+  + Automate CreatedAt/UpdatedAt
 + openapi/swagger-ui only in DEV + tests
   + NodaTime integration
 + prometheus metrics + test
@@ -44,8 +45,6 @@
 
 
 ## TODO:
-- postgress + tests
-  + db updated at
 + AwesomeAssertions.Json - Parse options
 - options += fluentvalidation
 - options validation - error message
