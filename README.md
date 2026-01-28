@@ -71,7 +71,8 @@
   + optimistic concurrency
 - Extentions: test Guid-Concurrency - auto-update / add save interceptor
 - postgress: master/slave
-+ Api-Modules
+- Api-Modules
+- (experiment) OpenTelemetry.Exporter.Prometheus.AspNetCore
 - ...
 
 admin:
