@@ -24,8 +24,6 @@
 + exceptions at 'app.Run()' are logged + tests
 + appsettings.secrets.json + gitignore
 
-+ Api-Modules
-+ Example-Api-Module
 
 ## Testing
 + XUnit v3
@@ -43,8 +41,8 @@
   + exclude GeneratedCode
   + make vscode to use ".runsettings"
 
-
 ## TODO:
+- postgress: enums
 + AwesomeAssertions.Json - Parse options
 - options += fluentvalidation
 - options validation - error message
@@ -72,6 +70,8 @@
 - RetryHelper
   + optimistic concurrency
 - Extentions: test Guid-Concurrency - auto-update / add save interceptor
+- postgress: master/slave
++ Api-Modules
 - ...
 
 admin:
