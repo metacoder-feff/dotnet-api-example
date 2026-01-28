@@ -9,10 +9,10 @@ namespace FEFF.Extentions.EntityFrameworkCore;
 /// Automate setting properties on saving to DB:
 /// <list type="bullet">
 ///     <item>
-///         <description>Instant CreatedAt {}</description>
+///         <description>Instant CreatedAt { get; private init; }</description>
 ///     </item>
 ///     <item>
-///         <description>Instant UpdatedAt {}</description>
+///         <description>Instant UpdatedAt { get; private init; }</description>
 ///     </item>
 /// </list>
 /// Attention:

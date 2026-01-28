@@ -31,7 +31,7 @@ public class Forecast : EntityBase
 public class EntityBase
 {
     // PG recomends 'long' for optimisation purposes
-    public /*auto*/ long    Id          { get; init; }
+    public /*auto*/ long    Id          { get; private init; }
 
     // optimistic concurrency token
     // EF automatically adds predicate to update statement
@@ -50,9 +50,9 @@ public class EntityBase
     // public Guid Version { get; init; }
 
     [Timestamp]
-    public /*auto*/ uint    Version     { get; init; }
+    public /*auto*/ uint    Version     { get; private init; }
 
     //UpdatedAtInterceptor
-    public /*auto*/ Instant CreatedAt   { get; init; }
-    public /*auto*/ Instant UpdatedAt   { get; init; }
+    public /*auto*/ Instant CreatedAt   { get; private init; }
+    public /*auto*/ Instant UpdatedAt   { get; private init; }
 }

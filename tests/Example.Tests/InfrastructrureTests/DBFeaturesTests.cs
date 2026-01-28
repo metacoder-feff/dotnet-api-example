@@ -6,8 +6,6 @@ namespace Example.Tests.InfrastructrureTests;
 
 public class DBFeaturesTests : ApiTestBase
 {
-    private const int ItemId = 1;
-
     [Fact]
     public async Task ConcurrentUpdate__should__throw()
     {
@@ -35,8 +33,7 @@ public class DBFeaturesTests : ApiTestBase
     {
         return await DbCtx.Forecasts
             .AsNoTracking()
-            .Where(x => x.Id == ItemId)
-            .SingleAsync(TestContext.Current.CancellationToken);
+            .FirstAsync(TestContext.Current.CancellationToken);
     }
 
     private async Task AssertItemAsync(string expectedName, long expectedCount)
@@ -68,7 +65,7 @@ public class DBFeaturesTests : ApiTestBase
     {
         await DbCtx.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
 
-        var fc = new Forecast { Id = ItemId, Name = "1111"};
+        var fc = new Forecast { Name = "1111"};
         DbCtx.Forecasts.Add(fc);
 
         await DbCtx.SaveChangesAsync(TestContext.Current.CancellationToken);
