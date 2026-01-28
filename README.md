@@ -71,6 +71,7 @@
   + CreateDb/DeleteDb+ on/off
 - RetryHelper
   + optimistic concurrency
+- Extentions: test Guid-Concurrency - auto-update / add save interceptor
 - ...
 
 admin:

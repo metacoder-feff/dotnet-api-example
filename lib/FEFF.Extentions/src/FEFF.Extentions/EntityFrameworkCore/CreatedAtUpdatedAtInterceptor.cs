@@ -6,10 +6,38 @@ using NodaTime.Extensions;
 namespace FEFF.Extentions.EntityFrameworkCore;
 
 /// <summary>
-/// 
+/// Automate setting properties on saving to DB:
+/// <list type="bullet">
+///     <item>
+///         <description>Instant CreatedAt {}</description>
+///     </item>
+///     <item>
+///         <description>Instant UpdatedAt {}</description>
+///     </item>
+/// </list>
+/// Attention:
+/// <list type="bullet">
+///     <item>
+///         <description>Model properties should be name exactly: 'CreatedAt'/'UpdatedAt' </description>
+///     </item>
+///     <item>
+///         <description>Only 'NodaTime.Instant' is supported as a type for the properies.</description>
+///     </item>
+///     <item>
+///         <description>Any other modifications of this properties would be reverted/overwritten.</description>
+///     </item>
+///     <item>
+///         <description>Uses TimeProvider as a source of time as a constructor dependency.</description>
+///     </item>
+/// </list>
 /// </summary>
 public sealed class CreatedAtUpdatedAtInterceptor : SaveChangesInterceptor
 {
+//TODO: err logging
+//TODO: DatetimeOffset support
+//TODO: other property bindings & type checks: interface/attribute/... ?
+//TODO: Nested (OwnsOne) support/test
+
     private readonly TimeProvider _time;
 
     public CreatedAtUpdatedAtInterceptor(TimeProvider t)
@@ -65,8 +93,7 @@ public sealed class CreatedAtUpdatedAtInterceptor : SaveChangesInterceptor
 
     private static MemberEntry? FindMemberEntry(EntityEntry e, string name)
     {
-//TODO: other bindings: interface/attribute ?
         return e.Members
-                .SingleOrDefault(x => x.Metadata.Name == name);
+                .SingleOrDefault(x => x.Metadata.Name == name && x.Metadata.ClrType == typeof(Instant));
     }
 }
