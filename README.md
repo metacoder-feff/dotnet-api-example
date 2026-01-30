@@ -31,6 +31,7 @@
   + timestamp format
 + exceptions at 'app.Run()' are logged + tests
 + appsettings.secrets.json + gitignore
++ SignalR + tests
 
 
 ## Testing
@@ -42,6 +43,7 @@
   + Override app setup
   + FakeRandom
   + FakeTimeProvider
+  + SignalR-Client
 + Example API tests
 + Infrastructure API tests
 + "openapi.json" should not be changed

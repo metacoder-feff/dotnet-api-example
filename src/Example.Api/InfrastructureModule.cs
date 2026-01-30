@@ -10,6 +10,8 @@ using FEFF.Extentions.EntityFrameworkCore;
 using FEFF.Extentions.HealthChecks;
 using FEFF.Extentions.OpenApi.NodaTime;
 
+using Example.Api.SignalR;
+
 namespace Example.Api;
 
 static class InfrastructureModule
@@ -45,6 +47,8 @@ static class InfrastructureModule
                 // overview
                 // .AddCheck<RedisHealthCheck>("Redis");
                 ;
+
+        services.AddSignalR();
 
         /*------------------------------------------------*/
         // DB
@@ -99,6 +103,13 @@ static class InfrastructureModule
         app.MapMetrics();
 
         app.MapStdHealthChecks();
+
+        app.MapHub<EventHub>("/events", opts =>
+        {
+            // close whenever jwt-auth-token expires 
+            // see https://learn.microsoft.com/en-us/aspnet/core/signalr/authn-and-authz?view=aspnetcore-8.0#authenticate-users-connecting-to-a-signalr-hub
+            opts.CloseOnAuthenticationExpiration = true;
+        });
     }
 
     internal static void ConfigureJsonSerializer(JsonSerializerOptions o)

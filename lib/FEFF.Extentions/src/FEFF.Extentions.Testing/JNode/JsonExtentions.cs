@@ -1,4 +1,6 @@
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
+using NodaTime.Serialization.JsonNet;
 
 namespace FEFF.Extentions.Testing;
 
@@ -35,6 +37,29 @@ public static class JsonExtentions
         }
 
         return result;
+    }
+
+//TODO: JTokenParseOptions
+    [return: NotNullIfNotNull(nameof(src))]
+    public static JToken? ToJToken(this object? src)//, bool parseIfString = true)
+    {
+        if (src == null)
+            return null;
+
+        // if(src is string str && parseIfString)
+        //     return str.ParseJToken();
+
+        var o = new JsonSerializerSettings
+        {
+            Converters = { new Newtonsoft.Json.Converters.StringEnumConverter(), new TimeSpanConverter() },
+            DateParseHandling = DateParseHandling.None,
+        };
+        o.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+
+        var ser = JsonSerializer.CreateDefault(o);
+
+        var js = JToken.FromObject(src, ser);
+        return js;
     }
 
     public static JToken? Sort(this JToken? src, string path)
@@ -114,4 +139,30 @@ public static class JsonExtentions
         //
         _ => JTokenType.None
     };
+}
+
+/// <summary>
+/// TimeSpans are not serialized consistently depending on what properties are present. So this 
+/// serializer will ensure the format is maintained no matter what.
+/// </summary>
+public class TimeSpanConverter : JsonConverter<TimeSpan>
+{
+    /// <summary>
+    /// Format: Days.Hours:Minutes:Seconds:Milliseconds
+    /// </summary>
+    // public const string TimeSpanFormatString = @"d\.hh\:mm\:ss\:FFF";
+
+    public override void WriteJson(JsonWriter writer, TimeSpan value, JsonSerializer serializer)
+    {
+        // var timespanFormatted = $"{value.ToString(TimeSpanFormatString)}";
+        // writer.WriteValue(timespanFormatted);
+        writer.WriteValue(value.ToString());
+    }
+
+    public override TimeSpan ReadJson(JsonReader reader, Type objectType, TimeSpan existingValue, bool hasExistingValue, Newtonsoft.Json.JsonSerializer serializer)
+    {
+        // TimeSpan.TryParseExact(reader.Value as string, TimeSpanFormatString, null, out TimeSpan parsedTimeSpan);
+        // return parsedTimeSpan;
+        throw new NotImplementedException();
+    }
 }

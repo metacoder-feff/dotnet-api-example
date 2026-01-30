@@ -1,3 +1,4 @@
+using Example.Api.SignalR;
 using NodaTime.Extensions;
 
 namespace Example.Api;
@@ -11,7 +12,7 @@ static class ExampleApiModule
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        app.MapGet("/weatherforecast", (TimeProvider tp, Random rand) =>
+        app.MapGet("/weatherforecast", async (TimeProvider tp, Random rand, IEventSender sender) =>
         {
             var now = tp.GetCurrentInstant();
             var todayUtc = now.InUtc().LocalDateTime.Date;
@@ -25,6 +26,7 @@ static class ExampleApiModule
                     summaries[rand.Next(summaries.Length)]
                 ))
                 .ToArray();
+            await sender.SendFinishedOkAsync();
             return forecast;
         })
         .WithName("GetWeatherForecast");
@@ -34,6 +36,7 @@ static class ExampleApiModule
     {
         services.AddTimeProvider();
         services.AddRandom();
+        services.AddTransient<IEventSender, EventSender>();
     }
 }
 

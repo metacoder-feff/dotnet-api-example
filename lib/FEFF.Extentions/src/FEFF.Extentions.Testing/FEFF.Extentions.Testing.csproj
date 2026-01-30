@@ -15,7 +15,9 @@
     <PackageReference Include="AwesomeAssertions" Version="9.3.0" />
     <PackageReference Include="AwesomeAssertions.Json" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.2" />
     <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="10.2.0" />
+    <PackageReference Include="NodaTime.Serialization.JsonNet" Version="3.2.0" />
     <PackageReference Include="xunit.v3.extensibility.core" Version="3.2.2" />
     </ItemGroup>
 
