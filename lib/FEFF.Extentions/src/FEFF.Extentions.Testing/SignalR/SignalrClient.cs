@@ -38,19 +38,29 @@ public sealed class SignalrClient
         _connection = connection;
     }
 
-    public void Subscribe(string methodName)
+    public void Subscribe(string methodName, int argsCount)
     {
+        ArgumentOutOfRangeException.ThrowIfLessThan(argsCount, 0);
+
+        var types = Type.EmptyTypes;
+        if(argsCount > 0)
+            types = Enumerable.Repeat(typeof(object), argsCount).ToArray();
+
+        _ = _connection.On(methodName, types, SignalRHandler, methodName);
+
+        // only one mapping per 'methodName' works
+        //_ = _connection.On(methodName, [typeof(object)], SignalRHandler, methodName);
+        //_ = _connection.On(methodName, Type.EmptyTypes, SignalRHandler1, methodName);
+        
 //TODO: return valuse auto dispose?
-//TODO: better handler?
-        _ = _connection.On(methodName, (JsonNode x) => SignalRHandler(methodName, x));
-        //_ = _connection.On(methodName, [typeof(JsonNode)], SignalRHandler1);
+//TODO: handle all args?
     }
 
-    private async Task SignalRHandler(string methodName, JsonNode arg)
+    private async Task SignalRHandler(object?[] args, object methodName)
     {
         var e = new ServerEvent(
-            Method: methodName,
-            Body:arg.ToString()
+            Method: methodName as string,
+            Args: args
         );
         await _eventsQueue.Writer.WriteAsync(e);
     }
@@ -71,5 +81,4 @@ public sealed class SignalrClient
     }
 }
 
-//TODO: JsonNode Body
-public record ServerEvent(string Method, string Body);
+public record ServerEvent(string? Method, object?[] Args);

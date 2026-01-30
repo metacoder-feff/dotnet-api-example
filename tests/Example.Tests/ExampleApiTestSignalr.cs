@@ -9,7 +9,7 @@ public class ExampleApiTestSignalr : ApiTestBase
     {
         // PREPARE
         await using var signalr = TestApplication.CreateSignalRClient("/events");
-        signalr.Subscribe(EventSender.MethodName);
+        signalr.Subscribe(EventSender.MethodName, 1);
         await signalr.StartAsync();
         
         // ACT
@@ -18,14 +18,16 @@ public class ExampleApiTestSignalr : ApiTestBase
         
         // ASSERT
         resp.ToJToken()
-          .Should().BeEquivalentTo("""
-          {
-            "Method": "finished_ok",
-            "Body": {
-              "result": "ok"
+            .Should().BeEquivalentTo("""
+            {
+              "Method": "finished_ok",
+              "Args": [
+                {
+                  "result": "ok"
+                }
+              ]
             }
-          }
-          """);
+            """);
 
     }
 }

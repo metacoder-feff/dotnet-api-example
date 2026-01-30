@@ -55,7 +55,8 @@ public static class JsonExtentions
             Converters = { 
                 new Newtonsoft.Json.Converters.StringEnumConverter(), 
                 new TimeSpanConverter(), 
-                new SystemJsonConverter() 
+                new SystemJsonNodeConverter(),
+                new SystemJsonElementConverter()
             },
             DateParseHandling = DateParseHandling.None,
         };
@@ -175,7 +176,7 @@ public class TimeSpanConverter : JsonConverter<TimeSpan>
 /// <summary>
 /// Convert 'System.Text.Json.Nodes.JsonNode' to 'Newtonsoft.Json.JToken'
 /// </summary>
-public class SystemJsonConverter : JsonConverter<JsonNode>
+public class SystemJsonNodeConverter : JsonConverter<JsonNode>
 {
     public override void WriteJson(JsonWriter writer, JsonNode? value, JsonSerializer serializer)
     {
@@ -196,6 +197,34 @@ public class SystemJsonConverter : JsonConverter<JsonNode>
     }
 
     public override JsonNode? ReadJson(JsonReader reader, Type objectType, JsonNode? existingValue, bool hasExistingValue, Newtonsoft.Json.JsonSerializer serializer)
+    {
+        // TimeSpan.TryParseExact(reader.Value as string, TimeSpanFormatString, null, out TimeSpan parsedTimeSpan);
+        // return parsedTimeSpan;
+        throw new NotImplementedException();
+    }
+}
+
+
+/// <summary>
+/// Convert 'System.Text.Json.JsonElement' to 'Newtonsoft.Json.JToken'
+/// </summary>
+public class SystemJsonElementConverter : JsonConverter<System.Text.Json.JsonElement>
+{
+    public override void WriteJson(JsonWriter writer, System.Text.Json.JsonElement value, JsonSerializer serializer)
+    {
+//TODO: custom reader without string?
+        var str = value.ToString();
+        var reader = new JsonTextReader(new StringReader(str))
+        {
+            DateParseHandling = serializer.DateParseHandling
+//TODO: test dates
+//TODO: other settings
+        };
+        writer.WriteToken(reader);
+
+    }
+
+    public override System.Text.Json.JsonElement ReadJson(JsonReader reader, Type objectType, System.Text.Json.JsonElement existingValue, bool hasExistingValue, Newtonsoft.Json.JsonSerializer serializer)
     {
         // TimeSpan.TryParseExact(reader.Value as string, TimeSpanFormatString, null, out TimeSpan parsedTimeSpan);
         // return parsedTimeSpan;
