@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Nodes;
 using Newtonsoft.Json;
 using NodaTime.Serialization.JsonNet;
 
@@ -51,7 +52,11 @@ public static class JsonExtentions
 
         var o = new JsonSerializerSettings
         {
-            Converters = { new Newtonsoft.Json.Converters.StringEnumConverter(), new TimeSpanConverter() },
+            Converters = { 
+                new Newtonsoft.Json.Converters.StringEnumConverter(), 
+                new TimeSpanConverter(), 
+                new SystemJsonConverter() 
+            },
             DateParseHandling = DateParseHandling.None,
         };
         o.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
@@ -160,6 +165,37 @@ public class TimeSpanConverter : JsonConverter<TimeSpan>
     }
 
     public override TimeSpan ReadJson(JsonReader reader, Type objectType, TimeSpan existingValue, bool hasExistingValue, Newtonsoft.Json.JsonSerializer serializer)
+    {
+        // TimeSpan.TryParseExact(reader.Value as string, TimeSpanFormatString, null, out TimeSpan parsedTimeSpan);
+        // return parsedTimeSpan;
+        throw new NotImplementedException();
+    }
+}
+
+/// <summary>
+/// Convert 'System.Text.Json.Nodes.JsonNode' to 'Newtonsoft.Json.JToken'
+/// </summary>
+public class SystemJsonConverter : JsonConverter<JsonNode>
+{
+    public override void WriteJson(JsonWriter writer, JsonNode? value, JsonSerializer serializer)
+    {
+        if(value == null)
+            writer.WriteNull();
+        else
+        {
+//TODO: custom reader without string?
+            var str = value.ToString();
+            var reader = new JsonTextReader(new StringReader(str))
+            {
+                DateParseHandling = serializer.DateParseHandling
+//TODO: test dates
+//TODO: other settings
+            };
+            writer.WriteToken(reader);
+        }
+    }
+
+    public override JsonNode? ReadJson(JsonReader reader, Type objectType, JsonNode? existingValue, bool hasExistingValue, Newtonsoft.Json.JsonSerializer serializer)
     {
         // TimeSpan.TryParseExact(reader.Value as string, TimeSpanFormatString, null, out TimeSpan parsedTimeSpan);
         // return parsedTimeSpan;

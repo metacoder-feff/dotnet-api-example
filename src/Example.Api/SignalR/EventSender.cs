@@ -26,6 +26,7 @@ public class EventSender : IEventSender
 
     public async Task SendFinishedOkAsync()
     {
+        // await _hubCtx.Clients.All.SendAsync(MethodName);
         var d = new {Result = "ok" };
         await _hubCtx.Clients.All.SendAsync(MethodName, d);
     }

@@ -21,7 +21,9 @@ public class ExampleApiTestSignalr : ApiTestBase
           .Should().BeEquivalentTo("""
           {
             "Method": "finished_ok",
-            "Body": "{\n  \"result\": \"ok\"\n}"
+            "Body": {
+              "result": "ok"
+            }
           }
           """);
 
