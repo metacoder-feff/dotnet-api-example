@@ -13,14 +13,15 @@ public class ApiTestBase: IAsyncLifetime
     protected ITestApplicationBuilder AppBuilder {get; }
     private readonly TestApplicationFixture _appFixture;
     private readonly TestDbFixture _dbFixture;
-    private readonly FakeServicesFixture _fakes;
+    private readonly FakeTimeFixture _fft;
+    private readonly FakeRandomFixture _frf;
 
     // props from fixtures for smart access
     protected ITestApplication TestApplication => _appFixture.LazyTestApplication;
     
-    protected FakeRandom FakeRandom => _fakes.FakeRandom;
+    protected FakeRandom FakeRandom => _frf.FakeRandom;
 
-    protected FakeTimeProvider  FakeTime => _fakes.FakeTime;
+    protected FakeTimeProvider  FakeTime => _fft.FakeTime;
 
     /// <summary>
     /// Run TestApp, create, memoize and return HttpClient connected to TestApp.
@@ -45,7 +46,8 @@ public class ApiTestBase: IAsyncLifetime
         AppBuilder = new TestApplicationBuilder<Program>();
         _appFixture = new(AppBuilder);
         _dbFixture = new(AppBuilder, DbName, InfrastructureModule.PgConnectionStringName);
-        _fakes = new FakeServicesFixture(AppBuilder);
+        _frf = new(AppBuilder);
+        _fft = new(AppBuilder);
     }
 
     #region IAsyncLifetime
