@@ -1,11 +1,19 @@
 # dotnet-api-example
-## Features:
+## Tooling:
++ DevContainers:
+  + dotnet-sdk-10
+  + postgres
+  + valkey (redis)
+  + minio (S3)
+
+
+## WebApp Infrastructure:
 + NodaTime
 + Minimal Api: ConfigureJsonSerializer
   + snake_case
   + JsonStringEnumConverter
   + NodaTime integration
-+ DB: postgress + tests
++ DB: postgres + tests
   + NodaTime integration
   + HealthCheck (readiness)
   + Optimistic lock (concurrency exception)
@@ -28,7 +36,8 @@
 ## Testing
 + XUnit v3
 + AwesomeAssertions (FluentAssertion)
-+ AwesomeAssertions.Json 
++ AwesomeAssertions.Json
++ CaseFixtures (experimental)
 + WebApplicationFactory
   + Override app setup
   + FakeRandom
