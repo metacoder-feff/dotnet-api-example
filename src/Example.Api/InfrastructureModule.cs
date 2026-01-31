@@ -1,7 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.OpenApi;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using NodaTime.Serialization.SystemTextJson;
 using Npgsql;
@@ -56,7 +55,29 @@ static class InfrastructureModule
         /*------------------------------------------------*/
         // Redis
         /*------------------------------------------------*/
-        services.AddRedisConnectrionManager();
+        services.AddRedisConnectrionManager()
+            .UseConnectionStringByName("Redis")
+            .Configure(o =>
+            {
+                var options = o.ConfigurationOptions;
+        
+                //, x => x.AbortOnConnectFail = false);
+
+                // ??
+                //options.LibraryName // is set at signal-R at:
+                // Microsoft.AspNetCore.SignalR.StackExchangeRedis.RedisOptions.ConnectAsync(TextWriter log)
+
+                // trust all cerificates
+                options.CertificateValidation += delegate { return true; };
+        //TODO: test with self-signed CA
+                //options.TrustIssuer("CA-path"); // or X509-obj (overload)
+                /*
+                also we can set ENV_variable: "SERedis_IssuerCertPath" targeting at "CA-path"
+                see: https://github.com/StackExchange/StackExchange.Redis/blob/main/src/StackExchange.Redis/PhysicalConnection.cs#L1470C70-L1470C92
+                */
+
+                //options.CertificateSelection  += SelectLocalCertificate;
+            });
 
         /*------------------------------------------------*/
         // SignalR

@@ -1,9 +1,47 @@
+using System.Reflection;
 using StackExchange.Redis;
 
 namespace FEFF.Extentions.Redis;
 
 public static class RedisExtentions
 {
+    // Check wether redis servers are configured to be a properly cluster (master-slave server set)
+    // only for Standalone:
+    // - if configured multiple masters\
+    // - no errors from StackExchange.Redis
+    // - undefined (untested) behavior 
+    public static void CheckConnection(this ConnectionMultiplexer c)
+    {
+        var servers = c.GetServers();
+
+        var allStandalone = servers.All(x => x.ServerType == ServerType.Standalone);
+        // TOOD: better message
+        if (allStandalone == false)
+            throw new InvalidOperationException("Not all servers have type 'Standalone'.");
+
+        var masterCnt = servers.Where(x => x.IsReplica == false && x.IsConnected).Count();
+        if (masterCnt > 1)
+            throw new InvalidOperationException("More than ONE master Standalone defined for redis connection.");
+    }
+
+//TODO: MR to REDIS
+    /// <summary>
+    /// Invoke private method 'ConfigurationOptions.DoParse'
+    /// </summary>
+    public static void ApplyConfigurationString(this ConfigurationOptions src, string configuration, bool ignoreUnknown = false)
+    {
+        ArgumentNullException.ThrowIfNull(src);
+
+        var dynMethod = 
+            src
+            .GetType()
+            .GetMethod("DoParse", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        ThrowHelper.Assert(dynMethod != null);
+
+        dynMethod.Invoke(src, [configuration, ignoreUnknown]);
+    }
+
 //TODO: add tests
     public static async Task<(long position, double score)?> SortedSetRankWithScoreAsync(this IDatabase db, RedisKey key, RedisValue member, Order order = Order.Ascending, CommandFlags flags = CommandFlags.None)
     {
