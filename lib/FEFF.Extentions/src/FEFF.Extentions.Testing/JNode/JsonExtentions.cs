@@ -22,7 +22,17 @@ public static class JsonExtentions
 {
     public static JToken ParseJToken(this string src)
     {
-        return JToken.Parse(src);
+        //return JToken.Parse(src);
+        return src.ParseJToken(new JTokenParseOptions
+        {
+            DateParseHandling = DateParseHandling.None,
+            LoadSettings = new JsonLoadSettings
+            {
+                DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error,
+                LineInfoHandling = LineInfoHandling.Ignore,
+                CommentHandling = CommentHandling.Ignore
+            }
+        });
     }
 
     public static JToken ParseJToken(this string json, JTokenParseOptions options)

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.OpenApi;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using NodaTime.Serialization.SystemTextJson;
 using Npgsql;
@@ -48,7 +49,13 @@ static class InfrastructureModule
                 // .AddCheck<RedisHealthCheck>("Redis");
                 ;
 
+        /*------------------------------------------------*/
+        // SignalR
+        /*------------------------------------------------*/
         services.AddSignalR();
+        services.Configure<JsonHubProtocolOptions>(o => 
+            ConfigureJsonSerializer(o.PayloadSerializerOptions)
+        );
 
         /*------------------------------------------------*/
         // DB

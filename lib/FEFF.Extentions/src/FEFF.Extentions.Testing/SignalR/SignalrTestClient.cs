@@ -38,15 +38,20 @@ public sealed class SignalrTestClient
         _connection = connection;
     }
 
-    public void Subscribe(string methodName, int argsCount)
+    /// <summary>
+    /// Client should define signature of method called by 'Hub' (because of realization of 'HubConnection')
+    /// </summary>
+    /// <param name="expectedMethodName">Method called by 'Hub'</param>
+    /// <param name="expectedArgsCount">Number of arguments sent from 'Hub'. Types of arguments do not matter for test.</param>
+    public void Subscribe(string expectedMethodName, int expectedArgsCount)
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(argsCount, 0);
+        ArgumentOutOfRangeException.ThrowIfLessThan(expectedArgsCount, 0);
 
         var types = Type.EmptyTypes;
-        if(argsCount > 0)
-            types = Enumerable.Repeat(typeof(object), argsCount).ToArray();
+        if(expectedArgsCount > 0)
+            types = Enumerable.Repeat(typeof(object), expectedArgsCount).ToArray();
 
-        _ = _connection.On(methodName, types, SignalRHandler, methodName);
+        _ = _connection.On(expectedMethodName, types, SignalRHandler, expectedMethodName);
 
 //TODO: handle all args?
         // only one mapping per 'methodName' works

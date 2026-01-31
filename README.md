@@ -25,6 +25,7 @@
   + liveness
   + readiness
   + overview
+  + ConfigureJsonSerializer
 + cloud-compatible logging + tests
   + stdout
   + json-lines
@@ -32,6 +33,7 @@
 + exceptions at 'app.Run()' are logged + tests
 + appsettings.secrets.json + gitignore
 + SignalR + tests
+  + ConfigureJsonSerializer
 
 
 ## Testing

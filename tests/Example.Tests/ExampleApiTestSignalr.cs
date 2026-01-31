@@ -23,11 +23,12 @@ public class ExampleApiTestSignalr : ApiTestBase
               "Method": "finished_ok",
               "Args": [
                 {
-                  "result": "ok"
+                  "result": "ok",
+                  "finished_at": "2000-01-01T00:00:00Z"
                 }
               ]
             }
-            """);
+            """.ParseJToken());
 
     }
 }

@@ -26,6 +26,6 @@ public class ExampleApiTest : ApiTestBase
                 "temperature_f": 0,
               }
             ]
-            """);
+            """.ParseJToken());
     }
 }
