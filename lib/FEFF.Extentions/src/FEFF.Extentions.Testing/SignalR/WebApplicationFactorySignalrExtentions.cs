@@ -34,7 +34,7 @@ public static class WebApplicationFactorySignalrExtentions
         .Build();
     }
     
-    public static SignalrClient CreateSignalRClient(this ITestApplication factory, string url)
+    public static SignalrTestClient CreateSignalRClient(this ITestApplication factory, string url)
     {
         var c =  new HubConnectionBuilder()
         .WithUrl(
@@ -46,6 +46,6 @@ public static class WebApplicationFactorySignalrExtentions
         )
         .Build();
 
-        return new SignalrClient(c);
+        return new SignalrTestClient(c);
     }
 }

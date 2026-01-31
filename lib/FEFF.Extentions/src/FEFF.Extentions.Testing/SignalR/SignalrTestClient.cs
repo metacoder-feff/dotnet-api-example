@@ -28,12 +28,12 @@ public static class ChannelEx
     }
 }
 
-public sealed class SignalrClient
+public sealed class SignalrTestClient
 {
     private readonly Channel<ServerEvent> _eventsQueue = Channel.CreateUnbounded<ServerEvent>();
     private readonly HubConnection _connection;
 
-    public SignalrClient(HubConnection connection)
+    public SignalrTestClient(HubConnection connection)
     {
         _connection = connection;
     }
@@ -48,12 +48,10 @@ public sealed class SignalrClient
 
         _ = _connection.On(methodName, types, SignalRHandler, methodName);
 
-        // only one mapping per 'methodName' works
-        //_ = _connection.On(methodName, [typeof(object)], SignalRHandler, methodName);
-        //_ = _connection.On(methodName, Type.EmptyTypes, SignalRHandler1, methodName);
-        
-//TODO: return valuse auto dispose?
 //TODO: handle all args?
+        // only one mapping per 'methodName' works
+        // https://github.com/dotnet/aspnetcore/blob/main/src/SignalR/common/Protocols.Json/src/Protocol/JsonHubProtocol.cs#L867
+        // throw new InvalidDataException($"Invocation provides {paramIndex} argument(s) but target expects {paramCount}.");
     }
 
     private async Task SignalRHandler(object?[] args, object methodName)
