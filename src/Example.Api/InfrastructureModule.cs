@@ -10,6 +10,7 @@ using Prometheus;
 using FEFF.Extentions.EntityFrameworkCore;
 using FEFF.Extentions.HealthChecks;
 using FEFF.Extentions.OpenApi.NodaTime;
+using FEFF.Extentions.Redis;
 
 using Example.Api.SignalR;
 
@@ -41,22 +42,29 @@ static class InfrastructureModule
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         services.AddOpenApi(ConfigureOpenApi);
 
+        /*------------------------------------------------*/
+        // Health
+        /*------------------------------------------------*/
         services.AddHealthChecks()
                 .AddSimpleLivenessCheck()
                 // readiness
                 .AddDbContextCheck<WeatherContext>(tags: [HealthCheckTag.Readiness])
                 // overview
-                // .AddCheck<RedisHealthCheck>("Redis");
+                .AddCheck<RedisHealthCheck>("Redis");
                 ;
+
+        /*------------------------------------------------*/
+        // Redis
+        /*------------------------------------------------*/
+        services.AddRedisConnectrionManager();
 
         /*------------------------------------------------*/
         // SignalR
         /*------------------------------------------------*/
-        services.AddSignalR();
-        services.Configure<JsonHubProtocolOptions>(o => 
-            ConfigureJsonSerializer(o.PayloadSerializerOptions)
-        );
-
+        services.AddSignalR()
+            .AddJsonProtocol(o => 
+                ConfigureJsonSerializer(o.PayloadSerializerOptions)
+            );
         /*------------------------------------------------*/
         // DB
         /*------------------------------------------------*/

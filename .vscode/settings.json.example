@@ -1,3 +1,5 @@
 {
     "dotnet.unitTests.runSettingsPath": "tests.runsettings"
+    //"csharp.debug.justMyCode": false,
+    //"csharp.debug.symbolOptions.searchNuGetOrgSymbolServer": true
 }

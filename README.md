@@ -32,6 +32,9 @@
   + timestamp format
 + exceptions at 'app.Run()' are logged + tests
 + appsettings.secrets.json + gitignore
++ Redis + tests
+  + DI
+  + HealthCheck (overview)
 + SignalR + tests
   + ConfigureJsonSerializer
 

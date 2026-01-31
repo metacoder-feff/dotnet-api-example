@@ -115,6 +115,13 @@ public class HealthCheckApiTest : ApiTestBase
             "duration": "00:00:00.555",
             "checks": [
                 {
+                    "name": "Redis",
+                    "description": "RedisConnectrionManager is initialized.",
+                    "duration": "00:00:00.555",
+                    "status": "healthy",
+                    "data": {}
+                },
+                {
                 "name": "SimpleHealthCheck",
                 "description": "AspNet is alive.",
                 "duration": "00:00:00.555",
@@ -135,19 +142,27 @@ public class HealthCheckApiTest : ApiTestBase
     [Theory]
     [InlineData(true, HttpStatusCode.OK)]
     [InlineData(false, HttpStatusCode.InternalServerError)]
-    public async Task Overview__should__depend_on_db(bool dbHealthy, HttpStatusCode heathResult)
+    public async Task Overview__should__depend_on_db(bool whenHealthy, HttpStatusCode healthcheckResult)
     {
-        if(dbHealthy)
-            await DbCtx.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
+        await SetupCheckedServices(dbHealthy: whenHealthy);
 
-        _ = await GetProbeAsync(HealthAllUri, expected: heathResult);
+        _ = await GetProbeAsync(HealthAllUri, expected: healthcheckResult);
     }
 
-    // [Fact]
-    // public async Task Overview__should_be__500_unhealthy_redis()
-    // {
-    // }
-    
+    [Theory]
+    [InlineData(true, HttpStatusCode.OK)]
+    [InlineData(false, HttpStatusCode.InternalServerError)]
+    public async Task Overview__should__depend_on_redis(bool whenHealthy, HttpStatusCode healthcheckResult)
+    {
+        await SetupCheckedServices(redisHealthy: whenHealthy);
+
+        var timeout = 1.5;
+        if (whenHealthy) 
+            timeout = 6;
+
+        _ = await GetProbeAsync(HealthAllUri, expected: healthcheckResult, timeout: timeout);
+    }
+
     private async Task<string> GetProbeAsync(string uri, double timeout = 1.5, HttpStatusCode expected = HttpStatusCode.OK)
     {
         // warmup
@@ -162,8 +177,18 @@ public class HealthCheckApiTest : ApiTestBase
         sw.Stop();
 
         sw.Elapsed
-            .Should().BeLessThanOrEqualTo(TimeSpan.FromSeconds(timeout));
+                .Should().BeLessThanOrEqualTo(TimeSpan.FromSeconds(timeout));
 
         return body;
+    }
+
+    private async Task SetupCheckedServices(bool dbHealthy = true, bool redisHealthy = true)
+    {
+        if (redisHealthy == false)
+            AppBuilder.UseSetting("ConnectionStrings:Redis", "localhost:8080");
+
+        // update builder before app starts
+        if(dbHealthy)
+            await DbCtx.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
     }
 }
