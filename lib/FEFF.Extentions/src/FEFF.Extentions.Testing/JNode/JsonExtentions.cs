@@ -100,7 +100,6 @@ public static class JsonExtentions
         if (src == null)
             return null;
 
-
         var tt = src.SelectTokens(path)
                     .Where(x => x is JValue)
                     .Select(x => (JValue)x);
@@ -199,8 +198,7 @@ public class SystemJsonNodeConverter : JsonConverter<JsonNode>
             var reader = new JsonTextReader(new StringReader(str))
             {
                 DateParseHandling = serializer.DateParseHandling
-//TODO: test dates
-//TODO: other settings
+//TODO: other settings (JTokenParseOptions)
             };
             writer.WriteToken(reader);
         }
@@ -227,8 +225,7 @@ public class SystemJsonElementConverter : JsonConverter<System.Text.Json.JsonEle
         var reader = new JsonTextReader(new StringReader(str))
         {
             DateParseHandling = serializer.DateParseHandling
-//TODO: test dates
-//TODO: other settings
+//TODO: other settings (JTokenParseOptions)
         };
         writer.WriteToken(reader);
 
