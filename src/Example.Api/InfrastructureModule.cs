@@ -5,11 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using NodaTime.Serialization.SystemTextJson;
 using Npgsql;
 using Prometheus;
+using StackExchange.Redis.Configuration;
 
 using FEFF.Extentions.EntityFrameworkCore;
 using FEFF.Extentions.HealthChecks;
 using FEFF.Extentions.OpenApi.NodaTime;
 using FEFF.Extentions.Redis;
+using FEFF.Extentions.SignalR.Redis;
 
 using Example.Api.SignalR;
 
@@ -49,33 +51,31 @@ static class InfrastructureModule
                 // readiness
                 .AddDbContextCheck<WeatherContext>(tags: [HealthCheckTag.Readiness])
                 // overview
-                .AddCheck<RedisHealthCheck>("Redis");
+                .AddCheck<RedisHealthCheck>("Redis");// The name of 'new healthcheck' is argument here.
                 ;
 
         /*------------------------------------------------*/
         // Redis
         /*------------------------------------------------*/
-        services.AddRedisConnectrionManager("Redis")
+        services.AddRedisConnectrionManager("Redis") // The name of 'connection-string to search' is argument here.
             .Configure(o =>
             {
                 var options = o.ConfigurationOptions;
-        
-                //, x => x.AbortOnConnectFail = false);
+                // options.AbortOnConnectFail = false;
 
-                // ??
-                //options.LibraryName // is set at signal-R at:
-                // Microsoft.AspNetCore.SignalR.StackExchangeRedis.RedisOptions.ConnectAsync(TextWriter log)
+                // FROM 'SignalR.Connect()'
+                // suffix SignalR onto the declared library name
+                var provider = DefaultOptionsProvider.GetProvider(options.EndPoints);
+                options.LibraryName = $"{provider.LibraryName} FEFF+SignalR";
 
                 // trust all cerificates
                 options.CertificateValidation += delegate { return true; };
-        //TODO: test with self-signed CA
-                //options.TrustIssuer("CA-path"); // or X509-obj (overload)
-                /*
-                also we can set ENV_variable: "SERedis_IssuerCertPath" targeting at "CA-path"
-                see: https://github.com/StackExchange/StackExchange.Redis/blob/main/src/StackExchange.Redis/PhysicalConnection.cs#L1470C70-L1470C92
-                */
-
+//TODO: test with self-signed CA
                 //options.CertificateSelection  += SelectLocalCertificate;
+                //options.TrustIssuer("CA-path"); // or X509-obj (overload)
+
+                // also we can set ENV_variable: "SERedis_IssuerCertPath" targeting at "CA-path"
+                // see: https://github.com/StackExchange/StackExchange.Redis/blob/main/src/StackExchange.Redis/PhysicalConnection.cs#L1470C70-L1470C92
             });
 
         /*------------------------------------------------*/
@@ -84,7 +84,13 @@ static class InfrastructureModule
         services.AddSignalR()
             .AddJsonProtocol(o => 
                 ConfigureJsonSerializer(o.PayloadSerializerOptions)
-            );
+            )
+            // default redis integration
+            //.AddStackExchangeRedis()
+            // redis integration using singletone factory (FEFF extention)
+            .AddRedisConnectionManager()
+            ;
+
         /*------------------------------------------------*/
         // DB
         /*------------------------------------------------*/

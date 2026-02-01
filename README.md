@@ -33,22 +33,27 @@
 + exceptions at 'app.Run()' are logged + tests
 + appsettings.secrets.json + gitignore
 + Redis + tests
-  + DependencyInjection
+  + Singletone factory
+  + Configure DI container
   + HealthCheck (overview)
 + SignalR + tests
   + ConfigureJsonSerializer
+  + Redis (via singletone factory)
 
 
 ## Testing
 + XUnit v3
 + AwesomeAssertions (FluentAssertion)
 + AwesomeAssertions.Json
+  + Configure JToken parser
 + CaseFixtures (experimental)
 + WebApplicationFactory
   + Override app setup
   + FakeRandom
   + FakeTimeProvider
   + SignalR-Client
+  + random test DB name (for postgres)
+  + random Key/Channel prefix (for redis)
 + Example API tests
 + Infrastructure API tests
 + "openapi.json" should not be changed
