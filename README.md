@@ -20,7 +20,7 @@
   + Automate CreatedAt/UpdatedAt
 + openapi/swagger-ui only in DEV + tests
   + NodaTime integration
-+ prometheus metrics + test
++ prometheus metrics + tests
 + cloud-compatible healthchecks + tests
   + liveness
   + readiness
@@ -33,12 +33,12 @@
 + exceptions at 'app.Run()' are logged + tests
 + appsettings.secrets.json + gitignore
 + Redis + tests
-  + Singletone factory
+  + Singletone connection factory
   + Configure DI container
   + HealthCheck (overview)
 + SignalR + tests
   + ConfigureJsonSerializer
-  + Redis (via singletone factory)
+  + Redis (via singletone connection factory)
 
 
 ## Testing

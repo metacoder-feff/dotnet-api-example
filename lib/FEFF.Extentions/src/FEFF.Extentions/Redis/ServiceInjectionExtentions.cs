@@ -64,9 +64,7 @@ public static class ServiceInjectionExtentions
         builder.Services.AddOptions<RedisConnectrionManagerOptionsFactory.Options>()
             .Configure<IConfiguration>((opts, conf) =>
             {
-                var cs = conf.GetConnectionString(connectionStringName)
-                            ?? throw new InvalidOperationException($"Connection string '{connectionStringName}' not found.");
-
+                var cs = conf.GetRequiredConnectionString(connectionStringName);
                 opts.SetParseFactoryWith(cs, ignoreUnknown);
             });
     }

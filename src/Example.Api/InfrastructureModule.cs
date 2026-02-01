@@ -35,13 +35,20 @@ static class InfrastructureModule
     {
         services.AddStdCloudLogging();
 
+        /*------------------------------------------------*/
+        // Configure serialization for minimal API
+        /*------------------------------------------------*/
         services.ConfigureHttpJsonOptions(o => 
             ConfigureJsonSerializer(o.SerializerOptions)
         );
 
-        // Add services to the container.
+        /*------------------------------------------------*/
+        // OpenApi
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-        services.AddOpenApi(ConfigureOpenApi);
+        /*------------------------------------------------*/
+        services.AddOpenApi( o => 
+            o.ConfigureNodaTime()
+        );
 
         /*------------------------------------------------*/
         // Health
@@ -92,7 +99,7 @@ static class InfrastructureModule
             ;
 
         /*------------------------------------------------*/
-        // DB
+        // DB (Postgres)
         /*------------------------------------------------*/
         services.AddTimeProvider(); // for CreatedAtUpdatedAtInterceptor
         services.AddTransient<CreatedAtUpdatedAtInterceptor>();
@@ -112,11 +119,6 @@ static class InfrastructureModule
             var i = sp.GetRequiredService<CreatedAtUpdatedAtInterceptor>();
             opt.AddInterceptors(i);
         });
-    }
-
-    private static void ConfigureOpenApi(OpenApiOptions o)
-    {
-        o.ConfigureNodaTime();
     }
 
     public static void SetupPipeline(WebApplication app)
@@ -163,6 +165,6 @@ static class InfrastructureModule
         o.AllowTrailingCommas    = true;
         o.ReadCommentHandling    = JsonCommentHandling.Skip;
 
-        o.ConfigureForNodaTime(NodaTime.DateTimeZoneProviders.Tzdb);
+        o.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
     }
 }

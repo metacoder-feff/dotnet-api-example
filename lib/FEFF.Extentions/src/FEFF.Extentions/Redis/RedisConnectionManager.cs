@@ -5,6 +5,9 @@ using StackExchange.Redis.KeyspaceIsolation;
 
 namespace FEFF.Extentions.Redis;
 
+/// <summary>
+/// Redis connection factory to be used via DI container as a 'Singletone'.
+/// </summary>
 public sealed partial class RedisConnectionManager : IAsyncDisposable
 {
     private readonly AsyncLock _asyncLock = AsyncLock.Exclusive();//  Semaphore();
