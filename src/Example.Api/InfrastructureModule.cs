@@ -46,9 +46,15 @@ static class InfrastructureModule
         // OpenApi
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         /*------------------------------------------------*/
-        services.AddOpenApi( o => 
-            o.ConfigureNodaTime()
-        );
+        services.AddOpenApi(ConfigureOpenApi);
+        
+        // openapi compile error:
+        // The 'interceptors' feature is not enabled in this namespace. Add '<InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.OpenApi.Generated</InterceptorsNamespaces>' to your project.
+        //
+        // services.AddOpenApi(o =>
+        //     o.ConfigureNodaTime()
+        // );
+
 
         /*------------------------------------------------*/
         // Health
@@ -153,6 +159,11 @@ static class InfrastructureModule
             // see https://learn.microsoft.com/en-us/aspnet/core/signalr/authn-and-authz?view=aspnetcore-8.0#authenticate-users-connecting-to-a-signalr-hub
             opts.CloseOnAuthenticationExpiration = true;
         });
+    }
+
+    private static void ConfigureOpenApi(OpenApiOptions o)
+    {
+        o.ConfigureNodaTime();
     }
 
     internal static void ConfigureJsonSerializer(JsonSerializerOptions o)
