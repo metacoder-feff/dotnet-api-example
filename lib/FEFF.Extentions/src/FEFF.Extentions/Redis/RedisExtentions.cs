@@ -24,24 +24,6 @@ public static class RedisExtentions
             throw new InvalidOperationException("More than ONE master Standalone defined for redis connection.");
     }
 
-//TODO: MR to REDIS
-    /// <summary>
-    /// Invoke private method 'ConfigurationOptions.DoParse'
-    /// </summary>
-    public static void ApplyConfigurationString(this ConfigurationOptions src, string configuration, bool ignoreUnknown = false)
-    {
-        ArgumentNullException.ThrowIfNull(src);
-
-        var dynMethod = 
-            src
-            .GetType()
-            .GetMethod("DoParse", BindingFlags.NonPublic | BindingFlags.Instance);
-
-        ThrowHelper.Assert(dynMethod != null);
-
-        dynMethod.Invoke(src, [configuration, ignoreUnknown]);
-    }
-
 //TODO: add tests
     public static async Task<(long position, double score)?> SortedSetRankWithScoreAsync(this IDatabase db, RedisKey key, RedisValue member, Order order = Order.Ascending, CommandFlags flags = CommandFlags.None)
     {

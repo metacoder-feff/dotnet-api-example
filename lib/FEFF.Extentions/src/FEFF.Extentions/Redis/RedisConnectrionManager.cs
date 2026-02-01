@@ -49,11 +49,10 @@ public sealed partial class RedisConnectrionManager : IAsyncDisposable
         return res.WithKeyPrefix(prefix);
     }
 
-    public async Task<ConnectionMultiplexer> GetConnectionAsync(CancellationToken cancellationToken = default, bool checkConnection = false)
+    public async Task<ConnectionMultiplexer> GetConnectionAsync(CancellationToken cancellationToken = default)
     {
         var r = await GetConnectionInternalAsync(cancellationToken).ConfigureAwait(false);
-        if(checkConnection)
-            r.CheckConnection();
+        //r.CheckConnection();
         return r;
     }
 

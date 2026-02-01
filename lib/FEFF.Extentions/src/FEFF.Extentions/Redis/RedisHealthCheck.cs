@@ -36,6 +36,8 @@ public class RedisHealthCheck : IHealthCheck
     {
         var connection = await _redis.GetConnectionAsync(cancellationToken).ConfigureAwait(false);
 
+        connection.CheckConnection();
+
         await connection.GetDatabase().PingAsync().ConfigureAwait(false);
 
         // check we have access to a Single Standalone Master 

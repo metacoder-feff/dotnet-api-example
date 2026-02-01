@@ -55,8 +55,7 @@ static class InfrastructureModule
         /*------------------------------------------------*/
         // Redis
         /*------------------------------------------------*/
-        services.AddRedisConnectrionManager()
-            .UseConnectionStringByName("Redis")
+        services.AddRedisConnectrionManager("Redis")
             .Configure(o =>
             {
                 var options = o.ConfigurationOptions;
