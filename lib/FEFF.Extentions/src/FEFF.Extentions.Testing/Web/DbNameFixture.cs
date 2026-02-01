@@ -9,14 +9,14 @@ namespace FEFF.Extentions.Testing;
 /// Mutates connectionstring - changes DB name.
 /// TODO: remove db after test (without dbcontext)
 /// </summary>
-public class TestDbFixture
+public class DbNameFixture
 {
     private readonly string _newDbName;
     private readonly string _connectionStringName;
     private string? _oldCs;
     private string? _newCs;
 
-    public TestDbFixture(ITestApplicationBuilder appBuilder, string newDbName, string connectionStringName)
+    public DbNameFixture(ITestApplicationBuilder appBuilder, string newDbName, string connectionStringName)
     {
         ArgumentException.ThrowIfNullOrEmpty(newDbName);
         ArgumentException.ThrowIfNullOrEmpty(connectionStringName);

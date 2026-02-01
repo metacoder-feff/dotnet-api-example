@@ -12,7 +12,6 @@ public class ApiTestBase: IAsyncLifetime
     // fixures
     protected ITestApplicationBuilder AppBuilder {get; }
     private readonly TestApplicationFixture _appFixture;
-    private readonly TestDbFixture _dbFixture;
     private readonly FakeTimeFixture _fft;
     private readonly FakeRandomFixture _frf;
 
@@ -45,9 +44,11 @@ public class ApiTestBase: IAsyncLifetime
         // build fixtures tree
         AppBuilder = new TestApplicationBuilder<Program>();
         _appFixture = new(AppBuilder);
-        _dbFixture = new(AppBuilder, DbName, InfrastructureModule.PgConnectionStringName);
         _frf = new(AppBuilder);
         _fft = new(AppBuilder);
+        // TODO: fixture as an Action
+        _ = new DbNameFixture(AppBuilder, DbName, InfrastructureModule.PgConnectionStringName);
+        _ = new RedisPrefixFixture(AppBuilder, DbName);
     }
 
     #region IAsyncLifetime
