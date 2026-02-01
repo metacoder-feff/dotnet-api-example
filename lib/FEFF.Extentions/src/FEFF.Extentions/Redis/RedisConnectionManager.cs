@@ -5,7 +5,7 @@ using StackExchange.Redis.KeyspaceIsolation;
 
 namespace FEFF.Extentions.Redis;
 
-public sealed partial class RedisConnectrionManager : IAsyncDisposable
+public sealed partial class RedisConnectionManager : IAsyncDisposable
 {
     private readonly AsyncLock _asyncLock = AsyncLock.Exclusive();//  Semaphore();
 //TODO: freeze options
@@ -14,7 +14,7 @@ public sealed partial class RedisConnectrionManager : IAsyncDisposable
     // Automatically reconnects
     private volatile ConnectionMultiplexer? _connection;
 
-    public RedisConnectrionManager(IOptions<Options> o)
+    public RedisConnectionManager(IOptions<Options> o)
     {
         _options = o.Value;
     }
@@ -36,9 +36,9 @@ public sealed partial class RedisConnectrionManager : IAsyncDisposable
     /// <summary>
     /// Returns a Database using 'options.KeyPrefix' (for tests).
     /// </summary>
-    public async Task<IDatabase> GetDatabaseAsync(CancellationToken token = default)
+    public async Task<IDatabase> GetDatabaseAsync(TextWriter? log = null, CancellationToken cancellationToken = default)
     {
-        var c = await GetConnectionAsync(token).ConfigureAwait(false);
+        var c = await GetConnectionAsync(log, cancellationToken).ConfigureAwait(false);
         var res = c.GetDatabase();
 
         var prefix = _options.KeyPrefix;
@@ -49,14 +49,14 @@ public sealed partial class RedisConnectrionManager : IAsyncDisposable
         return res.WithKeyPrefix(prefix);
     }
 
-    public async Task<ConnectionMultiplexer> GetConnectionAsync(CancellationToken cancellationToken = default)
+    public async Task<ConnectionMultiplexer> GetConnectionAsync(TextWriter? log = null, CancellationToken cancellationToken = default)
     {
-        var r = await GetConnectionInternalAsync(cancellationToken).ConfigureAwait(false);
+        var r = await GetConnectionInternalAsync(log, cancellationToken).ConfigureAwait(false);
         //r.CheckConnection();
         return r;
     }
 
-    private async Task<ConnectionMultiplexer> GetConnectionInternalAsync(CancellationToken cancellationToken)
+    private async Task<ConnectionMultiplexer> GetConnectionInternalAsync(TextWriter? log, CancellationToken cancellationToken)
     {
 
         if (_connection != null)
@@ -67,15 +67,15 @@ public sealed partial class RedisConnectrionManager : IAsyncDisposable
             if (_connection != null)
                 return _connection;
 
-            _connection = await ConnectAsync(cancellationToken).ConfigureAwait(false);
+            _connection = await ConnectAsync(log, cancellationToken).ConfigureAwait(false);
         }
 
         return _connection;
     }
 
-    private async Task<ConnectionMultiplexer> ConnectAsync(CancellationToken cancellationToken)
+    private async Task<ConnectionMultiplexer> ConnectAsync(TextWriter? log, CancellationToken cancellationToken)
     {
 //TODO: cancellationToken
-        return await ConnectionMultiplexer.ConnectAsync(_options.ConfigurationOptions).ConfigureAwait(false);
+        return await ConnectionMultiplexer.ConnectAsync(_options.ConfigurationOptions, log).ConfigureAwait(false);
     }
 }

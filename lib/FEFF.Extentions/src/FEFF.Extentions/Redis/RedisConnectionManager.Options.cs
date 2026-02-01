@@ -2,7 +2,7 @@ using StackExchange.Redis;
 
 namespace FEFF.Extentions.Redis;
 
-partial class RedisConnectrionManager
+partial class RedisConnectionManager
 {
     /// <summary>
     /// Extend standard 'Redis.ConfigurationOptions'

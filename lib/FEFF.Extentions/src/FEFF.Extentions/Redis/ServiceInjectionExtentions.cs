@@ -19,11 +19,11 @@ public static class ServiceInjectionExtentions
         // by default configuration subsysten creates TOption via new()
         // use IOptionsFactory to create 'ConfigurationOptions' via 'ConfigurationOptions.Parse(..)'
         services.TryAddTransient<
-            IOptionsFactory<RedisConnectrionManager.Options>, 
+            IOptionsFactory<RedisConnectionManager.Options>, 
             RedisConnectrionManagerOptionsFactory
             >();
 
-        services.TryAddSingleton<RedisConnectrionManager>();
+        services.TryAddSingleton<RedisConnectionManager>();
         return new Builder(services);
     }
 
@@ -112,9 +112,9 @@ public static class ServiceInjectionExtentions
     /// <summary>
     /// Use this method to override setting parsed from ConnectionString and to setup additional settings.
     /// </summary>
-    public static IRedisConnectrionManagerBuilder Configure(this IRedisConnectrionManagerBuilder builder,  Action<RedisConnectrionManager.Options> config)
+    public static IRedisConnectrionManagerBuilder Configure(this IRedisConnectrionManagerBuilder builder,  Action<RedisConnectionManager.Options> config)
     {
-        builder.Services.AddOptions<RedisConnectrionManager.Options>()
+        builder.Services.AddOptions<RedisConnectionManager.Options>()
             .Configure(config);
             
         return builder;
@@ -131,22 +131,22 @@ public interface IConfigurationFactoryBuilder
     IServiceCollection Services { get; }
 }
 
-public class RedisConnectrionManagerOptionsFactory : OptionsFactory<RedisConnectrionManager.Options>
+public class RedisConnectrionManagerOptionsFactory : OptionsFactory<RedisConnectionManager.Options>
 {
     private readonly Func<ConfigurationOptions> _factory;
 
     public RedisConnectrionManagerOptionsFactory(
-        IEnumerable<IConfigureOptions<RedisConnectrionManager.Options>> setups, 
-        IEnumerable<IPostConfigureOptions<RedisConnectrionManager.Options>> postConfigures,
+        IEnumerable<IConfigureOptions<RedisConnectionManager.Options>> setups, 
+        IEnumerable<IPostConfigureOptions<RedisConnectionManager.Options>> postConfigures,
         IOptions<Options> factoryOpts) 
     : base(setups, postConfigures)
     {
         _factory = factoryOpts.Value.Factory;
     }
 
-    protected override RedisConnectrionManager.Options CreateInstance(string name)
+    protected override RedisConnectionManager.Options CreateInstance(string name)
     {
-        return new RedisConnectrionManager.Options
+        return new RedisConnectionManager.Options
         {
             ConfigurationOptions = _factory() // e.g. ConfigurationOptions.Parse(...)
         };

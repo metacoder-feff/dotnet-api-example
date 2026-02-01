@@ -8,9 +8,9 @@ namespace FEFF.Extentions.Redis;
 
 public class RedisHealthCheck : IHealthCheck
 {
-    private RedisConnectrionManager _redis;
+    private RedisConnectionManager _redis;
 
-    public RedisHealthCheck(RedisConnectrionManager m)
+    public RedisHealthCheck(RedisConnectionManager m)
     {
         _redis = m;
     }
@@ -34,7 +34,7 @@ public class RedisHealthCheck : IHealthCheck
 
     private async Task<string?> CheckHealthAsync(CancellationToken cancellationToken)
     {
-        var connection = await _redis.GetConnectionAsync(cancellationToken).ConfigureAwait(false);
+        var connection = await _redis.GetConnectionAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
         connection.CheckConnection();
 
