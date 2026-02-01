@@ -33,7 +33,7 @@
 + exceptions at 'app.Run()' are logged + tests
 + appsettings.secrets.json + gitignore
 + Redis + tests
-  + DependencyInjection+configs
+  + DependencyInjection
   + HealthCheck (overview)
 + SignalR + tests
   + ConfigureJsonSerializer

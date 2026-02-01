@@ -157,7 +157,7 @@ public class HealthCheckApiTest : ApiTestBase
         await SetupCheckedServices(redisHealthy: whenHealthy);
 
         var timeout = 1.5;
-        if (whenHealthy) 
+        if (whenHealthy == false) 
             timeout = 6;
 
         _ = await GetProbeAsync(HealthAllUri, expected: healthcheckResult, timeout: timeout);
