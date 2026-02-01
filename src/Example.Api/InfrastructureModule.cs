@@ -95,7 +95,7 @@ static class InfrastructureModule
             // default redis integration
             //.AddStackExchangeRedis()
             // redis integration using singletone factory (FEFF extention)
-            .AddRedisConnectionManager()
+            .AddRedisConnectionFactory()
             ;
 
         /*------------------------------------------------*/

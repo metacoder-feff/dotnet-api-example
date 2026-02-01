@@ -8,9 +8,9 @@ namespace FEFF.Extentions.Redis;
 
 public class RedisHealthCheck : IHealthCheck
 {
-    private RedisConnectionManager _redis;
+    private RedisConnectionFactory _redis;
 
-    public RedisHealthCheck(RedisConnectionManager m)
+    public RedisHealthCheck(RedisConnectionFactory m)
     {
         _redis = m;
     }

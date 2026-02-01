@@ -7,19 +7,19 @@ namespace FEFF.Extentions.SignalR.Redis;
 
 public static class SignalRBuilderExtention
 {
-    public static ISignalRServerBuilder AddRedisConnectionManager(this ISignalRServerBuilder builder)
+    public static ISignalRServerBuilder AddRedisConnectionFactory(this ISignalRServerBuilder builder)
     {        
         builder.AddStackExchangeRedis();
         builder.Services
             .AddOptions<RedisOptions>()
-            .Configure<RedisConnectionManager>((opts, redisManager) =>
+            .Configure<RedisConnectionFactory>((opts, redisManager) =>
                 opts.ConnectionFactory = redisManager.GetConnectionAsync
             );
 
         return builder;
     }
 
-    internal static async Task<IConnectionMultiplexer> GetConnectionAsync(this RedisConnectionManager src, TextWriter log)
+    internal static async Task<IConnectionMultiplexer> GetConnectionAsync(this RedisConnectionFactory src, TextWriter log)
     {
         return await src.GetConnectionAsync(log).ConfigureAwait(false);
     }

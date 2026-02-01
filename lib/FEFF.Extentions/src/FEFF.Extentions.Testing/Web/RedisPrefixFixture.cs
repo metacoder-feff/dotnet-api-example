@@ -13,7 +13,7 @@ public class RedisPrefixFixture
     public RedisPrefixFixture(ITestApplicationBuilder appBuilder, string prefix)
     {
         appBuilder.ConfigureServices( services =>
-            services.Configure<RedisConnectionManager.Options>(x =>
+            services.Configure<RedisConnectionFactory.Options>(x =>
             {
                 x.KeyPrefix = prefix;
                 x.ConfigurationOptions.ChannelPrefix = RedisChannel.Literal(prefix);

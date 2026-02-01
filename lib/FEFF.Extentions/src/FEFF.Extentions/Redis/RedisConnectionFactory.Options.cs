@@ -4,7 +4,7 @@ namespace FEFF.Extentions.Redis;
 
 //TODO: Move KeyPrefix to Redis
 //TODO: Then use only ConfigurationOptions
-partial class RedisConnectionManager
+partial class RedisConnectionFactory
 {
     /// <summary>
     /// Extend standard 'Redis.ConfigurationOptions'

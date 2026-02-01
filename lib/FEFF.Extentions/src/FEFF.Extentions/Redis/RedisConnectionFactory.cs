@@ -8,7 +8,7 @@ namespace FEFF.Extentions.Redis;
 /// <summary>
 /// Redis connection factory to be used via DI container as a 'Singletone'.
 /// </summary>
-public sealed partial class RedisConnectionManager : IAsyncDisposable
+public sealed partial class RedisConnectionFactory : IAsyncDisposable
 {
     private readonly AsyncLock _asyncLock = AsyncLock.Exclusive();//  Semaphore();
 //TODO: freeze options
@@ -17,7 +17,7 @@ public sealed partial class RedisConnectionManager : IAsyncDisposable
     // Automatically reconnects
     private volatile ConnectionMultiplexer? _connection;
 
-    public RedisConnectionManager(IOptions<Options> o)
+    public RedisConnectionFactory(IOptions<Options> o)
     {
         _options = o.Value;
     }
