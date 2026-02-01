@@ -8,19 +8,19 @@ public static class ServiceInjectionExtentions
 {
     // split interfaces for different use-cases
     // implement single realization for simplicity
-    internal record Builder(IServiceCollection Services) : IRedisConnectrionManagerBuilder, IConfigurationFactoryBuilder;
+    internal record Builder(IServiceCollection Services) : IRedisConnectionFactoryBuilder, IRedisConfigurationFactoryBuilder;
 
     /// <summary>
-    /// Add 'RedisConnectrionManager' with no configuration.<br/>
+    /// Add 'RedisConnectionFactory' with no configuration.<br/>
     /// Configuration may be overriden in chained calls.
     /// </summary>
-    public static IRedisConnectrionManagerBuilder AddRedisConnectrionManager(this IServiceCollection services)
+    public static IRedisConnectionFactoryBuilder AddRedisConnectionFactory(this IServiceCollection services)
     {
         // by default configuration subsysten creates TOption via new()
         // use IOptionsFactory to create 'ConfigurationOptions' via 'ConfigurationOptions.Parse(..)'
         services.TryAddTransient<
             IOptionsFactory<RedisConnectionFactory.Options>, 
-            RedisConnectrionManagerOptionsFactory
+            RedisConnectionFactoryOptionsFactory
             >();
 
         services.TryAddSingleton<RedisConnectionFactory>();
@@ -28,30 +28,30 @@ public static class ServiceInjectionExtentions
     }
 
     /// <summary>
-    /// Add 'RedisConnectrionManager' with configuration parsed from ConnectionString.<br/>
+    /// Add 'RedisConnectionFactory' with configuration parsed from ConnectionString.<br/>
     /// Configuration may be overriden in chained calls.
     /// </summary>
     /// <param name="services"></param>
     /// <param name="connectionStringName">The NAME of the connection string in the configuration section.</param>
     /// <param name="ignoreUnknown">see: 'Redis.ConfigurationOptions.Parse(...)'</param>
     /// <returns></returns>
-    public static IRedisConnectrionManagerBuilder AddRedisConnectrionManager(this IServiceCollection services, string connectionStringName, bool ignoreUnknown = false)
+    public static IRedisConnectionFactoryBuilder AddRedisConnectionFactory(this IServiceCollection services, string connectionStringName, bool ignoreUnknown = false)
     {
-        return services.AddRedisConnectrionManager( o => 
+        return services.AddRedisConnectionFactory( o => 
             o.UseConnectionStringByName(connectionStringName, ignoreUnknown)
         );
     }
 
     /// <summary>
-    /// Add 'RedisConnectrionManager' with customized factory for 'ConfigurationOptions'.<br/>
+    /// Add 'RedisConnectionFactory' with customized factory for 'ConfigurationOptions'.<br/>
     /// Configuration may be overriden in chained calls.
     /// </summary>
-    public static IRedisConnectrionManagerBuilder AddRedisConnectrionManager(this IServiceCollection services, Action<IConfigurationFactoryBuilder> factoryConfig)
+    public static IRedisConnectionFactoryBuilder AddRedisConnectionFactory(this IServiceCollection services, Action<IRedisConfigurationFactoryBuilder> factoryConfig)
     {
         // use 'IConfigurationFactoryBuilder' to GetConnectionString by name 
         var builder = new Builder(services);
         factoryConfig(builder);
-        return services.AddRedisConnectrionManager();
+        return services.AddRedisConnectionFactory();
     }
 
     /// <summary>
@@ -59,9 +59,9 @@ public static class ServiceInjectionExtentions
     /// </summary>
     /// <param name="connectionStringName">The NAME of the connection string in the configuration section.</param>
     /// <param name="ignoreUnknown">see: 'Redis.ConfigurationOptions.Parse(...)'</param>
-    public static void UseConnectionStringByName(this IConfigurationFactoryBuilder builder, string connectionStringName, bool ignoreUnknown = false)
+    public static void UseConnectionStringByName(this IRedisConfigurationFactoryBuilder builder, string connectionStringName, bool ignoreUnknown = false)
     {
-        builder.Services.AddOptions<RedisConnectrionManagerOptionsFactory.Options>()
+        builder.Services.AddOptions<RedisConnectionFactoryOptionsFactory.Options>()
             .Configure<IConfiguration>((opts, conf) =>
             {
                 var cs = conf.GetRequiredConnectionString(connectionStringName);
@@ -94,15 +94,15 @@ public static class ServiceInjectionExtentions
     ///     $"{HOST_NAME}:{PORT_NUMBER},password={PASSWORD}"
     /// </param>
     /// <param name="ignoreUnknown">see: 'Redis.ConfigurationOptions.Parse(...)'</param>
-    public static void UseConfigurationFromString(this IConfigurationFactoryBuilder builder, string configuration, bool ignoreUnknown = false)
+    public static void UseConfigurationFromString(this IRedisConfigurationFactoryBuilder builder, string configuration, bool ignoreUnknown = false)
     {
-        builder.Services.AddOptions<RedisConnectrionManagerOptionsFactory.Options>()
+        builder.Services.AddOptions<RedisConnectionFactoryOptionsFactory.Options>()
             .Configure((opts) => 
                 opts.SetParseFactoryWith(configuration, ignoreUnknown)
             );
     }
 
-    internal static void SetParseFactoryWith(this RedisConnectrionManagerOptionsFactory.Options src, string configuration, bool ignoreUnknown)
+    internal static void SetParseFactoryWith(this RedisConnectionFactoryOptionsFactory.Options src, string configuration, bool ignoreUnknown)
     {
         src.Factory = () => ConfigurationOptions.Parse(configuration, ignoreUnknown);
     }
@@ -110,7 +110,7 @@ public static class ServiceInjectionExtentions
     /// <summary>
     /// Use this method to override setting parsed from ConnectionString and to setup additional settings.
     /// </summary>
-    public static IRedisConnectrionManagerBuilder Configure(this IRedisConnectrionManagerBuilder builder,  Action<RedisConnectionFactory.Options> config)
+    public static IRedisConnectionFactoryBuilder Configure(this IRedisConnectionFactoryBuilder builder,  Action<RedisConnectionFactory.Options> config)
     {
         builder.Services.AddOptions<RedisConnectionFactory.Options>()
             .Configure(config);
@@ -119,21 +119,21 @@ public static class ServiceInjectionExtentions
     }
 }
 
-public interface IRedisConnectrionManagerBuilder
+public interface IRedisConnectionFactoryBuilder
 {
     IServiceCollection Services { get; }
 }
 
-public interface IConfigurationFactoryBuilder
+public interface IRedisConfigurationFactoryBuilder
 {
     IServiceCollection Services { get; }
 }
 
-public class RedisConnectrionManagerOptionsFactory : OptionsFactory<RedisConnectionFactory.Options>
+public class RedisConnectionFactoryOptionsFactory : OptionsFactory<RedisConnectionFactory.Options>
 {
     private readonly Func<ConfigurationOptions> _factory;
 
-    public RedisConnectrionManagerOptionsFactory(
+    public RedisConnectionFactoryOptionsFactory(
         IEnumerable<IConfigureOptions<RedisConnectionFactory.Options>> setups, 
         IEnumerable<IPostConfigureOptions<RedisConnectionFactory.Options>> postConfigures,
         IOptions<Options> factoryOpts) 

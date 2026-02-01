@@ -12,8 +12,8 @@ public static class SignalRBuilderExtention
         builder.AddStackExchangeRedis();
         builder.Services
             .AddOptions<RedisOptions>()
-            .Configure<RedisConnectionFactory>((opts, redisManager) =>
-                opts.ConnectionFactory = redisManager.GetConnectionAsync
+            .Configure<RedisConnectionFactory>((opts, rfc) =>
+                opts.ConnectionFactory = rfc.GetConnectionAsync
             );
 
         return builder;

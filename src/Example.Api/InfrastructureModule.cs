@@ -64,7 +64,7 @@ static class InfrastructureModule
         /*------------------------------------------------*/
         // Redis
         /*------------------------------------------------*/
-        services.AddRedisConnectrionManager("Redis") // The name of 'connection-string to search' is argument here.
+        services.AddRedisConnectionFactory("Redis") // The name of 'connection-string to search' is argument here.
             .Configure(o =>
             {
                 var options = o.ConfigurationOptions;

@@ -31,13 +31,11 @@ public sealed partial class RedisConnectionFactory : IAsyncDisposable
         {
             await _connection.DisposeAsync().ConfigureAwait(false);
             //_connection = null;
-//TODO: ref-counter/using
-// thus for now 'RedisConnectrionManager' is singletone
         }
     }
 
     /// <summary>
-    /// Returns a Database using 'options.KeyPrefix' (for tests).
+    /// Returns a Database using 'options.KeyPrefix' (for test support).
     /// </summary>
     public async Task<IDatabase> GetDatabaseAsync(TextWriter? log = null, CancellationToken cancellationToken = default)
     {

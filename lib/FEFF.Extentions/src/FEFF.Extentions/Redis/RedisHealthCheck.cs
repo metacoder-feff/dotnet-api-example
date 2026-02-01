@@ -22,13 +22,13 @@ public class RedisHealthCheck : IHealthCheck
 //TODO: timeouts        
             var error = await CheckHealthAsync(cancellationToken);
             if (error != null)
-                return new HealthCheckResult(context.Registration.FailureStatus, "RedisConnectrionManager is not working: " + error);
+                return new HealthCheckResult(context.Registration.FailureStatus, "RedisConnectionFactory is not working: " + error);
 
-            return HealthCheckResult.Healthy("RedisConnectrionManager is initialized.");
+            return HealthCheckResult.Healthy("RedisConnectionFactory is initialized.");
        }
        catch (Exception ex)
        {
-            return new HealthCheckResult(context.Registration.FailureStatus, "RedisConnectrionManager is not working.", ex);
+            return new HealthCheckResult(context.Registration.FailureStatus, "RedisConnectionFactory is not working.", ex);
        }
     }
 

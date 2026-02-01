@@ -116,7 +116,7 @@ public class HealthCheckApiTest : ApiTestBase
             "checks": [
                 {
                     "name": "Redis",
-                    "description": "RedisConnectrionManager is initialized.",
+                    "description": "RedisConnectionFactory is initialized.",
                     "duration": "00:00:00.555",
                     "status": "healthy",
                     "data": {}
