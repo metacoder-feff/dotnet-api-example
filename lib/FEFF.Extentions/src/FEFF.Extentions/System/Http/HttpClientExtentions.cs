@@ -1,6 +1,6 @@
 using System.Net.Http.Headers;
 
-namespace FEFF.Extentions;
+namespace System.Net.Http;
 
 public static class HttpClientExtentions
 {

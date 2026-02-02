@@ -1,14 +1,13 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Http.Json;
-using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 
-namespace FEFF.Extentions.OpenApi.NodaTime;
+namespace Microsoft.AspNetCore.OpenApi.NodaTime;
 
 // see also: MMonrad.OpenApi.NodaTime
 //TODO: add complex tests
-public static class OpenApiOptionsExtensions
+public static class NodaTimeExtensions
 {
     /// <summary>
     /// Adds OpenAPI schema for 'NodaTime' types serialized by custom 'JsonConverter'.

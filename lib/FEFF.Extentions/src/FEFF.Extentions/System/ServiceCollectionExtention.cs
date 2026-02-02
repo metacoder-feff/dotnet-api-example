@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Frozen;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
+//TODO: split namespaces
 namespace FEFF.Extentions;
 
 public static class ServiceCollectionExtention
