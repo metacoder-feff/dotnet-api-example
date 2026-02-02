@@ -20,23 +20,30 @@ public partial class RedisDatabaseFactory
         /// SeeAlso: 'ConfigurationOptions.ChannelPrefix'
         /// </summary>
         public string? KeyPrefix { get; set; }
+
+        /// <summary>
+        /// Log writer used when creating 'Redis.ConnectionMultiplexer'.
+        /// </summary>
+        public TextWriter? ConnectionLog { get; set; }
     }
 
     private readonly string? _prefix;
+    private readonly TextWriter? _log;
     private readonly RedisConnectionFactory _redis;
 
     public RedisDatabaseFactory(RedisConnectionFactory redis, IOptions<Options> opts)
     {
-        _prefix = opts.Value.KeyPrefix;
         _redis = redis;
+        _prefix = opts.Value.KeyPrefix;
+        _log = opts.Value.ConnectionLog;
     }
 
     /// <summary>
     /// Returns a Database using 'options.KeyPrefix' (for test support).
     /// </summary>
-    public async Task<IDatabase> GetDatabaseAsync(TextWriter? log = null, CancellationToken cancellationToken = default)
+    public async Task<IDatabase> GetDatabaseAsync(CancellationToken cancellationToken = default)
     {
-        var c = await _redis.GetConnectionAsync(log, cancellationToken).ConfigureAwait(false);
+        var c = await _redis.GetConnectionAsync(_log, cancellationToken).ConfigureAwait(false);
         var res = c.GetDatabase();
 
         if (_prefix.IsNullOrEmpty())
