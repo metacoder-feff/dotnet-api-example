@@ -11,7 +11,6 @@ namespace FEFF.Extentions.Redis;
 public sealed partial class RedisConnectionFactory : IAsyncDisposable
 {
     private readonly AsyncLock _asyncLock = AsyncLock.Exclusive();//  Semaphore();
-//TODO: freeze options
     private readonly ConfigurationOptions _options;
 
     // Automatically reconnects
@@ -19,7 +18,9 @@ public sealed partial class RedisConnectionFactory : IAsyncDisposable
 
     public RedisConnectionFactory(IOptions<ConfigurationOptions> o)
     {
-        _options = o.Value;
+        // freeze
+        _options = o.Value.Clone();
+        //_options = o.Value;
     }
     
     public async ValueTask DisposeAsync()
