@@ -4,7 +4,23 @@ using StackExchange.Redis;
 
 namespace FEFF.Extentions.Redis;
 
-public static class ServiceInjectionExtentions
+public static class DatabaseServiceInjectionExtentions
+{
+    public static IServiceCollection AddRedisDatabaseFactory(this IServiceCollection services, Action<RedisDatabaseFactory.Options>? config = null)
+    {
+        services.AddRedisConnectionFactory();
+        services.TryAddTransient<RedisDatabaseFactory>();
+        if(config != null)
+        {
+            services
+                .AddOptions<RedisDatabaseFactory.Options>()
+                .Configure(config);
+        }
+        return services;
+    }
+}
+
+public static class ConnectionServiceInjectionExtentions
 {
     // split interfaces for different use-cases
     // implement single realization for simplicity
@@ -19,7 +35,7 @@ public static class ServiceInjectionExtentions
         // by default configuration subsysten creates TOption via new()
         // use IOptionsFactory to create 'ConfigurationOptions' via 'ConfigurationOptions.Parse(..)'
         services.TryAddTransient<
-            IOptionsFactory<RedisConnectionFactory.Options>, 
+            IOptionsFactory<ConfigurationOptions>, 
             RedisConnectionFactoryOptionsFactory
             >();
 
@@ -110,9 +126,9 @@ public static class ServiceInjectionExtentions
     /// <summary>
     /// Use this method to override setting parsed from ConnectionString and to setup additional settings.
     /// </summary>
-    public static IRedisConnectionFactoryBuilder Configure(this IRedisConnectionFactoryBuilder builder,  Action<RedisConnectionFactory.Options> config)
+    public static IRedisConnectionFactoryBuilder Configure(this IRedisConnectionFactoryBuilder builder,  Action<ConfigurationOptions> config)
     {
-        builder.Services.AddOptions<RedisConnectionFactory.Options>()
+        builder.Services.AddOptions<ConfigurationOptions>()
             .Configure(config);
             
         return builder;
@@ -129,25 +145,22 @@ public interface IRedisConfigurationFactoryBuilder
     IServiceCollection Services { get; }
 }
 
-public class RedisConnectionFactoryOptionsFactory : OptionsFactory<RedisConnectionFactory.Options>
+public class RedisConnectionFactoryOptionsFactory : OptionsFactory<ConfigurationOptions>
 {
     private readonly Func<ConfigurationOptions> _factory;
 
     public RedisConnectionFactoryOptionsFactory(
-        IEnumerable<IConfigureOptions<RedisConnectionFactory.Options>> setups, 
-        IEnumerable<IPostConfigureOptions<RedisConnectionFactory.Options>> postConfigures,
+        IEnumerable<IConfigureOptions<ConfigurationOptions>> setups, 
+        IEnumerable<IPostConfigureOptions<ConfigurationOptions>> postConfigures,
         IOptions<Options> factoryOpts) 
     : base(setups, postConfigures)
     {
         _factory = factoryOpts.Value.Factory;
     }
 
-    protected override RedisConnectionFactory.Options CreateInstance(string name)
+    protected override ConfigurationOptions CreateInstance(string name)
     {
-        return new RedisConnectionFactory.Options
-        {
-            ConfigurationOptions = _factory() // e.g. ConfigurationOptions.Parse(...)
-        };
+        return _factory(); // e.g. ConfigurationOptions.Parse(...)
         //return base.CreateInstance(name);
     }
 

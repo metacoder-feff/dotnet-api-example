@@ -1,23 +1,23 @@
 using DotNext.Threading;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
-using StackExchange.Redis.KeyspaceIsolation;
 
 namespace FEFF.Extentions.Redis;
 
 /// <summary>
 /// Redis connection factory to be used via DI container as a 'Singletone'.
 /// </summary>
+//TODO: interface
 public sealed partial class RedisConnectionFactory : IAsyncDisposable
 {
     private readonly AsyncLock _asyncLock = AsyncLock.Exclusive();//  Semaphore();
 //TODO: freeze options
-    private readonly Options _options;
+    private readonly ConfigurationOptions _options;
 
     // Automatically reconnects
     private volatile ConnectionMultiplexer? _connection;
 
-    public RedisConnectionFactory(IOptions<Options> o)
+    public RedisConnectionFactory(IOptions<ConfigurationOptions> o)
     {
         _options = o.Value;
     }
@@ -32,22 +32,6 @@ public sealed partial class RedisConnectionFactory : IAsyncDisposable
             await _connection.DisposeAsync().ConfigureAwait(false);
             //_connection = null;
         }
-    }
-
-    /// <summary>
-    /// Returns a Database using 'options.KeyPrefix' (for test support).
-    /// </summary>
-    public async Task<IDatabase> GetDatabaseAsync(TextWriter? log = null, CancellationToken cancellationToken = default)
-    {
-        var c = await GetConnectionAsync(log, cancellationToken).ConfigureAwait(false);
-        var res = c.GetDatabase();
-
-        var prefix = _options.KeyPrefix;
-        if (prefix.IsNullOrEmpty())
-            return res;
-
-        // namespace for Redis keyspace DB API
-        return res.WithKeyPrefix(prefix);
     }
 
     public async Task<ConnectionMultiplexer> GetConnectionAsync(TextWriter? log = null, CancellationToken cancellationToken = default)
@@ -77,6 +61,6 @@ public sealed partial class RedisConnectionFactory : IAsyncDisposable
     private async Task<ConnectionMultiplexer> ConnectAsync(TextWriter? log, CancellationToken cancellationToken)
     {
 //TODO: cancellationToken
-        return await ConnectionMultiplexer.ConnectAsync(_options.ConfigurationOptions, log).ConfigureAwait(false);
+        return await ConnectionMultiplexer.ConnectAsync(_options, log).ConfigureAwait(false);
     }
 }

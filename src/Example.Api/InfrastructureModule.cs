@@ -71,9 +71,8 @@ static class InfrastructureModule
         // Redis
         /*------------------------------------------------*/
         services.AddRedisConnectionFactory("Redis") // The name of 'connection-string to search' is argument here.
-            .Configure(o =>
+            .Configure(options =>
             {
-                var options = o.ConfigurationOptions;
                 // options.AbortOnConnectFail = false;
 
                 // FROM 'SignalR.Connect()'
@@ -90,6 +89,8 @@ static class InfrastructureModule
                 // also we can set ENV_variable: "SERedis_IssuerCertPath" targeting at "CA-path"
                 // see: https://github.com/StackExchange/StackExchange.Redis/blob/main/src/StackExchange.Redis/PhysicalConnection.cs#L1470C70-L1470C92
             });
+            // Allow key space isolation (for tests)
+            services.AddRedisDatabaseFactory();
 
         /*------------------------------------------------*/
         // SignalR

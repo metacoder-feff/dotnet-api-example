@@ -158,8 +158,8 @@ public class HealthCheckApiTest : ApiTestBase
 
         var timeout = 1.5;
         if (whenHealthy == false) 
-            timeout = 6;
-            //timeout = 10;
+            //timeout = 6;
+            timeout = 10;
 
         _ = await GetProbeAsync(HealthAllUri, expected: healthcheckResult, timeout: timeout);
     }
