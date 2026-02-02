@@ -1,17 +1,19 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.OpenApi;
+using Microsoft.AspNetCore.SignalR.StackExchangeRedis;
 using Microsoft.EntityFrameworkCore;
 using NodaTime.Serialization.SystemTextJson;
 using Npgsql;
 using Prometheus;
+using StackExchange.Redis;
 using StackExchange.Redis.Configuration;
+using StackExchange.Redis.KeyspaceIsolation;
 
 using FEFF.Extentions.EntityFrameworkCore;
 using FEFF.Extentions.HealthChecks;
+using FEFF.Extentions.HealthChecks.Redis;
 using FEFF.Extentions.OpenApi.NodaTime;
-using FEFF.Extentions.Redis;
-using FEFF.Extentions.SignalR.Redis;
 
 using Example.Api.SignalR;
 

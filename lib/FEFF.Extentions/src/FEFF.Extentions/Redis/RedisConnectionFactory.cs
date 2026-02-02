@@ -1,8 +1,7 @@
 using DotNext.Threading;
 using Microsoft.Extensions.Options;
-using StackExchange.Redis;
 
-namespace FEFF.Extentions.Redis;
+namespace StackExchange.Redis;
 
 /// <summary>
 /// Redis connection factory to be used via DI container as a 'Singletone'.

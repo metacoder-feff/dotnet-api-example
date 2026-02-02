@@ -1,8 +1,6 @@
 using Microsoft.Extensions.Options;
-using StackExchange.Redis;
-using StackExchange.Redis.KeyspaceIsolation;
 
-namespace FEFF.Extentions.Redis;
+namespace StackExchange.Redis.KeyspaceIsolation;
 
 /// <summary>
 /// Create Prefixed Database (for testing)

@@ -1,7 +1,6 @@
-using System.Reflection;
-using StackExchange.Redis;
+using FEFF.Extentions;
 
-namespace FEFF.Extentions.Redis;
+namespace StackExchange.Redis;
 
 public static class RedisExtentions
 {

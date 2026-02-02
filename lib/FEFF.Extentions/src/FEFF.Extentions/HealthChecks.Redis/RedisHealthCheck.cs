@@ -4,7 +4,7 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using StackExchange.Redis;
 
-namespace FEFF.Extentions.Redis;
+namespace FEFF.Extentions.HealthChecks.Redis;
 
 public class RedisHealthCheck : IHealthCheck
 {

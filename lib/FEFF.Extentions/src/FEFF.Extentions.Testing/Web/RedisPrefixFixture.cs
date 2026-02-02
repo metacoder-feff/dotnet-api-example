@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-
-using FEFF.Extentions.Redis;
 using StackExchange.Redis;
+using StackExchange.Redis.KeyspaceIsolation;
 
 namespace FEFF.Extentions.Testing;
 
