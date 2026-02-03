@@ -3,7 +3,7 @@ using Example.Api;
 // setup ulimit otherwise
 // to fix linux exception:
 //   "The configured user limit (128) on the number of inotify..."
-//EnvironmentHelper.DisableReloadConfigByDefault();
+//ReloadConfigHelper.DisableReloadConfigByDefault();
 
 // WebApplication.CreateBuilder uses constructor new WebApplicationBuilder(...)
 // which uses ConfigurationManager values to add config files to ConfigurationManager

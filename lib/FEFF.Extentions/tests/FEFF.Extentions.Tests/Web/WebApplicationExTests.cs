@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Builder;
 
 namespace FEFF.Extentions.Tests.Web;
 
-//TODO: restore Environment after tests
 public class WebApplicationExTests
 {
     //DisableReloadConfigByDefault__should__change_WebApplicationBuilder_when__env_is_not_set
@@ -24,7 +23,7 @@ public class WebApplicationExTests
 
         // ACT
         if(actionIsApplied)
-            EnvironmentHelper.DisableReloadConfigByDefault();
+            ReloadConfigHelper.DisableReloadConfigByDefault();
 
         var builder = WebApplication.CreateBuilder();
 
