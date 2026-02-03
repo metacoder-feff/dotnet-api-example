@@ -1,4 +1,4 @@
-namespace Microsoft.AspNetCore.Builder;
+namespace FEFF.Extentions.Web;
 
 public static class ReloadConfigHelper
 {

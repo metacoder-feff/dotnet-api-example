@@ -7,7 +7,7 @@ using FEFF.Extentions.Redis;
 
 public static class SignalRBuilderExtention
 {
-    public static ISignalRServerBuilder AddRedisConnectionFactory(this ISignalRServerBuilder builder)
+    public static ISignalRServerBuilder UseRedisConnectionFactory(this ISignalRServerBuilder builder)
     {        
         builder.AddStackExchangeRedis();
         builder.Services

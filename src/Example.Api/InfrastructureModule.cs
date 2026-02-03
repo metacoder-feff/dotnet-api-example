@@ -12,10 +12,11 @@ using FEFF.Extentions.EntityFrameworkCore;
 using FEFF.Extentions.HealthChecks;
 using FEFF.Extentions.HealthChecks.Redis;
 
-using Example.Api.SignalR;
 using FEFF.Extentions.OpenApi.NodaTime;
+using FEFF.Extentions.Web;
 
 namespace Example.Api;
+using SignalR;
 
 static class InfrastructureModule
 {
@@ -102,7 +103,7 @@ static class InfrastructureModule
             // default redis integration
             //.AddStackExchangeRedis()
             // redis integration using singletone factory (FEFF extention)
-            .AddRedisConnectionFactory()
+            .UseRedisConnectionFactory()
             ;
 
         /*------------------------------------------------*/

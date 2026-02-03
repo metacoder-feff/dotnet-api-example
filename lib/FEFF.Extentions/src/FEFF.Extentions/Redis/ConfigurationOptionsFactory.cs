@@ -3,11 +3,11 @@ using StackExchange.Redis;
 
 namespace FEFF.Extentions.Redis;
 
-public class RedisConnectionFactoryOptionsFactory : OptionsFactory<ConfigurationOptions>
+public class ConfigurationOptionsFactory : OptionsFactory<ConfigurationOptions>
 {
     private readonly Func<ConfigurationOptions> _factory;
 
-    public RedisConnectionFactoryOptionsFactory(
+    public ConfigurationOptionsFactory(
         IEnumerable<IConfigureOptions<ConfigurationOptions>> setups, 
         IEnumerable<IPostConfigureOptions<ConfigurationOptions>> postConfigures,
         IOptions<Options> factoryOpts) 

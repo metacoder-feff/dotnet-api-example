@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Builder;
 
 namespace FEFF.Extentions.Tests.Web;
 
+using FEFF.Extentions.Web;
+
 public class WebApplicationExTests
 {
     //DisableReloadConfigByDefault__should__change_WebApplicationBuilder_when__env_is_not_set

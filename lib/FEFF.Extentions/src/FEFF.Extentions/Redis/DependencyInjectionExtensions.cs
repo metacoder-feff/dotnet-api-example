@@ -22,7 +22,7 @@ public static class DependencyInjectionExtensions
         // use IOptionsFactory to create 'ConfigurationOptions' via 'ConfigurationOptions.Parse(..)'
         services.TryAddTransient<
             IOptionsFactory<ConfigurationOptions>, 
-            RedisConnectionFactoryOptionsFactory
+            ConfigurationOptionsFactory
             >();
 
         services.TryAddSingleton<RedisConnectionFactory>();
@@ -63,7 +63,7 @@ public static class DependencyInjectionExtensions
     /// <param name="ignoreUnknown">see: 'Redis.ConfigurationOptions.Parse(...)'</param>
     public static void UseConnectionStringByName(this IRedisConfigurationFactoryBuilder builder, string connectionStringName, bool ignoreUnknown = false)
     {
-        builder.Services.AddOptions<RedisConnectionFactoryOptionsFactory.Options>()
+        builder.Services.AddOptions<ConfigurationOptionsFactory.Options>()
             .Configure<IConfiguration>((opts, conf) =>
             {
                 var cs = conf.GetRequiredConnectionString(connectionStringName);
@@ -98,13 +98,13 @@ public static class DependencyInjectionExtensions
     /// <param name="ignoreUnknown">see: 'Redis.ConfigurationOptions.Parse(...)'</param>
     public static void UseConfigurationFromString(this IRedisConfigurationFactoryBuilder builder, string configuration, bool ignoreUnknown = false)
     {
-        builder.Services.AddOptions<RedisConnectionFactoryOptionsFactory.Options>()
+        builder.Services.AddOptions<ConfigurationOptionsFactory.Options>()
             .Configure((opts) => 
                 opts.SetParseFactoryWith(configuration, ignoreUnknown)
             );
     }
 
-    internal static void SetParseFactoryWith(this RedisConnectionFactoryOptionsFactory.Options src, string configuration, bool ignoreUnknown)
+    internal static void SetParseFactoryWith(this ConfigurationOptionsFactory.Options src, string configuration, bool ignoreUnknown)
     {
         src.Factory = () => ConfigurationOptions.Parse(configuration, ignoreUnknown);
     }
