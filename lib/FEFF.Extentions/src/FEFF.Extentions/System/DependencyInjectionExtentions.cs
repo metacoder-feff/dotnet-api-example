@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtention
+public static class DependencyInjectionExtentions
 {
     public static void AddTimeProvider(this IServiceCollection services)
     {
