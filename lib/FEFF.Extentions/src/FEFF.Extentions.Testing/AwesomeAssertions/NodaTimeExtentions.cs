@@ -4,6 +4,7 @@ using NodaTime.Text;
 namespace AwesomeAssertions;
 
 //TODO: search github
+// see: Heavendata.AwesomeAssertions.NodaTime
 public static class NodaTimeExtentions
 {
     public static AndConstraint<ComparableTypeAssertions<Instant>> Be(this ComparableTypeAssertions<Instant> src, string isoTimeString)
