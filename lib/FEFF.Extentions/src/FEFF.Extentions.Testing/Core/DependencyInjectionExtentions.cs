@@ -1,11 +1,9 @@
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-//TODO: split namespaces
-namespace FEFF.Extentions.Testing;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtention
+public static class DependencyInjectionExtentions
 {
     public static IServiceCollection TryReplaceSingleton<TService>(this IServiceCollection services, TService instance)
         where TService : class
