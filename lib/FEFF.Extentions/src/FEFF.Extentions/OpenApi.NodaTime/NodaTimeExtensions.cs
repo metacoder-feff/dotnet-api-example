@@ -1,9 +1,10 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 
-namespace Microsoft.AspNetCore.OpenApi.NodaTime;
+namespace FEFF.Extentions.OpenApi.NodaTime;
 
 // see also: MMonrad.OpenApi.NodaTime
 //TODO: add complex tests
