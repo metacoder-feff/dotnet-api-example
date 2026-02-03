@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-namespace System;
+namespace FEFF.Extentions;
 
 [DebuggerNonUserCode]
 public static class ThrowHelper

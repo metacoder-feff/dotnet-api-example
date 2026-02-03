@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Frozen;
 
-//TODO: split namespaces
 namespace FEFF.Extentions;
 
 public static class EnvironmentHelper
