@@ -1,8 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using NodaTime.Extensions;
 
-namespace Microsoft.EntityFrameworkCore.NodaTime;
+namespace FEFF.Extentions.EntityFrameworkCore;
 
 /// <summary>
 /// Automate setting properties on saving to DB:

@@ -2,10 +2,12 @@ using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace FEFF.Extentions.HealthChecks;
+namespace Microsoft.AspNetCore.Routing;
+
+using FEFF.Extentions.HealthChecks;
 
 // No need to add "startup" check because it dublicates "liveness" waiting for a bit more time this is configured at cloud.
-public static class HealthCheckMapExtentions
+public static class EndpointRouteBuilderExtentions
 {
     /// <summary>
     /// HealthStatus.Degraded: not needed for Liveness/Readiness.

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.OpenApi.NodaTime;
 using Microsoft.AspNetCore.SignalR.StackExchangeRedis;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.NodaTime;
 using NodaTime.Serialization.SystemTextJson;
 using Npgsql;
 using Prometheus;
@@ -12,6 +11,7 @@ using StackExchange.Redis;
 using StackExchange.Redis.Configuration;
 using StackExchange.Redis.KeyspaceIsolation;
 
+using FEFF.Extentions.EntityFrameworkCore;
 using FEFF.Extentions.HealthChecks;
 using FEFF.Extentions.HealthChecks.Redis;
 

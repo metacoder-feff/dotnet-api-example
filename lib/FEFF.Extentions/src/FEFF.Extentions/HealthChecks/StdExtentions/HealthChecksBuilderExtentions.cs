@@ -1,8 +1,10 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace FEFF.Extentions.HealthChecks;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class HealthCheckRegistryExtentions
+using FEFF.Extentions.HealthChecks;
+
+public static class HealthChecksBuilderExtentions
 {
 //TODO: Readiness
 
