@@ -1,7 +1,8 @@
 using DotNext.Threading;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 
-namespace StackExchange.Redis;
+namespace FEFF.Extentions.Redis;
 
 /// <summary>
 /// Redis connection factory to be used via DI container as a 'Singletone'.
@@ -9,6 +10,7 @@ namespace StackExchange.Redis;
 //TODO: interface
 public sealed partial class RedisConnectionFactory : IAsyncDisposable
 {
+//TODO: remove dotnext
     private readonly AsyncLock _asyncLock = AsyncLock.Exclusive();//  Semaphore();
     private readonly ConfigurationOptions _options;
 

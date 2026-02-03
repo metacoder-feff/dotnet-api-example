@@ -1,8 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
-using StackExchange.Redis.KeyspaceIsolation;
 
 namespace FEFF.Extentions.Testing;
+
+using FEFF.Extentions.Redis;
 
 /// <summary>
 /// Adds prefix to redis DB & Channel.

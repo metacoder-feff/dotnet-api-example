@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.SignalR.StackExchangeRedis;
 using StackExchange.Redis;
 
-namespace Microsoft.AspNetCore.SignalR.StackExchangeRedis;
+namespace Microsoft.AspNetCore.SignalR;
+
+using FEFF.Extentions.Redis;
 
 public static class SignalRBuilderExtention
 {

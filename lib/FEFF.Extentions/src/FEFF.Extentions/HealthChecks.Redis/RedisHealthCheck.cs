@@ -6,6 +6,8 @@ using StackExchange.Redis;
 
 namespace FEFF.Extentions.HealthChecks.Redis;
 
+using FEFF.Extentions.Redis;
+
 public class RedisHealthCheck : IHealthCheck
 {
     private RedisConnectionFactory _redis;

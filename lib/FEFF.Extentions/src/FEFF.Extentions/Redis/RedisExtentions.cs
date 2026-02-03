@@ -1,5 +1,3 @@
-using FEFF.Extentions;
-
 namespace StackExchange.Redis;
 
 public static class RedisExtentions

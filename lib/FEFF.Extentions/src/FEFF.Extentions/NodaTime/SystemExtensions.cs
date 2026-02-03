@@ -1,4 +1,4 @@
-namespace System;
+namespace FEFF.Extentions;
 
 public static class SystemExtensions
 {

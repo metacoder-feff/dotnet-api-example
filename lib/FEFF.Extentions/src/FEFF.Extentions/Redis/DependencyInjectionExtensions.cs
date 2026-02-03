@@ -1,11 +1,12 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 
-using FEFF.Extentions;
+namespace Microsoft.Extensions.DependencyInjection;
 
-namespace StackExchange.Redis;
+using FEFF.Extentions.Redis;
 
-public static class ConnectionServiceInjectionExtentions
+public static class DependencyInjectionExtensions
 {
     // split interfaces for different use-cases
     // implement single realization for simplicity
@@ -118,41 +119,16 @@ public static class ConnectionServiceInjectionExtentions
             
         return builder;
     }
-}
-
-public interface IRedisConnectionFactoryBuilder
-{
-    IServiceCollection Services { get; }
-}
-
-public interface IRedisConfigurationFactoryBuilder
-{
-    IServiceCollection Services { get; }
-}
-
-public class RedisConnectionFactoryOptionsFactory : OptionsFactory<ConfigurationOptions>
-{
-    private readonly Func<ConfigurationOptions> _factory;
-
-    public RedisConnectionFactoryOptionsFactory(
-        IEnumerable<IConfigureOptions<ConfigurationOptions>> setups, 
-        IEnumerable<IPostConfigureOptions<ConfigurationOptions>> postConfigures,
-        IOptions<Options> factoryOpts) 
-    : base(setups, postConfigures)
+    public static IServiceCollection AddRedisDatabaseFactory(this IServiceCollection services, Action<RedisDatabaseFactory.Options>? config = null)
     {
-        _factory = factoryOpts.Value.Factory;
-    }
-
-    protected override ConfigurationOptions CreateInstance(string name)
-    {
-        return _factory(); // e.g. ConfigurationOptions.Parse(...)
-        //return base.CreateInstance(name);
-    }
-
-    public class Options
-    {
-        public Func<ConfigurationOptions> Factory { get; set; } = DefaultFactory;
-        
-        public static ConfigurationOptions DefaultFactory() => new();
+        services.AddRedisConnectionFactory();
+        services.TryAddTransient<RedisDatabaseFactory>();
+        if(config != null)
+        {
+            services
+                .AddOptions<RedisDatabaseFactory.Options>()
+                .Configure(config);
+        }
+        return services;
     }
 }
