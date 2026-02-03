@@ -37,9 +37,10 @@ public static class SystemExtentions
         }
         return src;
     }
-    //TODO: test    
-    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<Nullable<T>> sequence)
-        where T : struct
+
+//TODO: single method?
+    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> sequence)
+    where T : struct
     {
         // return enumerable.Where(e => e != null).Select(e => e!);
         foreach (var item in sequence)
@@ -50,8 +51,9 @@ public static class SystemExtentions
         }
     }
 
+//TODO: test
     public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> sequence)
-        where T : notnull
+    where T : notnull
     {
         // return enumerable.Where(e => e != null).Select(e => e!);
         foreach (var item in sequence)
@@ -60,6 +62,28 @@ public static class SystemExtentions
                 continue;
             yield return item;
         }
+    }
+    
+//TODO: test
+    // returns 'null' only when not found. Only allowed when 'TVal : notnull'.
+    public static TVal? TryGetOrNull<TKey, TVal>(this IDictionary<TKey, TVal>src, TKey key)
+    where TVal : notnull
+    {
+        var b = src.TryGetValue(key, out var value);
+        if (b == false)
+            return default;
+        return value;
+    }
+
+//TODO: test
+    // returns 'null' whether not found or found null
+    public static TVal? TryGetBothNull<TKey, TVal>(this IDictionary<TKey, TVal?>src, TKey key)
+    where TVal : notnull
+    {
+        var b = src.TryGetValue(key, out var value);
+        if (b == false)
+            return default;
+        return value;
     }
 
     public static bool IsNullOrEmpty([NotNullWhen(false)] this string? src)
