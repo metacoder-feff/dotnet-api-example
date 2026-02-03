@@ -1,6 +1,6 @@
 namespace NodaTime.Text;
 
-public static class NodaTimeExtensions
+public static class NodaTimeTextExtensions
 {
     public static T ParseOrThrow<T>(this IPattern<T> src, string text)
     {
