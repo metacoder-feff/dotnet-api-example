@@ -74,7 +74,8 @@ static class InfrastructureModule
         services.AddRedisConnectionFactory("Redis") // The name of 'connection-string to search' is argument here.
             .Configure(options =>
             {
-                // options.AbortOnConnectFail = false;
+                // Enable reconnecting by default
+                options.AbortOnConnectFail = false;
 
                 // FROM 'SignalR.Connect()'
                 // suffix SignalR onto the declared library name

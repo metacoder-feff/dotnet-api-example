@@ -3,13 +3,18 @@ using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
 namespace FEFF.Extentions.Redis;
-
 /// <summary>
 /// Redis connection factory to be used via DI container as a 'Singletone'.
+/// Use single connection for multiplexing.
+/// It offers high efficiency but works transparently without requiring any special code to enable it in your app.
 /// </summary>
-//TODO: interface
+/// <remarks>
+/// The main disadvantage of multiplexing compared to connection pooling is that it can't support the blocking "pop" commands (such as BLPOP) since these would stall the connection for all callers.
+/// <seealso href="https://redis.io/docs/latest/develop/clients/pools-and-muxing/"/>
+// </remarks>
 public sealed partial class RedisConnectionFactory : IAsyncDisposable
 {
+//TODO: interface
 //TODO: remove dotnext
     private readonly AsyncLock _asyncLock = AsyncLock.Exclusive();//  Semaphore();
     private readonly ConfigurationOptions _options;
@@ -38,14 +43,13 @@ public sealed partial class RedisConnectionFactory : IAsyncDisposable
 
     public async Task<ConnectionMultiplexer> GetConnectionAsync(TextWriter? log = null, CancellationToken cancellationToken = default)
     {
-        var r = await GetConnectionInternalAsync(log, cancellationToken).ConfigureAwait(false);
+        var r = await GetConnectionLockedAsync(log, cancellationToken).ConfigureAwait(false);
         //r.CheckConnection();
         return r;
     }
 
-    private async Task<ConnectionMultiplexer> GetConnectionInternalAsync(TextWriter? log, CancellationToken cancellationToken)
+    private async Task<ConnectionMultiplexer> GetConnectionLockedAsync(TextWriter? log, CancellationToken cancellationToken)
     {
-
         if (_connection != null)
             return _connection;
 
