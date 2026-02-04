@@ -76,7 +76,6 @@ public class SemaphoreLockTests : IAsyncDisposable
         );
     }
 
-//TODO: test w/o loc by order
     [Fact]
     public void DisposeAsync_twice__should__not_throw()
     {
@@ -142,4 +141,14 @@ public class SemaphoreLockTests : IAsyncDisposable
         var l3 = await _loc.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
         l3.Should().NotBeNull();
     }
+
+    [Fact]
+    public async Task Handler_Dispose_twice__should__not_throw()
+    {
+        var l = await _loc.EnterAsync(TestContext.Current.CancellationToken);
+        l.Dispose();
+        l.Dispose();
+    }
+
+    //TODO: test twice dispose do not release twice
 }

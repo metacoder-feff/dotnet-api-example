@@ -1,14 +1,13 @@
 ﻿namespace FEFF.Extentions;
 
-//TODO: add TryGetLockAsync(Timeout) ?
 /// <summary>
-/// AsyncLock using 'SemaphoreSlim'. </br>
-/// Does not throw on SemaphoreSlim.Release() is SemaphoreSlim is disposed.</br>
-/// Does not wait for SemaphoreSlim.Release() in SemaphoreSlim.Dispose().
+/// AsyncLock using 'SemaphoreSlim'.</br>
+/// Does not throw at SemaphoreSlim.Release() when is disposed.</br>
+/// Does not wait for SemaphoreSlim.Release() at .Dispose().
 /// </summary>
 /// <remarks>
 /// NOT reentrant!!! <br/>
-/// The nearest realization is DotNext.Threading.AsyncLock.Semahore 
+/// The nearest realization is DotNext.Threading.AsyncLock.Semaphore 
 /// but it throws at SemaphoreSlim.Release() 
 /// and waits (may deadlock)  at AsyncLock.DisposeAsync().
 /// </remarks>
@@ -23,42 +22,40 @@ public sealed class SemaphoreLock: IDisposable
         _semaphore = new (maxParallelism);
     }
 
-//TODO: check double dispose
     public void Dispose()
     {
         _semaphore.Dispose();
         GC.SuppressFinalize(this);
     }
 
-    public async Task<Lock> EnterAsync(CancellationToken cancellationToken = default)
+    public async Task<Handler> EnterAsync(CancellationToken cancellationToken = default)
     {
         await _semaphore.WaitAsync(cancellationToken);
-        return new Lock(_semaphore);
+        return new Handler(_semaphore);
     }
 
-    public async Task<Lock?> TryEnterAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
+    public async Task<Handler?> TryEnterAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
     {
         var b = await _semaphore.WaitAsync(timeout, cancellationToken);
         if(b == false)
             return null;
 
-        return new Lock(_semaphore);
+        return new Handler(_semaphore);
     }
 
-    public sealed class Lock: IDisposable
+    public sealed class Handler: IDisposable
     {
         private readonly SemaphoreSlim _semaphore;
 
         // threadsafe bool, interlocked
         private volatile int _isDisposed = 0; //false;
 
-        public Lock(SemaphoreSlim semaphore)
+        public Handler(SemaphoreSlim semaphore)
         {
             ArgumentNullException.ThrowIfNull(semaphore);
             _semaphore = semaphore;
         }
 
-        //TODO: thread safe : test
         public void Dispose()
         {
             // set _isDisposed = true;
@@ -72,10 +69,11 @@ public sealed class SemaphoreLock: IDisposable
             {
                 _semaphore.Release();
             }
-            catch(ObjectDisposedException e)
+            catch(ObjectDisposedException)
             {
-                var x = e.ToString();
-                Console.WriteLine(x);
+                // The aim of 'SemaphoreLock' is to avoid concurrent access to a resource.
+                // There is no matter to throw at Release() because Lock would never be entered again
+                // when SemaphoreLock (=SemaphoreSlim) is disposed
             }
 
             GC.SuppressFinalize(this);
