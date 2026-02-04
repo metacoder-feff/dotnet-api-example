@@ -1,6 +1,6 @@
 namespace FEFF.Extentions.Tests;
 
-public class SemaphoreLockTests : IAsyncDisposable
+public class SingleSemaphoreLockTests : IAsyncDisposable
 {
     private readonly SemaphoreLock _loc = new();
     private readonly List<int> _list = [];
@@ -149,6 +149,4 @@ public class SemaphoreLockTests : IAsyncDisposable
         l.Dispose();
         l.Dispose();
     }
-
-    //TODO: test twice dispose do not release twice
 }

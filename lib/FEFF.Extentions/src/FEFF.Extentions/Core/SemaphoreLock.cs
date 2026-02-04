@@ -15,6 +15,12 @@ public sealed class SemaphoreLock: IDisposable
 {
     private readonly SemaphoreSlim _semaphore;// = new(ParrallelDBTests); // max locks on semaphore 
 
+    /// <summary>
+    /// Gets the current count of the <see cref="SemaphoreSlim"/>.
+    /// </summary>
+    /// <value>The current count of the <see cref="SemaphoreSlim"/>.</value>
+    public int CurrentCount => _semaphore.CurrentCount;
+
     public SemaphoreLock(int maxParallelism = 1)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(maxParallelism, 0);
