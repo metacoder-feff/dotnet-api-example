@@ -1,8 +1,8 @@
-namespace FEFF.Extentions.Tests;
+namespace FEFF.Extentions.Tests.SemaphoreLock;
 
 public class SingleSemaphoreLockTests : IAsyncDisposable
 {
-    private readonly SemaphoreLock _lock = new();
+    private readonly FEFF.Extentions.SemaphoreLock _lock = new();
     private readonly List<int> _list = [];
 
     public ValueTask DisposeAsync()

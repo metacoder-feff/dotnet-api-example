@@ -1,4 +1,4 @@
-namespace FEFF.Extentions.Tests;
+namespace FEFF.Extentions.Tests.SemaphoreLock.External;
 
 public class SemaphoreSlimTests : IAsyncDisposable
 {

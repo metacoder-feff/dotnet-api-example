@@ -1,6 +1,6 @@
 using DotNext.Threading;
 
-namespace FEFF.Extentions.Tests;
+namespace FEFF.Extentions.Tests.SemaphoreLock.External;
 
 public class DotNextSemaphoreLockTests : IAsyncDisposable
 {

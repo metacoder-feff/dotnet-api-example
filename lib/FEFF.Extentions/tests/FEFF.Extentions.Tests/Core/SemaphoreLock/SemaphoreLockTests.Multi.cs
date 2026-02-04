@@ -1,9 +1,9 @@
-namespace FEFF.Extentions.Tests;
+namespace FEFF.Extentions.Tests.SemaphoreLock;
 
 //TODO: rename namespace
 public class MultiSemaphoreLockTests : IAsyncDisposable
 {
-    private readonly SemaphoreLock _lock = new(5);
+    private readonly FEFF.Extentions.SemaphoreLock _lock = new(5);
 
     public ValueTask DisposeAsync()
     {
