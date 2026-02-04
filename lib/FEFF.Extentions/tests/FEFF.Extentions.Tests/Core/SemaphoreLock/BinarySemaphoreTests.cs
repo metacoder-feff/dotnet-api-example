@@ -1,6 +1,6 @@
 namespace FEFF.Extentions.Tests.SemaphoreLock;
 
-public class SingleSemaphoreLockTests : IAsyncDisposable
+public class BinarySemaphoreTests : IAsyncDisposable
 {
     private readonly FEFF.Extentions.SemaphoreLock _lock = new();
     private readonly List<int> _list = [];
