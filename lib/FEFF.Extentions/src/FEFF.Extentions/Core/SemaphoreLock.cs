@@ -24,7 +24,10 @@ public sealed class SemaphoreLock: IDisposable
     public SemaphoreLock(int maxParallelism = 1)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(maxParallelism, 0);
-//TODO: maxCount?
+
+        // we do not need to set 'maxCount'
+        // because we do not allow 'Release()' without 'Wait()'
+        // via encapsulation
         _semaphore = new (maxParallelism);
     }
 
