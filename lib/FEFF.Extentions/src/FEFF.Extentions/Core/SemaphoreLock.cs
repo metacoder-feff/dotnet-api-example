@@ -52,6 +52,8 @@ public sealed class SemaphoreLock: IDisposable
         return new Handler(_semaphore);
     }
 
+    // Do not use Disposable mutable struct!
+    // to avoid accidental copy and double release
     public sealed class Handler: IDisposable
     {
         private readonly SemaphoreSlim _semaphore;
