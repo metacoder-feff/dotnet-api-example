@@ -2,12 +2,12 @@ namespace FEFF.Extentions.Tests;
 
 public class SingleSemaphoreLockTests : IAsyncDisposable
 {
-    private readonly SemaphoreLock _loc = new();
+    private readonly SemaphoreLock _lock = new();
     private readonly List<int> _list = [];
 
     public ValueTask DisposeAsync()
     {
-        _loc.Dispose();
+        _lock.Dispose();
         GC.SuppressFinalize(this);
 
         return ValueTask.CompletedTask;
@@ -34,7 +34,7 @@ public class SingleSemaphoreLockTests : IAsyncDisposable
 
     private async Task WithLock(Func<Task> a)
     {
-        using var l = await _loc.EnterAsync(TestContext.Current.CancellationToken);
+        using var l = await _lock.EnterAsync(TestContext.Current.CancellationToken);
         await a();
     }
 
@@ -79,32 +79,32 @@ public class SingleSemaphoreLockTests : IAsyncDisposable
     [Fact]
     public void DisposeAsync_twice__should__not_throw()
     {
-        _loc.Dispose();
-        _loc.Dispose();
+        _lock.Dispose();
+        _lock.Dispose();
     }
 
     [Fact]
     public async Task Dispose__nonreleased__should__not_cause_deadlock()
     {
-        _ = await _loc.EnterAsync(TestContext.Current.CancellationToken);
-        _loc.Dispose();
+        _ = await _lock.EnterAsync(TestContext.Current.CancellationToken);
+        _lock.Dispose();
     }
 
     [Fact]
     public async Task Lock_twice__should__be_not_reentrant()
     {
-        var l1 = await _loc.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
+        var l1 = await _lock.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
         l1.Should().NotBeNull();
         
-        var l2 = await _loc.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
+        var l2 = await _lock.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
         l2.Should().BeNull();
     }
     
     [Fact]
     public async Task Release_after_dispose__should__NOT_throw()
     {
-        var l1 = await _loc.EnterAsync(TestContext.Current.CancellationToken);
-        _loc.Dispose();
+        var l1 = await _lock.EnterAsync(TestContext.Current.CancellationToken);
+        _lock.Dispose();
 
         var fn = () => l1.Dispose();
         fn.Should().NotThrow();
@@ -114,11 +114,11 @@ public class SingleSemaphoreLockTests : IAsyncDisposable
     public async Task TryEnterAsync_when_busy__should__return_null()
     {
         // PREPARE
-        var l1 = await _loc.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
+        var l1 = await _lock.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
         l1.Should().NotBeNull();
         
         // ACT
-        var l2 = await _loc.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
+        var l2 = await _lock.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
         
         // ASSERT
         l2.Should().BeNull();
@@ -128,24 +128,24 @@ public class SingleSemaphoreLockTests : IAsyncDisposable
     public async Task TryEnterAsync_when_release__should__return__not_null()
     {
         // PREPARE
-        var l1 = await _loc.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
+        var l1 = await _lock.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
         l1.Should().NotBeNull();
         
-        var l2 = await _loc.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
+        var l2 = await _lock.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
         l2.Should().BeNull();
 
         // ACT
         l1.Dispose();
 
         // Assert
-        var l3 = await _loc.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
+        var l3 = await _lock.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
         l3.Should().NotBeNull();
     }
 
     [Fact]
     public async Task Handler_Dispose_twice__should__not_throw()
     {
-        var l = await _loc.EnterAsync(TestContext.Current.CancellationToken);
+        var l = await _lock.EnterAsync(TestContext.Current.CancellationToken);
         l.Dispose();
         l.Dispose();
     }
