@@ -47,22 +47,6 @@
         "resolved": "10.1.0",
         "contentHash": "ilUsTvGA9hO1ulR7ibdWMWSg3438Iu+pDFcEYUorp+/ClHwaHFdpp/ATfBsFXv2sIRVDbQlEwd5BWBOdMdtKCA=="
       },
-      "DotNext": {
-        "type": "Transitive",
-        "resolved": "5.26.3",
-        "contentHash": "gynCsMbABAme2T0airGkFVCdK06fZyRO5L9yD4dcFEcW6h9Es0AReN8vptW/VpZtyJZrlYXvxxfcnlQcPzk0Ww==",
-        "dependencies": {
-          "System.IO.Hashing": "8.0.0"
-        }
-      },
-      "DotNext.Threading": {
-        "type": "Transitive",
-        "resolved": "5.26.3",
-        "contentHash": "Vm858Ck1EF6LdXyqSoO3LxYF2YSqgGJ4rnWOMgpdrXpuLzcR/BDUdlL6ZsjOcgoURogHa+sOjrtqLz6AIJmBOQ==",
-        "dependencies": {
-          "DotNext": "5.26.3"
-        }
-      },
       "MessagePack": {
         "type": "Transitive",
         "resolved": "2.5.187",
@@ -185,7 +169,6 @@
       "feff.extentions": {
         "type": "Project",
         "dependencies": {
-          "DotNext.Threading": "[5.26.3, )",
           "Microsoft.AspNetCore.OpenApi": "[10.0.2, )",
           "Microsoft.AspNetCore.SignalR.StackExchangeRedis": "[10.0.2, )",
           "Microsoft.EntityFrameworkCore": "[10.0.2, )",

@@ -13,7 +13,7 @@
 /// </remarks>
 public sealed class SemaphoreLock: IDisposable
 {
-    private readonly SemaphoreSlim _semaphore;// = new(ParrallelDBTests); // max locks on semaphore 
+    private readonly SemaphoreSlim _semaphore;
 
     /// <summary>
     /// Gets the current count of the <see cref="SemaphoreSlim"/>.
@@ -37,31 +37,31 @@ public sealed class SemaphoreLock: IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public async Task<Handler> EnterAsync(CancellationToken cancellationToken = default)
+    public async Task<IDisposable> EnterAsync(CancellationToken cancellationToken = default)
     {
         await _semaphore.WaitAsync(cancellationToken);
-        return new Handler(_semaphore);
+        return new Releaser(_semaphore);
     }
 
-    public async Task<Handler?> TryEnterAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
+    public async Task<IDisposable?> TryEnterAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
     {
         var b = await _semaphore.WaitAsync(timeout, cancellationToken);
         if(b == false)
             return null;
 
-        return new Handler(_semaphore);
+        return new Releaser(_semaphore);
     }
 
     // Do not use Disposable mutable struct!
     // to avoid accidental copy and double release
-    public sealed class Handler: IDisposable
+    private sealed class Releaser: IDisposable
     {
         private readonly SemaphoreSlim _semaphore;
 
         // threadsafe bool, interlocked
         private volatile int _isDisposed = 0; //false;
 
-        public Handler(SemaphoreSlim semaphore)
+        public Releaser(SemaphoreSlim semaphore)
         {
             ArgumentNullException.ThrowIfNull(semaphore);
             _semaphore = semaphore;

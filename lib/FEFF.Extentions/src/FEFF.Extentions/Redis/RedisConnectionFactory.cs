@@ -1,4 +1,3 @@
-using DotNext.Threading;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
@@ -15,8 +14,7 @@ namespace FEFF.Extentions.Redis;
 public sealed partial class RedisConnectionFactory : IAsyncDisposable
 {
 //TODO: interface
-//TODO: remove dotnext
-    private readonly AsyncLock _asyncLock = AsyncLock.Exclusive();//  Semaphore();
+    private readonly SemaphoreLock _asyncLock = new();
     private readonly ConfigurationOptions _options;
 
     // Automatically reconnects
@@ -31,8 +29,7 @@ public sealed partial class RedisConnectionFactory : IAsyncDisposable
     
     public async ValueTask DisposeAsync()
     {
-        // this also waits _asyncLock to be released
-        await _asyncLock.DisposeAsync().ConfigureAwait(false);
+        _asyncLock.Dispose();
 
         if (_connection != null)
         {
@@ -53,7 +50,7 @@ public sealed partial class RedisConnectionFactory : IAsyncDisposable
         if (_connection != null)
             return _connection;
 
-        using (var l = await _asyncLock.AcquireAsync(cancellationToken).ConfigureAwait(false))
+        using (var l = await _asyncLock.EnterAsync(cancellationToken).ConfigureAwait(false))
         {
             if (_connection != null)
                 return _connection;
