@@ -10,7 +10,7 @@ var app = TryCreateApp(args);
 if(app == null)
     return -1;
 
-return TryRunApp(app);
+return TrySetupAndRunApp(app);
 
 
 // *************************************
@@ -54,7 +54,7 @@ static WebApplication? TryCreateApp(string[] args)
 }
 
 // *************************************
-static int TryRunApp(WebApplication app)
+static int TrySetupAndRunApp(WebApplication app)
 {
     try
     {
@@ -66,7 +66,7 @@ static int TryRunApp(WebApplication app)
     }
     catch (Exception e)
     {
-        app.Logger.LogCritical(e, "Error at 'TryRunApp' stage.");
+        app.Logger.LogCritical(e, "Error at 'TrySetupAndRunApp' stage.");
         return -1;
     }
 }
