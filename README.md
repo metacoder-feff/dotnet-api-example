@@ -30,7 +30,8 @@
   + stdout
   + json-lines
   + timestamp format
-+ exceptions at 'app.Run()' are logged + tests
++ exceptions at 'WebApplication.Run()' are logged + tests
++ exceptions at 'WebApplicationBuilder.Build()' are logged + tests
 + appsettings.secrets.json + gitignore
 + Redis + tests
   + Singletone connection factory

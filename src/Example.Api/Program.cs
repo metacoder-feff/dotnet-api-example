@@ -1,31 +1,68 @@
+
 using Example.Api;
+using FEFF.Extentions.Web;
 
-// setup ulimit otherwise
-// to fix linux exception:
-//   "The configured user limit (128) on the number of inotify..."
-//ReloadConfigHelper.DisableReloadConfigByDefault();
+// *************************************
+// MAIN
+// *************************************
+var app = TryCreateApp(args);
 
-// WebApplication.CreateBuilder uses constructor new WebApplicationBuilder(...)
-// which uses ConfigurationManager values to add config files to ConfigurationManager
-// At that moment ConfigurationManager is set only from Environment 
-// by: EnvironmentVariablesExtensions.AddEnvironmentVariables(this ..., string? prefix)
-var builder = WebApplication.CreateBuilder(args);
+if(app == null)
+    return -1;
 
-//TODO: log errors until build completes?
-InfrastructureModule.SetupConfiguration(builder.Configuration, builder.Environment);
-InfrastructureModule.SetupServices(builder.Services);
-ExampleApiModule.SetupServices(builder.Services);
+return TryRunApp(app);
 
-var app = builder.Build();
 
-try
+// *************************************
+static WebApplication? TryCreateApp(string[] args)
 {
-    InfrastructureModule.SetupPipeline(app);
-    ExampleApiModule.SetupPipeline(app);
+    // create logger to use at app building stage
+    using var logCtx = new SimpleLogContext(
+        (b) => b.AddStdCloudLogging(),
+        "TryCreateApp"
+    );
 
-    app.Run();
+    try
+    {
+        // setup ulimit otherwise
+        // to fix linux exception:
+        //   "The configured user limit (128) on the number of inotify..."
+        //ReloadConfigHelper.DisableReloadConfigByDefault();
+
+        // WebApplication.CreateBuilder uses constructor new WebApplicationBuilder(...)
+        // which uses ConfigurationManager values to add config files to ConfigurationManager
+        // At that moment ConfigurationManager is set only from Environment 
+        // by: EnvironmentVariablesExtensions.AddEnvironmentVariables(this ..., string? prefix)
+        var builder = WebApplication.CreateBuilder(args);
+        //builder.Services.AddStdCloudLogging();
+
+        InfrastructureModule.SetupConfiguration(builder.Configuration, builder.Environment);
+        InfrastructureModule.SetupServices(builder.Services);
+        ExampleApiModule.SetupServices(builder.Services);
+
+        return builder.Build();
+    }
+    catch (Exception e)
+    {
+        logCtx.Logger.LogCritical(e, "Error at 'TryCreateApp' stage.");
+        return null;
+    }
 }
-catch (Exception e)
+
+// *************************************
+static int TryRunApp(WebApplication app)
 {
-    app.Logger.LogCritical(e, "Error at 'App Setup/Run' stage.");
+    try
+    {
+        InfrastructureModule.SetupPipeline(app);
+        ExampleApiModule.SetupPipeline(app);
+
+        app.Run();
+        return 0;
+    }
+    catch (Exception e)
+    {
+        app.Logger.LogCritical(e, "Error at 'TryRunApp' stage.");
+        return -1;
+    }
 }
