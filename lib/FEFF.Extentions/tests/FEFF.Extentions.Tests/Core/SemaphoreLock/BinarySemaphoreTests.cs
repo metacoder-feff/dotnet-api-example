@@ -15,7 +15,7 @@ public class BinarySemaphoreTests : IAsyncDisposable
 
     private async Task Fn1()
     {
-        // avoid race condition when updating '_list'
+        // avoid race condition when updating '_list' in 'WithoutLock' mode
         await Task.Delay(1000, TestContext.Current.CancellationToken);
         _list.Add(1);
     }
@@ -99,9 +99,27 @@ public class BinarySemaphoreTests : IAsyncDisposable
         var l2 = await _lock.TryEnterAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
         l2.Should().BeNull();
     }
+
+    [Fact]
+    public async Task EnterAsync__when_disposed__should_throw()
+    {
+        _lock.Dispose();
+        var fn = () => _lock.EnterAsync(TestContext.Current.CancellationToken);
+        
+        await fn.Should().ThrowExactlyAsync<ObjectDisposedException>();
+    }
+
+    [Fact]
+    public async Task TryEnterAsync__when_disposed__should_throw()
+    {
+        _lock.Dispose();
+        var fn = () => _lock.TryEnterAsync(TimeSpan.Zero, TestContext.Current.CancellationToken);
+        
+        await fn.Should().ThrowExactlyAsync<ObjectDisposedException>();
+    }
     
     [Fact]
-    public async Task Release_after_dispose__should__NOT_throw()
+    public async Task Release__when_disposed__should__NOT_throw()
     {
         var l1 = await _lock.EnterAsync(TestContext.Current.CancellationToken);
         _lock.Dispose();
