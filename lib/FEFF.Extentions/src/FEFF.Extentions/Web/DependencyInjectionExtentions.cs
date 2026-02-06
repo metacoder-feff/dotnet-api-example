@@ -25,21 +25,27 @@ public static class DependencyInjectionExtentions
     public static IServiceCollection AddStdCloudLogging(this IServiceCollection services)
     {
         services.AddLogging(
-            l => l.AddJsonConsole(
-                j =>
-                {
-                    j.TimestampFormat = "yyyy-MM-ddTHH:mm:ss.ffffffZ";
-                    j.UseUtcTimestamp = true;
-                    j.IncludeScopes = true;
-                    j.UseUtcTimestamp = true;
-                    j.JsonWriterOptions = new System.Text.Json.JsonWriterOptions
-                    {
-                        Indented = false
-                    };
-                }
-            )
+            l => l.AddStdCloudLogging()
         );
         return services;
+    }
+
+    public static ILoggingBuilder AddStdCloudLogging(this ILoggingBuilder builder)
+    {
+        builder.AddJsonConsole(
+            j =>
+            {
+                j.TimestampFormat = "yyyy-MM-ddTHH:mm:ss.ffffffZ";
+                j.UseUtcTimestamp = true;
+                j.IncludeScopes = true;
+                j.UseUtcTimestamp = true;
+                j.JsonWriterOptions = new System.Text.Json.JsonWriterOptions
+                {
+                    Indented = false
+                };
+            }
+        );
+        return builder;
     }
 
     public static string GetRequiredConnectionString(this IServiceProvider src, string connectionStringName)
