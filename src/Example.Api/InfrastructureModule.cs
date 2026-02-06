@@ -22,20 +22,9 @@ static class InfrastructureModule
 {
     public const string PgConnectionStringName = "PgDb";
 
-    internal static void SetupConfiguration(ConfigurationManager configuration, IWebHostEnvironment environment)
-    {
-        if (environment.IsDevelopment())
-        {
-            var reloadOnChange = configuration.GetReloadConfigOnChangeValue();
-            configuration
-                .AddJsonFile("appsettings.secrets.json", optional: true, reloadOnChange: reloadOnChange);
-        }
-    }
 
     public static void SetupServices(IServiceCollection services)
     {
-        services.AddStdCloudLogging();
-
         /*------------------------------------------------*/
         // Configure serialization for minimal API
         /*------------------------------------------------*/

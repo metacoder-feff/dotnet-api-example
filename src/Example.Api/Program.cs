@@ -19,7 +19,7 @@ static WebApplication? TryCreateApp(string[] args)
     // create logger to use at app building stage
     using var logCtx = new SimpleLogContext(
         (b) => b.AddStdCloudLogging(),
-        "TryCreateApp"
+        logCategoryName: "TryCreateApp"
     );
 
     try
@@ -34,9 +34,13 @@ static WebApplication? TryCreateApp(string[] args)
         // At that moment ConfigurationManager is set only from Environment 
         // by: EnvironmentVariablesExtensions.AddEnvironmentVariables(this ..., string? prefix)
         var builder = WebApplication.CreateBuilder(args);
-        //builder.Services.AddStdCloudLogging();
 
-        InfrastructureModule.SetupConfiguration(builder.Configuration, builder.Environment);
+        // setup configuration
+        builder.AddAppsettingSecretsJson();
+
+        //setup regular logger for app (after building)
+        builder.AddStdCloudLogging();
+
         InfrastructureModule.SetupServices(builder.Services);
         ExampleApiModule.SetupServices(builder.Services);
 

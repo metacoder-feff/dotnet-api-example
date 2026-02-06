@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using FEFF.Extentions.Web;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+//TODO: split namespaces/files
 public static class DependencyInjectionExtentions
 {
     public static void AddTimeProvider(this IServiceCollection services)
@@ -14,14 +16,12 @@ public static class DependencyInjectionExtentions
         services.TryAddSingleton((_) => Random.Shared);
     }
 
-    /// <summary>
-    /// Cloud-compatible logging:
-    /// - stdout
-    /// - json-lines
-    /// - timestamp
-    /// Also log scopes
-    /// </summary>
-    /// <param name="services"></param>
+    public static IHostApplicationBuilder AddStdCloudLogging(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddStdCloudLogging();
+        return builder;
+    }
+
     public static IServiceCollection AddStdCloudLogging(this IServiceCollection services)
     {
         services.AddLogging(
@@ -30,6 +30,14 @@ public static class DependencyInjectionExtentions
         return services;
     }
 
+    /// <summary>
+    /// Cloud-compatible logging:
+    /// - stdout
+    /// - json-lines
+    /// - timestamp
+    /// Also log scopes
+    /// </summary>
+    /// <param name="services"></param>
     public static ILoggingBuilder AddStdCloudLogging(this ILoggingBuilder builder)
     {
         builder.AddJsonConsole(
@@ -52,5 +60,20 @@ public static class DependencyInjectionExtentions
     {
         var configuration = src.GetRequiredService<IConfiguration>();
         return configuration.GetRequiredConnectionString(connectionStringName);
+    }
+
+    /// <summary>
+    /// Add configuration from "appsettings.secrets.json" (parse now)
+    /// only if Asp environment is 'Development' by default
+    /// </summary>
+    public static void AddAppsettingSecretsJson(this IHostApplicationBuilder builder, bool inDevelopmentOnly = true)
+    {
+        if(inDevelopmentOnly && !builder.Environment.IsDevelopment())
+            return;
+
+        var configuration = builder.Configuration;
+        var reloadOnChange = configuration.GetReloadConfigOnChangeValue();
+        configuration
+            .AddJsonFile("appsettings.secrets.json", optional: true, reloadOnChange: reloadOnChange);
     }
 }
