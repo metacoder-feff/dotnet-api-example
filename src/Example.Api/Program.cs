@@ -2,9 +2,9 @@
 using Example.Api;
 using FEFF.Extentions.Web;
 
-// *************************************
+/*------------------------------------------------*/
 // MAIN
-// *************************************
+/*------------------------------------------------*/
 var app = TryCreateApp(args);
 
 if(app == null)
@@ -13,7 +13,7 @@ if(app == null)
 return TrySetupAndRunApp(app);
 
 
-// *************************************
+/*------------------------------------------------*/
 static WebApplication? TryCreateApp(string[] args)
 {
     // create logger to use at app building stage
@@ -53,7 +53,7 @@ static WebApplication? TryCreateApp(string[] args)
     }
 }
 
-// *************************************
+/*------------------------------------------------*/
 static int TrySetupAndRunApp(WebApplication app)
 {
     try
