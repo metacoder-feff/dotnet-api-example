@@ -40,11 +40,12 @@ static class InfrastructureModule
         
         // openapi compile error:
         // The 'interceptors' feature is not enabled in this namespace. Add '<InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.OpenApi.Generated</InterceptorsNamespaces>' to your project.
-        //
+        // 
         // services.AddOpenApi(o =>
         //     o.ConfigureNodaTime()
         // );
-
+        // workaround - add to csproj
+        // <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.OpenApi.Generated</InterceptorsNamespaces>   
 
         /*------------------------------------------------*/
         // Health
