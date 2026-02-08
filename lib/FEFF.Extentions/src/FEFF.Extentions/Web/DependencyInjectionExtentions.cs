@@ -6,6 +6,15 @@ namespace Microsoft.Extensions.DependencyInjection;
 //TODO: split namespaces/files
 public static class DependencyInjectionExtentions
 {
+    public static IServiceCollection AddInterfaceForImplementation<TService, TImplementation>(this IServiceCollection services)
+        where TImplementation     : class, TService
+        where TService : class
+    {
+//TODO: add with same ServiceLifetime?
+        services.AddTransient<TService>(x => x.GetRequiredService<TImplementation>());
+        return services;
+    }
+
     public static void AddTimeProvider(this IServiceCollection services)
     {
         services.TryAddSingleton((_) => TimeProvider.System);

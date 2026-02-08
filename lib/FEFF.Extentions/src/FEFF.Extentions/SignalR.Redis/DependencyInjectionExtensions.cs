@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.SignalR.StackExchangeRedis;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using StackExchange.Redis;
 
 namespace Microsoft.AspNetCore.SignalR;
 
@@ -12,21 +11,17 @@ public static class SignalRBuilderExtention
     {        
         builder.AddStackExchangeRedis();
         builder.Services.TryAddSingleton<RedisConnectionFactory>();
+
         builder.Services
             .AddOptions<RedisOptions>()
             .Configure<RedisConnectionFactory>((opts, rfc) =>
-                opts.ConnectionFactory = rfc.GetConnectionAsync
+                opts.ConnectionFactory = rfc.CreateConnectionAsync
             );
 
         return builder;
     }
 
-    private static async Task<IConnectionMultiplexer> GetConnectionAsync(this RedisConnectionFactory src, TextWriter log)
-    {
-        return await src.GetConnectionAsync(log).ConfigureAwait(false);
-    }
-
-    public static IHealthChecksBuilder AddRedisConnectionForSignalrCheck(
+    public static IHealthChecksBuilder AddRedisConnectionForSignalRCheck(
         this IHealthChecksBuilder builder,
         string name = "RedisConnection_For_SignalR",
         IEnumerable<string>? tags = null,

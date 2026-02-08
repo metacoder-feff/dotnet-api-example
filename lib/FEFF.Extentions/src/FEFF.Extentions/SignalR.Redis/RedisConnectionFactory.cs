@@ -3,8 +3,13 @@ using StackExchange.Redis;
 
 namespace FEFF.Extentions.SignalR.Redis;
 
+// public interface IRedisConnectionFactory
+// {
+//     Task<IConnectionMultiplexer> CreateConnectionAsync(TextWriter? log);
+// }
+
 //TODO: docs
-public class RedisConnectionFactory
+public class RedisConnectionFactory //: IRedisConnectionFactory
 {
 //TODO: distinguish multiple proxies/factories
 //TODO: return stored _connection?
@@ -27,7 +32,9 @@ public class RedisConnectionFactory
         _options = o.Value.Clone();
     }
 
-    public async Task<ConnectionMultiplexer> GetConnectionAsync(TextWriter? log = null, CancellationToken cancellationToken = default)
+
+//TODO: cancellationToken
+    public async Task<IConnectionMultiplexer> CreateConnectionAsync(TextWriter? log)
     {
         _isRequested = true;
 

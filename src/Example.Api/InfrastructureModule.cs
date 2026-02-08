@@ -53,7 +53,7 @@ static class InfrastructureModule
                 // readiness
                 .AddDbContextCheck<WeatherContext>(tags: [HealthCheckTag.Readiness])
                 // overview
-                .AddRedisConnectionForSignalrCheck()
+                .AddRedisConnectionForSignalRCheck()
                 ;
 
         /*------------------------------------------------*/
