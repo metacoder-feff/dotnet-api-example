@@ -60,8 +60,10 @@ static class InfrastructureModule
 
         /*------------------------------------------------*/
         // Redis
+        // setup one configuration for different connections
+        // (for different use cases)
         /*------------------------------------------------*/
-        services.AddRedisConnectionFactory("Redis") // The name of 'connection-string to search' is argument here.
+        services.AddRedisConfiguration("Redis") // The name of 'connection-string to search' is argument here.
             .Configure(options =>
             {
                 // Enable reconnecting by default
@@ -82,7 +84,7 @@ static class InfrastructureModule
                 // see: https://github.com/StackExchange/StackExchange.Redis/blob/main/src/StackExchange.Redis/PhysicalConnection.cs#L1470C70-L1470C92
             });
             // Allow key space isolation (for tests)
-            services.AddRedisDatabaseFactory();
+            //services.AddRedisDatabaseFactory();
 
         /*------------------------------------------------*/
         // SignalR
@@ -91,10 +93,12 @@ static class InfrastructureModule
             .AddJsonProtocol(o => 
                 ConfigureJsonSerializer(o.PayloadSerializerOptions)
             )
-            // default redis integration
-            //.AddStackExchangeRedis()
-            // redis integration using singletone factory (FEFF extention)
-            .UseRedisConnectionFactory()
+            // RedisConnectionProxy
+            // uses configuration defined above
+            // provides a connection to SignalR via ConnectionFactory
+            // and exports the connection to healthcheck
+            // the connection is managed (requested and disposed) by SignalR singletone service
+            .UseRedisConnectionProxy()
             ;
 
         /*------------------------------------------------*/

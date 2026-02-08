@@ -71,7 +71,7 @@ public sealed class SemaphoreLock: IDisposable
     /// </exception>
     public async Task<IDisposable> EnterAsync(CancellationToken cancellationToken = default)
     {
-        await _semaphore.WaitAsync(cancellationToken);
+        await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
         return new Releaser(_semaphore);
     }
     /// <summary>
@@ -101,7 +101,7 @@ public sealed class SemaphoreLock: IDisposable
     /// </exception>
     public async Task<IDisposable?> TryEnterAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
     {
-        var b = await _semaphore.WaitAsync(timeout, cancellationToken);
+        var b = await _semaphore.WaitAsync(timeout, cancellationToken).ConfigureAwait(false);
         if(b == false)
             return null;
 

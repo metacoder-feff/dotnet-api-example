@@ -10,13 +10,13 @@ public static class DependencyInjectionExtensions
 {
     // split interfaces for different use-cases
     // implement single realization for simplicity
-    internal record Builder(IServiceCollection Services) : IRedisConnectionFactoryBuilder, IRedisConfigurationFactoryBuilder;
+    internal record Builder(IServiceCollection Services) : IRedisConfigurationBuilder, IRedisConfigurationFactoryBuilder;
 
     /// <summary>
     /// Add 'RedisConnectionFactory' with no configuration.<br/>
     /// Configuration may be overriden in chained calls.
     /// </summary>
-    public static IRedisConnectionFactoryBuilder AddRedisConnectionFactory(this IServiceCollection services)
+    public static IRedisConfigurationBuilder AddRedisConfiguration(this IServiceCollection services)
     {
         // by default configuration subsysten creates TOption via new()
         // use IOptionsFactory to create 'ConfigurationOptions' via 'ConfigurationOptions.Parse(..)'
@@ -24,8 +24,6 @@ public static class DependencyInjectionExtensions
             IOptionsFactory<ConfigurationOptions>, 
             ConfigurationOptionsFactory
             >();
-
-        services.TryAddSingleton<RedisConnectionFactory>();
         return new Builder(services);
     }
 
@@ -37,9 +35,9 @@ public static class DependencyInjectionExtensions
     /// <param name="connectionStringName">The NAME of the connection string in the configuration section.</param>
     /// <param name="ignoreUnknown">see: 'Redis.ConfigurationOptions.Parse(...)'</param>
     /// <returns></returns>
-    public static IRedisConnectionFactoryBuilder AddRedisConnectionFactory(this IServiceCollection services, string connectionStringName, bool ignoreUnknown = false)
+    public static IRedisConfigurationBuilder AddRedisConfiguration(this IServiceCollection services, string connectionStringName, bool ignoreUnknown = false)
     {
-        return services.AddRedisConnectionFactory( o => 
+        return services.AddRedisConfiguration( o => 
             o.UseConnectionStringByName(connectionStringName, ignoreUnknown)
         );
     }
@@ -48,12 +46,12 @@ public static class DependencyInjectionExtensions
     /// Add 'RedisConnectionFactory' with customized factory for 'ConfigurationOptions'.<br/>
     /// Configuration may be overriden in chained calls.
     /// </summary>
-    public static IRedisConnectionFactoryBuilder AddRedisConnectionFactory(this IServiceCollection services, Action<IRedisConfigurationFactoryBuilder> factoryConfig)
+    public static IRedisConfigurationBuilder AddRedisConfiguration(this IServiceCollection services, Action<IRedisConfigurationFactoryBuilder> factoryConfig)
     {
         // use 'IConfigurationFactoryBuilder' to GetConnectionString by name 
         var builder = new Builder(services);
         factoryConfig(builder);
-        return services.AddRedisConnectionFactory();
+        return services.AddRedisConfiguration();
     }
 
     /// <summary>
@@ -112,23 +110,24 @@ public static class DependencyInjectionExtensions
     /// <summary>
     /// Use this method to override setting parsed from ConnectionString and to setup additional settings.
     /// </summary>
-    public static IRedisConnectionFactoryBuilder Configure(this IRedisConnectionFactoryBuilder builder,  Action<ConfigurationOptions> config)
+    public static IRedisConfigurationBuilder Configure(this IRedisConfigurationBuilder builder,  Action<ConfigurationOptions> config)
     {
         builder.Services.AddOptions<ConfigurationOptions>()
             .Configure(config);
             
         return builder;
     }
-    public static IServiceCollection AddRedisDatabaseFactory(this IServiceCollection services, Action<RedisDatabaseFactory.Options>? config = null)
-    {
-        services.AddRedisConnectionFactory();
-        services.TryAddTransient<RedisDatabaseFactory>();
-        if(config != null)
-        {
-            services
-                .AddOptions<RedisDatabaseFactory.Options>()
-                .Configure(config);
-        }
-        return services;
-    }
+    
+    // public static IServiceCollection AddRedisDatabaseFactory(this IServiceCollection services, Action<RedisDatabaseFactory.Options>? config = null)
+    // {
+    //     services.AddRedisConnectionFactory();
+    //     services.TryAddTransient<RedisDatabaseFactory>();
+    //     if(config != null)
+    //     {
+    //         services
+    //             .AddOptions<RedisDatabaseFactory.Options>()
+    //             .Configure(config);
+    //     }
+    //     return services;
+    // }
 }

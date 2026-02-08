@@ -4,22 +4,24 @@ using StackExchange.Redis;
 namespace Microsoft.AspNetCore.SignalR;
 
 using FEFF.Extentions.Redis;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 public static class SignalRBuilderExtention
 {
-    public static ISignalRServerBuilder UseRedisConnectionFactory(this ISignalRServerBuilder builder)
+    public static ISignalRServerBuilder UseRedisConnectionProxy(this ISignalRServerBuilder builder)
     {        
         builder.AddStackExchangeRedis();
+        builder.Services.TryAddSingleton<RedisConnectionProxy>();
         builder.Services
             .AddOptions<RedisOptions>()
-            .Configure<RedisConnectionFactory>((opts, rfc) =>
+            .Configure<RedisConnectionProxy>((opts, rfc) =>
                 opts.ConnectionFactory = rfc.GetConnectionAsync
             );
 
         return builder;
     }
 
-    internal static async Task<IConnectionMultiplexer> GetConnectionAsync(this RedisConnectionFactory src, TextWriter log)
+    private static async Task<IConnectionMultiplexer> GetConnectionAsync(this RedisConnectionProxy src, TextWriter log)
     {
         return await src.GetConnectionAsync(log).ConfigureAwait(false);
     }

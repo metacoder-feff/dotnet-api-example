@@ -19,11 +19,11 @@ public class RedisPrefixFixture
             })
         );
         
-        appBuilder.ConfigureServices( services =>
-            services.Configure<RedisDatabaseFactory.Options>(x =>
-            {
-                x.KeyPrefix = prefix;
-            })
-        );
+        // appBuilder.ConfigureServices( services =>
+        //     services.Configure<RedisDatabaseFactory.Options>(x =>
+        //     {
+        //         x.KeyPrefix = prefix;
+        //     })
+        // );
     }
 }

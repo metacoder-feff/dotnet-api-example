@@ -1,6 +1,6 @@
 namespace FEFF.Extentions.Redis;
 
-public interface IRedisConnectionFactoryBuilder
+public interface IRedisConfigurationBuilder
 {
     IServiceCollection Services { get; }
 }

@@ -10,9 +10,9 @@ using FEFF.Extentions.Redis;
 
 public class RedisHealthCheck : IHealthCheck
 {
-    private RedisConnectionFactory _redis;
+    private RedisConnectionProxy _redis;
 
-    public RedisHealthCheck(RedisConnectionFactory m)
+    public RedisHealthCheck(RedisConnectionProxy m)
     {
         _redis = m;
     }
