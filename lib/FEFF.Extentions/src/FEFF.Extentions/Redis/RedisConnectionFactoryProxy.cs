@@ -1,11 +1,24 @@
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
-namespace FEFF.Extentions.HealthChecks.Redis;
+namespace FEFF.Extentions.Redis;
 
-//TODO: docs
-public class RedisConnectionFactoryProxy
+/// <summary>
+/// To use with external redis connection managers like 'SignalR' or 'Distributed cache.'</br>
+/// Main features:</br>
+/// 1. Use IOptions<ConfigurationOptions> that is defined once for many connections.</br>
+/// 2. Create a connection for a consumer (e.g. SignalR)</br>
+/// 2. Provide last connection object for HealthCheck
+/// </summary>
+/// <remarks>
+/// 1. To use as a proxy for a HealthCheck it should be registered as a Singletone.</br>
+/// 2. This class does not dispose a connection - it is responsibility of a consumer (SignalR).</br>
+/// </remarks>
+public class RedisConnectionFactoryProxy : IRedisConnectionFactory
 {
+//TODO: split proxy responsibility
+
+
 //TODO: return stored _connection?
 //TODO: cancellationToken
 //TODO: store last exception?

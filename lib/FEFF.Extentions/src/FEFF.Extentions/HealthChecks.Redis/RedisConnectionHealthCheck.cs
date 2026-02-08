@@ -5,6 +5,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using StackExchange.Redis;
 
 namespace FEFF.Extentions.HealthChecks.Redis;
+using FEFF.Extentions.Redis;
 
 internal class RedisConnectionFactoryHealthCheck<T> : IHealthCheck
 where T: RedisConnectionFactoryProxy

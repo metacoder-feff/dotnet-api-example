@@ -1,3 +1,5 @@
+using StackExchange.Redis;
+
 namespace FEFF.Extentions.Redis;
 
 public interface IRedisConfigurationBuilder
@@ -10,7 +12,11 @@ public interface IRedisConfigurationFactoryBuilder
     IServiceCollection Services { get; }
 }
 
-//TODO: IRedisConnectionFactory
+public interface IRedisConnectionFactory
+{
+    Task<IConnectionMultiplexer> CreateConnectionAsync(TextWriter? log);
+}
+
 //TODO: IRedisDatabaseFactory
 //TODO: public ConfigurationOptionsFactory.Options
 //TODO: internal RedisConnectionFactory RedisDatabaseFactory ConfigurationOptionsFactory
