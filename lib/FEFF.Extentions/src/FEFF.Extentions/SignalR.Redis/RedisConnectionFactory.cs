@@ -1,26 +1,27 @@
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
-namespace FEFF.Extentions.Redis;
+namespace FEFF.Extentions.SignalR.Redis;
 
 //TODO: docs
-public class RedisConnectionProxy
+public class RedisConnectionFactory
 {
-//TODO: distinguish multiple proxies
+//TODO: distinguish multiple proxies/factories
 //TODO: return stored _connection?
 //TODO: cancellationToken
+//TODO: store last exception?
 
     //private readonly SemaphoreLock _asyncLock = new();
 
     private readonly ConfigurationOptions _options;
 
     private volatile ConnectionMultiplexer? _lastConnection;
-    private volatile bool _isStarted;
+    private volatile bool _isRequested;
 
-    public bool IsStarted => _isStarted;
+    public bool IsRequested => _isRequested;
     public ConnectionMultiplexer? Connection => _lastConnection;
 
-    public RedisConnectionProxy(IOptions<ConfigurationOptions> o)
+    public RedisConnectionFactory(IOptions<ConfigurationOptions> o)
     {
         // freeze
         _options = o.Value.Clone();
@@ -28,7 +29,7 @@ public class RedisConnectionProxy
 
     public async Task<ConnectionMultiplexer> GetConnectionAsync(TextWriter? log = null, CancellationToken cancellationToken = default)
     {
-        _isStarted = true;
+        _isRequested = true;
 
         //using var l = await _asyncLock.EnterAsync(cancellationToken).ConfigureAwait(false);
 

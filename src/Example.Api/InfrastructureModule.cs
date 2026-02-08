@@ -10,10 +10,8 @@ using StackExchange.Redis.Configuration;
 
 using FEFF.Extentions.EntityFrameworkCore;
 using FEFF.Extentions.HealthChecks;
-using FEFF.Extentions.HealthChecks.Redis;
 
 using FEFF.Extentions.OpenApi.NodaTime;
-using FEFF.Extentions.Web;
 
 namespace Example.Api;
 using SignalR;
@@ -55,7 +53,7 @@ static class InfrastructureModule
                 // readiness
                 .AddDbContextCheck<WeatherContext>(tags: [HealthCheckTag.Readiness])
                 // overview
-                .AddCheck<RedisHealthCheck>("Redis");// The name of 'new healthcheck' is argument here.
+                .AddRedisConnectionForSignalrCheck()
                 ;
 
         /*------------------------------------------------*/
@@ -98,7 +96,7 @@ static class InfrastructureModule
             // provides a connection to SignalR via ConnectionFactory
             // and exports the connection to healthcheck
             // the connection is managed (requested and disposed) by SignalR singletone service
-            .UseRedisConnectionProxy()
+            .UseRedisConnectionFactory()
             ;
 
         /*------------------------------------------------*/

@@ -115,8 +115,8 @@ public class HealthCheckApiTest : ApiTestBase
             "duration": "00:00:00.555",
             "checks": [
                 {
-                    "name": "Redis",
-                    "description": "RedisConnectionFactory is initialized.",
+                    "name": "RedisConnection_For_SignalR",
+                    "description": "Redis Connection is alive.",
                     "duration": "00:00:00.555",
                     "status": "healthy",
                     "data": {}

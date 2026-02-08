@@ -4,42 +4,48 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using StackExchange.Redis;
 
-namespace FEFF.Extentions.HealthChecks.Redis;
+namespace FEFF.Extentions.SignalR.Redis;
 
-using FEFF.Extentions.Redis;
-
-public class RedisHealthCheck : IHealthCheck
+internal class RedisConnectionHealthCheck : IHealthCheck
 {
-    private RedisConnectionProxy _redis;
+    private RedisConnectionFactory _redis;
 
-    public RedisHealthCheck(RedisConnectionProxy m)
+    public RedisConnectionHealthCheck(RedisConnectionFactory m)
     {
         _redis = m;
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
-       try
-       {
-//TODO: timeouts        
-            var error = await CheckHealthAsync(cancellationToken);
-            if (error != null)
-                return new HealthCheckResult(context.Registration.FailureStatus, "RedisConnectionFactory is not working: " + error);
+        if(_redis.IsRequested == false)
+            return HealthCheckResult.Healthy("RedisConnectionFactory has not been requested yet.");
 
-            return HealthCheckResult.Healthy("RedisConnectionFactory is initialized.");
-       }
-       catch (Exception ex)
-       {
-            return new HealthCheckResult(context.Registration.FailureStatus, "RedisConnectionFactory is not working.", ex);
-       }
+        var conn = _redis.Connection;
+        if(conn == null)
+            return HealthCheckResult.Unhealthy("RedisConnectionFactory is starting a connection.");
+
+//TODO: Connection exception
+
+        try
+        {
+//TODO: timeouts        
+                var error = await CheckHealthAsync(conn, cancellationToken);
+                if (error != null)
+                    return new HealthCheckResult(context.Registration.FailureStatus, "Redis Connection is not working: " + error);
+
+                return HealthCheckResult.Healthy("Redis Connection is alive.");
+        }
+        catch (Exception ex)
+        {
+                return new HealthCheckResult(context.Registration.FailureStatus, "Redis Connection: HealthCheck error.", ex);
+        }
     }
 
-    private async Task<string?> CheckHealthAsync(CancellationToken cancellationToken)
+    private static async Task<string?> CheckHealthAsync(ConnectionMultiplexer connection, CancellationToken cancellationToken)
     {
-        var connection = await _redis.GetConnectionAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-
         connection.CheckConnection();
 
+//TODO: cancellationToken
         await connection.GetDatabase().PingAsync().ConfigureAwait(false);
 
         // check we have access to a Single Standalone Master 
@@ -48,10 +54,11 @@ public class RedisHealthCheck : IHealthCheck
         if (s == null)
             return "Single Standalone Master not found";
 
+//TODO: cancellationToken
         await s.PingAsync().ConfigureAwait(false);
 // TODO: test can write
 
-// TODO: add degraded if no replica
+// TODO: add another check for replica
 
 
 
