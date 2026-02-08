@@ -95,7 +95,7 @@ static class InfrastructureModule
             // provides a connection for SignalR via ConnectionFactory
             // and exports the connection to the healthcheck
             // the connection is managed (requested and disposed) by SignalR singletone service
-            .UseRedisConnectionFactory()
+            .AddRedisByConnectionFactory()
             ;
 
         /*------------------------------------------------*/
