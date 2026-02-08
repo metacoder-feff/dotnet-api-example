@@ -14,7 +14,7 @@ namespace FEFF.Extentions.Redis;
 /// 1. To use as a proxy for a HealthCheck it should be registered as a Singletone.</br>
 /// 2. This class does not dispose a connection - it is responsibility of a consumer (SignalR).</br>
 /// </remarks>
-public class RedisConnectionFactoryProxy : IRedisConnectionFactory
+public class RedisConnectionFactoryProxy : IRedisConnectionFactory, IRedisHealthConnectionProvider
 {
 //TODO: split proxy responsibility
 
@@ -30,8 +30,8 @@ public class RedisConnectionFactoryProxy : IRedisConnectionFactory
     private volatile ConnectionMultiplexer? _lastConnection;
     private volatile bool _isRequested;
 
-    public bool IsRequested => _isRequested;
-    public ConnectionMultiplexer? Connection => _lastConnection;
+    public bool IsConnectionRequested => _isRequested;
+    public ConnectionMultiplexer? ActiveConnection => _lastConnection;
 
     public RedisConnectionFactoryProxy(IOptions<ConfigurationOptions> o)
     {

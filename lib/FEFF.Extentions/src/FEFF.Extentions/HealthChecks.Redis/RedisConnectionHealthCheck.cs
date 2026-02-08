@@ -8,9 +8,9 @@ namespace FEFF.Extentions.HealthChecks.Redis;
 using FEFF.Extentions.Redis;
 
 internal class RedisConnectionFactoryHealthCheck<T> : IHealthCheck
-where T: RedisConnectionFactoryProxy
+where T: IRedisHealthConnectionProvider
 {
-    private RedisConnectionFactoryProxy _redis;
+    private IRedisHealthConnectionProvider _redis;
 
     public RedisConnectionFactoryHealthCheck(T m)
     {
@@ -19,10 +19,10 @@ where T: RedisConnectionFactoryProxy
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
-        if(_redis.IsRequested == false)
+        if(_redis.IsConnectionRequested == false)
             return HealthCheckResult.Healthy("RedisConnectionFactory has not been requested yet.");
 
-        var conn = _redis.Connection;
+        var conn = _redis.ActiveConnection;
         if(conn == null)
             return HealthCheckResult.Unhealthy("RedisConnectionFactory is starting a connection.");
 
