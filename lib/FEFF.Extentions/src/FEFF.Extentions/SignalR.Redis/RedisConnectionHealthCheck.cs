@@ -31,13 +31,13 @@ internal class RedisConnectionHealthCheck : IHealthCheck
 //TODO: timeouts        
                 var error = await CheckHealthAsync(conn, cancellationToken);
                 if (error != null)
-                    return new HealthCheckResult(context.Registration.FailureStatus, "Redis Connection is not working: " + error);
+                    return new HealthCheckResult(context.Registration.FailureStatus, "Redis Connection error: " + error);
 
                 return HealthCheckResult.Healthy("Redis Connection is alive.");
         }
         catch (Exception ex)
         {
-                return new HealthCheckResult(context.Registration.FailureStatus, "Redis Connection: HealthCheck error.", ex);
+                return new HealthCheckResult(context.Registration.FailureStatus, "Redis Connection HealthCheck exception.", ex);
         }
     }
 
