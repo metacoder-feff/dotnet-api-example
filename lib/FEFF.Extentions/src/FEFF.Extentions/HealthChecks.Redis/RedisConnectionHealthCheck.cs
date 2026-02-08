@@ -4,13 +4,14 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using StackExchange.Redis;
 
-namespace FEFF.Extentions.SignalR.Redis;
+namespace FEFF.Extentions.HealthChecks.Redis;
 
-internal class RedisConnectionHealthCheck : IHealthCheck
+internal class RedisConnectionFactoryHealthCheck<T> : IHealthCheck
+where T: RedisConnectionFactoryProxy
 {
-    private RedisConnectionFactory _redis;
+    private RedisConnectionFactoryProxy _redis;
 
-    public RedisConnectionHealthCheck(RedisConnectionFactory m)
+    public RedisConnectionFactoryHealthCheck(T m)
     {
         _redis = m;
     }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.AspNetCore.SignalR;
 
+using FEFF.Extentions.HealthChecks.Redis;
 using FEFF.Extentions.SignalR.Redis;
 
 public static class SignalRBuilderExtention
@@ -10,11 +11,11 @@ public static class SignalRBuilderExtention
     public static ISignalRServerBuilder UseRedisConnectionFactory(this ISignalRServerBuilder builder)
     {        
         builder.AddStackExchangeRedis();
-        builder.Services.TryAddSingleton<RedisConnectionFactory>();
+        builder.Services.TryAddSingleton<SignalRedisConnectionFactory>();
 
         builder.Services
             .AddOptions<RedisOptions>()
-            .Configure<RedisConnectionFactory>((opts, rfc) =>
+            .Configure<SignalRedisConnectionFactory>((opts, rfc) =>
                 opts.ConnectionFactory = rfc.CreateConnectionAsync
             );
 
@@ -30,6 +31,6 @@ public static class SignalRBuilderExtention
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(name);
 
-        return builder.AddCheck<RedisConnectionHealthCheck>(name, null, tags, timeout);
+        return builder.AddCheck<RedisConnectionFactoryHealthCheck<SignalRedisConnectionFactory>>(name, null, tags, timeout);
     }
 }

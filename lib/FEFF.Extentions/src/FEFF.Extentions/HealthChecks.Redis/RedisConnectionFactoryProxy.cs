@@ -1,17 +1,11 @@
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
-namespace FEFF.Extentions.SignalR.Redis;
-
-// public interface IRedisConnectionFactory
-// {
-//     Task<IConnectionMultiplexer> CreateConnectionAsync(TextWriter? log);
-// }
+namespace FEFF.Extentions.HealthChecks.Redis;
 
 //TODO: docs
-public class RedisConnectionFactory //: IRedisConnectionFactory
+public class RedisConnectionFactoryProxy
 {
-//TODO: distinguish multiple proxies/factories
 //TODO: return stored _connection?
 //TODO: cancellationToken
 //TODO: store last exception?
@@ -26,7 +20,7 @@ public class RedisConnectionFactory //: IRedisConnectionFactory
     public bool IsRequested => _isRequested;
     public ConnectionMultiplexer? Connection => _lastConnection;
 
-    public RedisConnectionFactory(IOptions<ConfigurationOptions> o)
+    public RedisConnectionFactoryProxy(IOptions<ConfigurationOptions> o)
     {
         // freeze
         _options = o.Value.Clone();

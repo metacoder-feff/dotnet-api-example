@@ -10,7 +10,6 @@ using StackExchange.Redis.Configuration;
 
 using FEFF.Extentions.EntityFrameworkCore;
 using FEFF.Extentions.HealthChecks;
-
 using FEFF.Extentions.OpenApi.NodaTime;
 
 namespace Example.Api;
@@ -91,10 +90,10 @@ static class InfrastructureModule
             .AddJsonProtocol(o => 
                 ConfigureJsonSerializer(o.PayloadSerializerOptions)
             )
-            // RedisConnectionProxy
+            // RedisConnectionFactory(+Proxy)
             // uses configuration defined above
-            // provides a connection to SignalR via ConnectionFactory
-            // and exports the connection to healthcheck
+            // provides a connection for SignalR via ConnectionFactory
+            // and exports the connection to the healthcheck
             // the connection is managed (requested and disposed) by SignalR singletone service
             .UseRedisConnectionFactory()
             ;
