@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.SignalR.StackExchangeRedis;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using StackExchange.Redis;
 
 namespace Microsoft.AspNetCore.SignalR;
 
@@ -9,7 +10,7 @@ using FEFF.Extentions.SignalR.Redis;
 public static class SignalRBuilderExtention
 {
     /// <summary>
-    /// Adds SignalRedisConnectionFactory as a source for:<br/>
+    /// Adds SignalRedisConnectionFactoryProxy as a source for:<br/>
     /// 1. SignalR redis connection<br/>
     /// 2. Healthcheck of this redis connection
     /// </summary>
@@ -18,16 +19,33 @@ public static class SignalRBuilderExtention
         builder.AddStackExchangeRedis();
 
         // this Singleton proxy stores a connection (last and single) to perform a HealthCheck
-        builder.Services.TryAddSingleton<SignalRedisConnectionFactory>();
+        builder.Services.TryAddSingleton<SignalRedisConnectionFactoryProxy>();
 
         builder.Services
             .AddOptions<RedisOptions>()
-            .Configure<SignalRedisConnectionFactory>((opts, rfc) =>
+            .Configure<SignalRedisConnectionFactoryProxy>((opts, rfc) =>
                 opts.ConnectionFactory = rfc.CreateConnectionAsync
             );
 
         return builder;
     }
+
+    /// <summary>
+    /// Add Redis using configured 'ConfigurationOptions' onbject
+    /// </summary>
+    // public static ISignalRServerBuilder AddRedisByOptions(this ISignalRServerBuilder builder)
+    // {
+    //     builder.AddStackExchangeRedis();
+
+    //     builder.Services
+    //         .AddOptions<RedisOptions>()
+    //         .Configure<ConfigurationOptions>((dst, srcOpts) =>
+    //         {
+    //             dst.ConnectionFactory = async (log) => await ConnectionMultiplexer.ConnectAsync(srcOpts, log);
+    //         });
+
+    //     return builder;
+    // }
 
     public static IHealthChecksBuilder AddRedisConnectionForSignalRCheck(
         this IHealthChecksBuilder builder,
@@ -38,6 +56,6 @@ public static class SignalRBuilderExtention
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(name);
 
-        return builder.AddCheck<RedisConnectionFactoryHealthCheck<SignalRedisConnectionFactory>>(name, null, tags, timeout);
+        return builder.AddCheck<RedisConnectionFactoryHealthCheck<SignalRedisConnectionFactoryProxy>>(name, null, tags, timeout);
     }
 }

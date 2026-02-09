@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
-namespace FEFF.Extentions.Redis;
+namespace FEFF.Extentions.HealthChecks.Redis;
 
 /// <summary>
 /// To use with external redis connection managers like 'SignalR' or 'Distributed cache.'</br>

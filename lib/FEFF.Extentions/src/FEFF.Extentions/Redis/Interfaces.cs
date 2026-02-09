@@ -17,13 +17,6 @@ public interface IRedisConfigurationFactoryBuilder
 //     Task<IConnectionMultiplexer> CreateConnectionAsync(TextWriter? log);
 // }
 
-//TODO: to redis healthcheck dll/ns
-public interface IRedisHealthConnectionProvider
-{
-    bool IsConnectionRequested { get; }
-    ConnectionMultiplexer? ActiveConnection { get; }
-}
-
 //TODO: IRedisDatabaseFactory
 //TODO: public ConfigurationOptionsFactory.Options
 //TODO: internal RedisConnectionFactory RedisDatabaseFactory ConfigurationOptionsFactory

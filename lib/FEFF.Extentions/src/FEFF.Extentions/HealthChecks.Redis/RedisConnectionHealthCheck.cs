@@ -5,7 +5,12 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using StackExchange.Redis;
 
 namespace FEFF.Extentions.HealthChecks.Redis;
-using FEFF.Extentions.Redis;
+
+public interface IRedisHealthConnectionProvider
+{
+    bool IsConnectionRequested { get; }
+    ConnectionMultiplexer? ActiveConnection { get; }
+}
 
 internal class RedisConnectionFactoryHealthCheck<T> : IHealthCheck
 where T: IRedisHealthConnectionProvider
