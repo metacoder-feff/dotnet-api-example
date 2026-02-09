@@ -36,7 +36,7 @@ static WebApplication? TryCreateApp(string[] args)
         var builder = WebApplication.CreateBuilder(args);
 
         // setup configuration
-        builder.AddAppsettingSecretsJson();
+        builder.AddAppSettingSecretsJson();
 
         //setup regular logger for app (after building)
         builder.AddStdCloudLogging();

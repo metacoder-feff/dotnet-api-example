@@ -75,7 +75,7 @@ public static class DependencyInjectionExtentions
     /// Add configuration from "appsettings.secrets.json" (parse now)
     /// only if Asp environment is 'Development' by default
     /// </summary>
-    public static void AddAppsettingSecretsJson(this IHostApplicationBuilder builder, bool inDevelopmentOnly = true)
+    public static void AddAppSettingSecretsJson(this IHostApplicationBuilder builder, bool inDevelopmentOnly = true)
     {
         if(inDevelopmentOnly && !builder.Environment.IsDevelopment())
             return;
