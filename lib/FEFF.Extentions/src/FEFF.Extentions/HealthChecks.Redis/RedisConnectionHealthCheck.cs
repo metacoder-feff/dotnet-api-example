@@ -38,13 +38,13 @@ where T: IRedisHealthConnectionProvider
 //TODO: timeouts        
                 var error = await CheckHealthAsync(conn, cancellationToken);
                 if (error != null)
-                    return new HealthCheckResult(context.Registration.FailureStatus, "Redis Connection error: " + error);
+                    return new HealthCheckResult(context.Registration.FailureStatus, "Redis HealthCheck failure: " + error);
 
                 return HealthCheckResult.Healthy("Redis Connection is alive.");
         }
         catch (Exception ex)
         {
-                return new HealthCheckResult(context.Registration.FailureStatus, "Redis Connection HealthCheck exception.", ex);
+                return new HealthCheckResult(context.Registration.FailureStatus, "Redis HealthCheck exception.", ex);
         }
     }
 

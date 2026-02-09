@@ -72,10 +72,9 @@ public class HealthCheckApiTest : ApiTestBase
 
         var body = await GetProbeAsync(ReadinessUri, expected: heathResult);
 
+        // positive body is asserted in Readiness__should_be__ok
         if(dbHealthy)
             return;
-        
-        // Assert Error Body
 
         body.ParseJToken()
             .ReplaceValue("duration", "00:00:00.555")
@@ -146,7 +145,23 @@ public class HealthCheckApiTest : ApiTestBase
     {
         await SetupCheckedServices(dbHealthy: whenHealthy);
 
-        _ = await GetProbeAsync(HealthAllUri, expected: healthcheckResult);
+        var body = await GetProbeAsync(HealthAllUri, expected: healthcheckResult);
+        
+        // positive body is asserted in Overview__should_be__ok
+        if(whenHealthy)
+            return;
+
+        body.ParseJToken()
+            .Should().ContainSubtree("""
+        {
+            "checks": [
+                {
+                    "name": "WeatherContext",
+                    "status": "unhealthy",
+                },
+            ]
+        }
+        """);
     }
 
     [Theory]
@@ -161,7 +176,31 @@ public class HealthCheckApiTest : ApiTestBase
             //timeout = 6;
             timeout = 15;
 
-        _ = await GetProbeAsync(HealthAllUri, expected: healthcheckResult, timeout: timeout);
+        var body = await GetProbeAsync(HealthAllUri, expected: healthcheckResult, timeout: timeout);
+        
+        // positive body is asserted in Overview__should_be__ok
+        if(whenHealthy)
+            return;
+
+        // we can have one of two errors:
+        // 1:
+        // "description": "RedisConnectionFactory is starting a connection.",
+        // 2:
+        // "description": "Redis Connection HealthCheck exception.",
+        // "error": "The message timed out in the backlog attempting to send because no connection became available (5000ms) - Last Connection Exception: UnableToConnect on localhost:8080/Interactive, Initializing/NotStarted, last: NONE, origin: BeginConnectAsync, outstanding: 0, last-read: 0s ago, last-write: 0s ago, keep-alive: 60s, state: Connecting, mgr: 10 of 10 available, last-heartbeat: never, global: 0s ago, v: 2.10.1.65101, command=PING, timeout: 5000, inst: 0, qu: 0, qs: 0, aw: False, bw: CheckingForTimeout, last-in: 0, cur-in: 0, sync-ops: 0, async-ops: 2, serverEndpoint: localhost:8080, conn-sec: n/a, aoc: 0, mc: 1/1/0, mgr: 10 of 10 available, clientName: 888ab121f439(SE.Redis-v2.10.1.65101), IOCP: (Busy=0,Free=1000,Min=1,Max=1000), WORKER: (Busy=0,Free=32767,Min=4,Max=32767), POOL: (Threads=6,QueuedItems=0,CompletedItems=295,Timers=13), v: 2.10.1.65101 (Please take a look at this article for some common client-side issues that can cause timeouts: https://stackexchange.github.io/StackExchange.Redis/Timeouts)",
+        //
+        // anyway we assert error status for this check:
+        body.ParseJToken()
+            .Should().ContainSubtree("""
+        {
+            "checks": [
+                {
+                    "name": "RedisConnection_For_SignalR",
+                    "status": "unhealthy",
+                },
+            ]
+        }
+        """);
     }
 
     private async Task<string> GetProbeAsync(string uri, double timeout = 1.5, HttpStatusCode expected = HttpStatusCode.OK)
