@@ -12,10 +12,10 @@ public interface IRedisConfigurationFactoryBuilder
     IServiceCollection Services { get; }
 }
 
-public interface IRedisConnectionFactory
-{
-    Task<IConnectionMultiplexer> CreateConnectionAsync(TextWriter? log);
-}
+// public interface IRedisConnectionFactory
+// {
+//     Task<IConnectionMultiplexer> CreateConnectionAsync(TextWriter? log);
+// }
 
 //TODO: to redis healthcheck dll/ns
 public interface IRedisHealthConnectionProvider

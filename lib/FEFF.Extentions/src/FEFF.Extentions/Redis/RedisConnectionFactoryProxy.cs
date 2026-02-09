@@ -11,10 +11,10 @@ namespace FEFF.Extentions.Redis;
 /// 2. Provide last connection object for HealthCheck
 /// </summary>
 /// <remarks>
-/// 1. To use as a proxy for a HealthCheck it should be registered as a Singletone.</br>
+/// 1. To use as a proxy for a HealthCheck it should be registered as a Singleton.</br>
 /// 2. This class does not dispose a connection - it is responsibility of a consumer (SignalR).</br>
 /// </remarks>
-public class RedisConnectionFactoryProxy : IRedisConnectionFactory, IRedisHealthConnectionProvider
+public class RedisConnectionFactoryProxy : /*IRedisConnectionFactory,*/ IRedisHealthConnectionProvider
 {
 //TODO: split proxy responsibility
 
