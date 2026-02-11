@@ -61,6 +61,7 @@ static class InfrastructureModule
         // (for different use cases)
         /*------------------------------------------------*/
         services.AddRedisConfiguration("Redis") // The name of 'connection-string to search' is argument here.
+            .AddLoggerFactory()
             .Configure(options =>
             {
                 // Enable reconnecting by default

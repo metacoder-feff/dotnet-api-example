@@ -24,6 +24,7 @@ public static class DependencyInjectionExtensions
             IOptionsFactory<ConfigurationOptions>, 
             ConfigurationOptionsFactory
             >();
+
         return new Builder(services);
     }
 
@@ -100,6 +101,16 @@ public static class DependencyInjectionExtensions
             .Configure((opts) => 
                 opts.SetParseFactoryWith(configuration, ignoreUnknown)
             );
+    }
+
+    public static IRedisConfigurationBuilder AddLoggerFactory(this IRedisConfigurationBuilder src)
+    {
+        src.Services.AddOptions<ConfigurationOptions>()
+        .Configure<ILoggerFactory>(
+            (opt, factory) => opt.LoggerFactory = factory
+        );
+
+        return src;
     }
 
     internal static void SetParseFactoryWith(this ConfigurationOptionsFactory.Options src, string configuration, bool ignoreUnknown)
