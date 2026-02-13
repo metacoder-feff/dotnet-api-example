@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-
-namespace FEFF.Extentions;
+﻿namespace FEFF.Extentions;
 
 /*
 The nearest realization is DotNext.Threading.AsyncLock: Semaphore/Exclusive.
@@ -18,13 +16,15 @@ to prevent access to shared resource without succesfull lock.
 */
 
 /// <summary>
-/// AsyncLock using 'SemaphoreSlim'.</br>
-/// Does not throw at SemaphoreSlim.Release() when is disposed.</br>
-/// Does not wait for SemaphoreSlim.Release() at SemaphoreLock.Dispose().
+/// AsyncLock using <see cref="SemaphoreSlim"/>.<br/>
+/// Does not throw at <see cref="SemaphoreSlim.Release"/> when is disposed.<br/>
+/// Does not wait anything at <see cref="SemaphoreLock.Dispose"/>.<br/>
+/// Does not deadlock EnterAsync/TryEnterAsync when <see cref="SemaphoreLock.Dispose"/> is called.
 /// </summary>
 /// <remarks>
 /// NOT reentrant!!! <br/>
-/// Throws ObjectDisposedException at EnterAsync/TryEnterAsync after SemaphoreLock is disposed.
+/// Throws <see cref="ObjectDisposedException"/> at EnterAsync/TryEnterAsync after <see cref="SemaphoreLock"/> is disposed.<br/>
+/// Even if <see cref="SemaphoreLock.Dispose"/> is called while awaiting EnterAsync/TryEnterAsync.
 /// </remarks>
 public sealed class SemaphoreLock: IDisposable
 {
