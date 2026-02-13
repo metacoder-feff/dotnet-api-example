@@ -4,7 +4,7 @@ namespace FEFF.Extentions.Tests.SemaphoreLock.External;
 
 public class DotNextExclusiveLockTests : IAsyncDisposable
 {
-    private readonly AsyncLock _loc = AsyncLock.Exclusive();
+    private readonly AsyncLock _lock = AsyncLock.Exclusive();
     private AsyncLock.Holder _lockHolder = default;
 
     public async ValueTask DisposeAsync()
@@ -13,30 +13,25 @@ public class DotNextExclusiveLockTests : IAsyncDisposable
         if(_lockHolder.IsEmpty == false)
             _lockHolder.Dispose();
 
-        await _loc.DisposeAsync();
+        await _lock.DisposeAsync();
         GC.SuppressFinalize(this);
     }
 
     [Fact]
     public async Task DisposeAsync_twice__should__not_throw()
     {
-        await _loc.DisposeAsync();
-        await _loc.DisposeAsync();
+        await _lock.DisposeAsync();
+        await _lock.DisposeAsync();
     }
+
+    //BUG
     [Fact]
-    public async Task DisposeAsync__nonreleased__should__cause_deadlock()
+    public async Task BUG__DisposeAsync__nonreleased__CANNOT_return()
     {
-        _lockHolder = await _loc.AcquireAsync(TestContext.Current.CancellationToken);
+        _lockHolder = await _lock.AcquireAsync(TestContext.Current.CancellationToken);
         _lockHolder.IsEmpty.Should().BeFalse();
 
-        //var fn = () => _loc.DisposeAsync();
-        // AwesomeAssertions does not work with 'ValueTask' for now
-        
-        async Task testedAction()
-        {
-            await _loc.DisposeAsync();
-        }
-        var fn = testedAction;
+        var fn = async () => await _lock.DisposeAsync();
 
         await fn.Should().NotCompleteWithinAsync(TimeSpan.FromSeconds(3));
     }
@@ -44,21 +39,44 @@ public class DotNextExclusiveLockTests : IAsyncDisposable
     [Fact]
     public async Task Lock_twice__should__be_not_reentrant()
     {
-        _lockHolder = await _loc.AcquireAsync(TestContext.Current.CancellationToken);
+        _lockHolder = await _lock.AcquireAsync(TestContext.Current.CancellationToken);
         _lockHolder.IsEmpty.Should().BeFalse();
         
-        var l2 = await _loc.TryAcquireAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
+        var l2 = await _lock.TryAcquireAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
         l2.IsEmpty.Should().BeTrue();
     }
     
+    //BUG
     [Fact]
-    public async Task Release_after_dispose__should__throw()
+    public async Task BUG__Release__after_dispose__throws()
     {
-        var l1 = await _loc.AcquireAsync(TestContext.Current.CancellationToken);
+        var l1 = await _lock.AcquireAsync(TestContext.Current.CancellationToken);
         l1.IsEmpty.Should().BeFalse();
-        _loc.Dispose();
+        _lock.Dispose();
 
         var fn = () => l1.Dispose();
         fn.Should().Throw<ObjectDisposedException>();
+    }
+    
+    [Fact]
+    public async Task AcquireAsync__when_disposing__should_throw()
+    {
+        var l1 = await _lock.AcquireAsync(TestContext.Current.CancellationToken);
+        l1.IsEmpty.Should().BeFalse();
+        
+        var t = Task.Run(
+            async () => await _lock.AcquireAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken),
+            TestContext.Current.CancellationToken
+        );
+
+        // start TryEnterAsync before 'Act'
+        await Task.Delay(100, TestContext.Current.CancellationToken);
+
+        // Act 
+        _lock.Dispose();
+
+        // Assert
+        var fn = async () => await t;
+        await fn.Should().ThrowExactlyAsync<ObjectDisposedException>();
     }
 }
