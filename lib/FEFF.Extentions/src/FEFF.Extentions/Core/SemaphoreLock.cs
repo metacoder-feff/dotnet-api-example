@@ -37,6 +37,7 @@ public sealed class SemaphoreLock: IDisposable
     private readonly CancellationTokenSource _disposingCTS = new();
     private volatile bool _isDisposed = false;
     
+//TODO: remove lock?    
     // avoid race condition between
     // 0. _isDisposed
     // 1. _disposingCTS.Cancel()
@@ -97,9 +98,9 @@ public sealed class SemaphoreLock: IDisposable
     /// <param name="cancellationToken">
     /// The <see cref="CancellationToken"/> token to observe.
     /// </param>
-    /// <returns>A task returning a 'disposable' to be used for releasing the lock.</returns>
+    /// <returns>A task returning a 'disposable' Scope to be used for releasing the lock.</returns>
     /// <exception cref="ObjectDisposedException">
-    /// If the <see cref="SemaphoreLock"/> is disposed.
+    /// If the <see cref="SemaphoreLock"/> is disposed before call or while awaiting.
     /// </exception>
     public async Task<IDisposable> EnterAsync(CancellationToken cancellationToken = default)
     {
@@ -146,15 +147,15 @@ public sealed class SemaphoreLock: IDisposable
     /// A task that will complete with:
     /// <list type="bullet">
     ///     <item>
-    ///         <description>A 'disposable' to be used for releasing the lock if operation finished succsessfully.</description>
+    ///         <description>A 'disposable' Scope to be used for releasing the lock if operation finished succsessfully.</description>
     ///     </item>
     ///     <item>
-    ///         <description>'Null' in case of exceeding the timeout.</description>
+    ///         <description>'null' in case of exceeding the timeout.</description>
     ///     </item>
     /// </list>
     /// </returns>
     /// <exception cref="ObjectDisposedException">
-    /// If the <see cref="SemaphoreLock"/> is disposed.
+    /// If the <see cref="SemaphoreLock"/> is disposed before call or while awaiting.
     /// </exception>
     public async Task<IDisposable?> TryEnterAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
     {
