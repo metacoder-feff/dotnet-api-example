@@ -121,7 +121,7 @@ public sealed class SemaphoreLock: IDisposable
         {
 //TODO: t.WaitAsync(_disposingToken) - safety of t?
             await t.WaitAsync(_disposingToken).ConfigureAwait(false);
-            return new Releaser(_semaphore);
+            return new Scope(_semaphore);
         }
         catch (OperationCanceledException e)
         when (e.CancellationToken == _disposingToken
@@ -185,20 +185,20 @@ public sealed class SemaphoreLock: IDisposable
         if(waitResult == false)
             return null;
 
-        return new Releaser(_semaphore);
+        return new Scope(_semaphore);
     }
 
 //TODO: ref struct like System.Threading.Lock.Scope
     // Do not use Disposable mutable struct!
     // to avoid accidental copy and double release
-    private sealed class Releaser: IDisposable
+    private sealed class Scope: IDisposable
     {
         private readonly SemaphoreSlim _semaphore;
 
         // threadsafe bool, interlocked
         private volatile int _isDisposed = 0; //false;
 
-        public Releaser(SemaphoreSlim semaphore)
+        public Scope(SemaphoreSlim semaphore)
         {
             ArgumentNullException.ThrowIfNull(semaphore);
             _semaphore = semaphore;
