@@ -4,12 +4,10 @@ public class CountingSemaphoreTests : IAsyncDisposable
 {
     private readonly FEFF.Extentions.SemaphoreLock _lock = new(5);
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        _lock.Dispose();
+        await _lock.DisposeAsync();
         GC.SuppressFinalize(this);
-
-        return ValueTask.CompletedTask;
     }
 
     [Fact]

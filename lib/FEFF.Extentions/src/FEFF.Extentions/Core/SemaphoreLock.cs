@@ -1,4 +1,6 @@
-﻿namespace FEFF.Extentions;
+﻿using System.Collections.Concurrent;
+
+namespace FEFF.Extentions;
 
 /*
 The nearest realization is DotNext.Threading.AsyncLock: Semaphore/Exclusive.
@@ -10,7 +12,7 @@ and waits for all 'enters' to be released (may deadlock) at AsyncLock.DisposeAsy
 
 /*
 HINT: 
-Do not implement 'auto dispose _semaphore after last release' feature beacuse 
+Do not implement 'auto dispose _semaphore after last release' feature because 
 we want to throw at EnterAsync()/TryEnterAsync when SemaphoreLock is disposed
 to prevent access to shared resource without succesfull lock.
 */
@@ -23,10 +25,14 @@ to prevent access to shared resource without succesfull lock.
 /// <remarks>
 /// NOT reentrant!!! <br/>
 /// Throws at EnterAsync()/TryEnterAsync when SemaphoreLock is disposed.
+/// SemaphoreLock.Dispose() waits until all active requests EnterAsync()/TryEnterAsync throws
 /// </remarks>
-public sealed class SemaphoreLock: IDisposable
+public sealed class SemaphoreLock: IAsyncDisposable
 {
     private readonly SemaphoreSlim _semaphore;
+    private readonly CancellationTokenSource _disposingCTS = new();
+    private volatile bool _isDisposed = false;
+    private readonly ConcurrentDictionary<Task, object?> _pendingWaits = [];
 
     /// <summary>
     /// Gets the current count of the <see cref="SemaphoreSlim"/>.
@@ -52,9 +58,39 @@ public sealed class SemaphoreLock: IDisposable
         _semaphore = new (maxParallelism);
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
+        ICollection<Task> pendingEnterRequests;
+
+        // avoid race condition between
+        // 1. _disposingCTS.Cancel()
+        // 2. _semaphore.WaitAsync()
+        lock(_pendingWaits)
+        {
+            if (_isDisposed)
+                return;
+            _isDisposed = true;
+                    
+            // cancel pending [Try]EnterAsync requests
+            _disposingCTS.Cancel();
+
+            pendingEnterRequests = _pendingWaits.Keys;
+        }
+
+        // awating _semaphore.WaitAsync() would never return after _semaphore.Dispose();
+        try
+        {
+            await Task.WhenAll(pendingEnterRequests).ConfigureAwait(false);
+            // operation canceled
+        }
+        catch // operation canceled
+        {
+        }
+
+        _pendingWaits.Clear();
         _semaphore.Dispose();
+        _disposingCTS.Dispose();
+
         GC.SuppressFinalize(this);
     }
 
@@ -71,8 +107,42 @@ public sealed class SemaphoreLock: IDisposable
     /// </exception>
     public async Task<IDisposable> EnterAsync(CancellationToken cancellationToken = default)
     {
-        await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-        return new Releaser(_semaphore);
+        // var r = await TryEnterAsync(Timeout.Infinite, cancellationToken).ConfigureAwait(false);
+        // ThrowHelper.Assert(r is not null);// should never happen
+        // return r;
+
+
+        using var complexCTS = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposingCTS.Token);
+
+        Task t;
+        // avoid race condition between:
+        // 1. _disposingCTS.Cancel()
+        // 2. _semaphore.WaitAsync()
+        lock(_pendingWaits)
+        {
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            t =_semaphore.WaitAsync(complexCTS.Token);
+            _pendingWaits[t] = null;
+        }
+
+        try
+        {
+            await t.ConfigureAwait(false);
+            return new Releaser(_semaphore);
+        }
+        catch (OperationCanceledException e)
+        when (e.CancellationToken == complexCTS.Token
+            && cancellationToken.IsCancellationRequested == false)
+            // _disposingCTS can already be disposed
+            //&& _disposingCTS.Token.IsCancellationRequested == true
+        {
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            throw;
+        }
+        finally
+        {
+            _pendingWaits.Remove(t, out _);
+        }
     }
     /// <summary>
     /// Asynchronously waits to enter the <see cref="SemaphoreLock"/>, using a <see
@@ -101,8 +171,40 @@ public sealed class SemaphoreLock: IDisposable
     /// </exception>
     public async Task<IDisposable?> TryEnterAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
     {
-        var b = await _semaphore.WaitAsync(timeout, cancellationToken).ConfigureAwait(false);
-        if(b == false)
+        Task<bool> t;
+        bool waitResult;
+
+        using var complexCTS = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposingCTS.Token);
+
+        // avoid race condition between:
+        // 1. _disposingCTS.Cancel()
+        // 2. _semaphore.WaitAsync()
+        lock(_pendingWaits)
+        {
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            t =_semaphore.WaitAsync(timeout, complexCTS.Token);
+            _pendingWaits[t] = null;
+        }
+
+        try
+        {
+            waitResult = await t.ConfigureAwait(false);
+        }
+        catch (OperationCanceledException e)
+        when (e.CancellationToken == complexCTS.Token
+            && cancellationToken.IsCancellationRequested == false)
+            // _disposingCTS can already be disposed - do not test it
+            //&& _disposingCTS.Token.IsCancellationRequested == true
+        {
+            ObjectDisposedException.ThrowIf(_isDisposed, this);
+            throw;
+        }
+        finally
+        {
+            _pendingWaits.Remove(t, out _);
+        }
+
+        if(waitResult == false)
             return null;
 
         return new Releaser(_semaphore);
