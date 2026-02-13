@@ -1,12 +1,12 @@
 namespace FEFF.Extentions.Tests.SemaphoreLock;
 
-public class CountingSemaphoreTests : IAsyncDisposable
+public class CountingSemaphoreTests : IDisposable
 {
     private readonly FEFF.Extentions.SemaphoreLock _lock = new(5);
 
-    public async ValueTask DisposeAsync()
+    public async void Dispose()
     {
-        await _lock.DisposeAsync();
+        _lock.Dispose();
         GC.SuppressFinalize(this);
     }
 

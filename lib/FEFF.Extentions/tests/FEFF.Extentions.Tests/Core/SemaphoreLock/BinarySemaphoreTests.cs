@@ -1,13 +1,13 @@
 namespace FEFF.Extentions.Tests.SemaphoreLock;
 
-public class BinarySemaphoreTests : IAsyncDisposable
+public class BinarySemaphoreTests : IDisposable
 {
     private readonly FEFF.Extentions.SemaphoreLock _lock = new();
     private readonly List<int> _list = [];
 
-    public async ValueTask DisposeAsync()
+    public async void Dispose()
     {
-        await _lock.DisposeAsync();
+        _lock.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -77,15 +77,15 @@ public class BinarySemaphoreTests : IAsyncDisposable
     [Fact]
     public async Task DisposeAsync_twice__should__not_throw()
     {
-        await _lock.DisposeAsync();
-        await _lock.DisposeAsync();
+        _lock.Dispose();
+        _lock.Dispose();
     }
 
     [Fact]
     public async Task Dispose__nonreleased__should__not_cause_deadlock()
     {
         _ = await _lock.EnterAsync(TestContext.Current.CancellationToken);
-        await _lock.DisposeAsync();
+        _lock.Dispose();
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class BinarySemaphoreTests : IAsyncDisposable
     [Fact]
     public async Task EnterAsync__when_disposed__should_throw()
     {
-        await _lock.DisposeAsync();
+        _lock.Dispose();
         var fn = () => _lock.EnterAsync(TestContext.Current.CancellationToken);
         
         await fn.Should().ThrowExactlyAsync<ObjectDisposedException>();
@@ -110,7 +110,7 @@ public class BinarySemaphoreTests : IAsyncDisposable
     [Fact]
     public async Task TryEnterAsync__when_disposed__should_throw()
     {
-        await _lock.DisposeAsync();
+        _lock.Dispose();
         var fn = () => _lock.TryEnterAsync(TimeSpan.Zero, TestContext.Current.CancellationToken);
         
         await fn.Should().ThrowExactlyAsync<ObjectDisposedException>();
@@ -120,7 +120,7 @@ public class BinarySemaphoreTests : IAsyncDisposable
     public async Task Release__when_disposed__should__NOT_throw()
     {
         var l1 = await _lock.EnterAsync(TestContext.Current.CancellationToken);
-        await _lock.DisposeAsync();
+        _lock.Dispose();
 
         var fn = () => l1.Dispose();
         fn.Should().NotThrow();
@@ -180,7 +180,7 @@ public class BinarySemaphoreTests : IAsyncDisposable
         await Task.Delay(100, TestContext.Current.CancellationToken);
 
         // Act 
-        await _lock.DisposeAsync();
+        _lock.Dispose();
 
         // Assert
         var fn = async () => await t;
@@ -201,7 +201,7 @@ public class BinarySemaphoreTests : IAsyncDisposable
         await Task.Delay(100, TestContext.Current.CancellationToken);
 
         // Act 
-        await _lock.DisposeAsync();
+        _lock.Dispose();
 
         // Assert
         var fn = async () => await t;

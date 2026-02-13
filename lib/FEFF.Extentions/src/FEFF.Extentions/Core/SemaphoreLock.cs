@@ -24,15 +24,24 @@ to prevent access to shared resource without succesfull lock.
 /// </summary>
 /// <remarks>
 /// NOT reentrant!!! <br/>
-/// Throws at EnterAsync()/TryEnterAsync when SemaphoreLock is disposed.
-/// SemaphoreLock.Dispose() waits until all active requests EnterAsync()/TryEnterAsync throws
+/// Throws ObjectDisposedException at EnterAsync/TryEnterAsync after SemaphoreLock is disposed.
 /// </remarks>
-public sealed class SemaphoreLock: IAsyncDisposable
+public sealed class SemaphoreLock: IDisposable
 {
     private readonly SemaphoreSlim _semaphore;
+
+    // awaiting _semaphore.WaitAsync() would not return after _semaphore.Dispose()
+    // (because ManualResetEvent inside _semaphore would be silently disposed)
+    // => use _disposingToken to return control to client from [Try]EnterAsync()
+    private readonly CancellationToken _disposingToken;
     private readonly CancellationTokenSource _disposingCTS = new();
     private volatile bool _isDisposed = false;
-    private readonly ConcurrentDictionary<Task, object?> _pendingWaits = [];
+    
+    // avoid race condition between
+    // 0. _isDisposed
+    // 1. _disposingCTS.Cancel()
+    // 2. _semaphore.WaitAsync()
+    private readonly Lock _lockObj = new();
 
     /// <summary>
     /// Gets the current count of the <see cref="SemaphoreSlim"/>.
@@ -56,16 +65,16 @@ public sealed class SemaphoreLock: IAsyncDisposable
         // because we do not allow 'Release()' without 'Wait()'
         // via encapsulation
         _semaphore = new (maxParallelism);
+        _disposingToken = _disposingCTS.Token;
     }
 
-    public async ValueTask DisposeAsync()
+    public void Dispose()
     {
-        ICollection<Task> pendingEnterRequests;
+        // double check (optimization)
+        if (_isDisposed)
+            return;
 
-        // avoid race condition between
-        // 1. _disposingCTS.Cancel()
-        // 2. _semaphore.WaitAsync()
-        lock(_pendingWaits)
+        lock(_lockObj)
         {
             if (_isDisposed)
                 return;
@@ -73,21 +82,8 @@ public sealed class SemaphoreLock: IAsyncDisposable
                     
             // cancel pending [Try]EnterAsync requests
             _disposingCTS.Cancel();
-
-            pendingEnterRequests = _pendingWaits.Keys;
         }
 
-        // awating _semaphore.WaitAsync() would never return after _semaphore.Dispose();
-        try
-        {
-            await Task.WhenAll(pendingEnterRequests).ConfigureAwait(false);
-            // operation canceled
-        }
-        catch // operation canceled
-        {
-        }
-
-        _pendingWaits.Clear();
         _semaphore.Dispose();
         _disposingCTS.Dispose();
 
@@ -111,37 +107,28 @@ public sealed class SemaphoreLock: IAsyncDisposable
         // ThrowHelper.Assert(r is not null);// should never happen
         // return r;
 
-
-        using var complexCTS = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposingCTS.Token);
+        // double check (optimization)
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
 
         Task t;
-        // avoid race condition between:
-        // 1. _disposingCTS.Cancel()
-        // 2. _semaphore.WaitAsync()
-        lock(_pendingWaits)
+        lock(_lockObj)
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);
-            t =_semaphore.WaitAsync(complexCTS.Token);
-            _pendingWaits[t] = null;
+            t =_semaphore.WaitAsync(cancellationToken);
         }
 
         try
         {
-            await t.ConfigureAwait(false);
+//TODO: t.WaitAsync(_disposingToken) - safety of t?
+            await t.WaitAsync(_disposingToken).ConfigureAwait(false);
             return new Releaser(_semaphore);
         }
         catch (OperationCanceledException e)
-        when (e.CancellationToken == complexCTS.Token
+        when (e.CancellationToken == _disposingToken
             && cancellationToken.IsCancellationRequested == false)
-            // _disposingCTS can already be disposed
-            //&& _disposingCTS.Token.IsCancellationRequested == true
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);
             throw;
-        }
-        finally
-        {
-            _pendingWaits.Remove(t, out _);
         }
     }
     /// <summary>
@@ -171,37 +158,28 @@ public sealed class SemaphoreLock: IAsyncDisposable
     /// </exception>
     public async Task<IDisposable?> TryEnterAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
     {
+        // double check (optimization)
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+
         Task<bool> t;
-        bool waitResult;
-
-        using var complexCTS = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposingCTS.Token);
-
-        // avoid race condition between:
-        // 1. _disposingCTS.Cancel()
-        // 2. _semaphore.WaitAsync()
-        lock(_pendingWaits)
+        lock(_lockObj)
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);
-            t =_semaphore.WaitAsync(timeout, complexCTS.Token);
-            _pendingWaits[t] = null;
+            t =_semaphore.WaitAsync(timeout, cancellationToken);
         }
 
+        bool waitResult;
         try
         {
-            waitResult = await t.ConfigureAwait(false);
+//TODO: t.WaitAsync(_disposingToken) - safety of t?
+            waitResult = await t.WaitAsync(_disposingToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException e)
-        when (e.CancellationToken == complexCTS.Token
+        when (e.CancellationToken == _disposingToken
             && cancellationToken.IsCancellationRequested == false)
-            // _disposingCTS can already be disposed - do not test it
-            //&& _disposingCTS.Token.IsCancellationRequested == true
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);
             throw;
-        }
-        finally
-        {
-            _pendingWaits.Remove(t, out _);
         }
 
         if(waitResult == false)
@@ -210,6 +188,7 @@ public sealed class SemaphoreLock: IAsyncDisposable
         return new Releaser(_semaphore);
     }
 
+//TODO: ref struct like System.Threading.Lock.Scope
     // Do not use Disposable mutable struct!
     // to avoid accidental copy and double release
     private sealed class Releaser: IDisposable
