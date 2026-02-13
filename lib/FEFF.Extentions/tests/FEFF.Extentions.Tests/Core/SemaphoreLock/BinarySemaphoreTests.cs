@@ -169,7 +169,7 @@ public class BinarySemaphoreTests : IDisposable
     [Fact]
     public async Task EnterAsync__while_disposing__should_throw()
     {
-        var l = await _lock.EnterAsync(TestContext.Current.CancellationToken);
+        _ = await _lock.EnterAsync(TestContext.Current.CancellationToken);
 
         var t = Task.Run(
             async () => await _lock.EnterAsync(TestContext.Current.CancellationToken),
@@ -190,11 +190,11 @@ public class BinarySemaphoreTests : IDisposable
     [Fact]
     public async Task TryEnterAsync__while_disposing__should_throw()
     {
-        var l = await _lock.EnterAsync(TestContext.Current.CancellationToken);
+        _ = await _lock.EnterAsync(TestContext.Current.CancellationToken);
         
         var t = Task.Run(
-            async () => await _lock.TryEnterAsync(TimeSpan.FromSeconds(5), 
-            TestContext.Current.CancellationToken)
+            async () => await _lock.TryEnterAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken),
+            TestContext.Current.CancellationToken
         );
 
         // start TryEnterAsync before 'Act'
@@ -206,5 +206,55 @@ public class BinarySemaphoreTests : IDisposable
         // Assert
         var fn = async () => await t;
         await fn.Should().ThrowExactlyAsync<ObjectDisposedException>();
+    }
+
+    [Fact]
+    public async Task EnterAsync__can_be_cancelled()
+    {
+        _ = await _lock.EnterAsync(TestContext.Current.CancellationToken);
+
+        using var cts = new CancellationTokenSource();
+        var token = cts.Token;
+                
+        var t = Task.Run(
+            async () => await _lock.EnterAsync(token),
+            TestContext.Current.CancellationToken
+        );
+
+        // start TryEnterAsync before 'Act'
+        await Task.Delay(100, TestContext.Current.CancellationToken);
+
+        // Act 
+        cts.Cancel();
+
+        // Assert
+        var fn = async () => await t;
+        var e = await fn.Should().ThrowExactlyAsync<OperationCanceledException>();
+        e.Which.CancellationToken.Should().Be(token);
+    }
+    
+    [Fact]
+    public async Task TryEnterAsync__can_be_cancelled()
+    {
+        _ = await _lock.EnterAsync(TestContext.Current.CancellationToken);
+
+        using var cts = new CancellationTokenSource();
+        var token = cts.Token;
+                
+        var t = Task.Run(
+            async () => await _lock.TryEnterAsync(TimeSpan.FromSeconds(5), token),
+            TestContext.Current.CancellationToken
+        );
+
+        // start TryEnterAsync before 'Act'
+        await Task.Delay(100, TestContext.Current.CancellationToken);
+
+        // Act 
+        cts.Cancel();
+
+        // Assert
+        var fn = async () => await t;
+        var e = await fn.Should().ThrowExactlyAsync<OperationCanceledException>();
+        e.Which.CancellationToken.Should().Be(token);
     }
 }
