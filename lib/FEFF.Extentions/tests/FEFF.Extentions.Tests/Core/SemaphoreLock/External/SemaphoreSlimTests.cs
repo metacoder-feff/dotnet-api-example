@@ -1,16 +1,15 @@
 namespace FEFF.Extentions.Tests.SemaphoreLock.External;
 
-public class SemaphoreSlimTests : IAsyncDisposable
+public class SemaphoreSlimTests : IDisposable
 {
     private readonly SemaphoreSlim _sem = new (1);
     private SemaphoreSlim? _sem2;
-    public ValueTask DisposeAsync()
+
+    public void Dispose()
     {
         _sem.Dispose();
         _sem2?.Dispose();
         GC.SuppressFinalize(this);
-
-        return ValueTask.CompletedTask;
     }
 
     [Fact]
@@ -38,6 +37,28 @@ public class SemaphoreSlimTests : IAsyncDisposable
         var b = await _sem.WaitAsync(TimeSpan.FromMilliseconds(1), TestContext.Current.CancellationToken);
 
         b.Should().BeFalse();
+    }
+    
+    // BUG
+    [Fact]
+    public async Task BUG__WaitAsync__when_disposing__CANNOT_return()
+    {
+        await _sem.WaitAsync(TestContext.Current.CancellationToken);
+        
+        var t = Task.Run(
+            async () => await _sem.WaitAsync(TimeSpan.FromSeconds(2), TestContext.Current.CancellationToken),
+            TestContext.Current.CancellationToken
+        );
+
+        // start WaitAsync before 'Act'
+        await Task.Delay(100, TestContext.Current.CancellationToken);
+
+        // Act 
+        _sem.Dispose();
+
+        // Assert
+        var fn = async () => await t;
+        await fn.Should().NotCompleteWithinAsync(TimeSpan.FromSeconds(4));
     }
     
     [Fact]
