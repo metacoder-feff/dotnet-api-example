@@ -159,7 +159,7 @@ public class BinarySemaphoreTests : IDisposable
     }
 
     [Fact]
-    public async Task Handler_Dispose_twice__should__not_throw()
+    public async Task Scope_Dispose_twice__should__not_throw()
     {
         var l = await _lock.EnterAsync(TestContext.Current.CancellationToken);
         l.Dispose();
@@ -167,7 +167,7 @@ public class BinarySemaphoreTests : IDisposable
     }
     
     [Fact]
-    public async Task EnterAsync__while_disposing__should_throw()
+    public async Task EnterAsync__when_disposing__should_throw()
     {
         _ = await _lock.EnterAsync(TestContext.Current.CancellationToken);
 
@@ -188,7 +188,7 @@ public class BinarySemaphoreTests : IDisposable
     }
     
     [Fact]
-    public async Task TryEnterAsync__while_disposing__should_throw()
+    public async Task TryEnterAsync__when_disposing__should_throw()
     {
         _ = await _lock.EnterAsync(TestContext.Current.CancellationToken);
         
@@ -209,7 +209,7 @@ public class BinarySemaphoreTests : IDisposable
     }
 
     [Fact]
-    public async Task EnterAsync__can_be_cancelled()
+    public async Task EnterAsync__when_started__can_be_cancelled()
     {
         _ = await _lock.EnterAsync(TestContext.Current.CancellationToken);
 
@@ -234,7 +234,7 @@ public class BinarySemaphoreTests : IDisposable
     }
     
     [Fact]
-    public async Task TryEnterAsync__can_be_cancelled()
+    public async Task TryEnterAsync__when_started__can_be_cancelled()
     {
         _ = await _lock.EnterAsync(TestContext.Current.CancellationToken);
 
@@ -259,7 +259,7 @@ public class BinarySemaphoreTests : IDisposable
     }
 
     [Fact]
-    public async Task EnterAsync__should_not_start__with_cancelled_token()
+    public async Task EnterAsync__with_cancelled_token__should_not_start()
     {
         _ = await _lock.EnterAsync(TestContext.Current.CancellationToken);
 
@@ -277,7 +277,7 @@ public class BinarySemaphoreTests : IDisposable
     }
 
     [Fact]
-    public async Task TryEnterAsync__should_not_start__with_cancelled_token()
+    public async Task TryEnterAsync__with_cancelled_token__should_not_start()
     {
         _ = await _lock.EnterAsync(TestContext.Current.CancellationToken);
 
