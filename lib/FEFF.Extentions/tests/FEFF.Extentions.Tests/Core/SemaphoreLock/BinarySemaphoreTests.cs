@@ -257,4 +257,40 @@ public class BinarySemaphoreTests : IDisposable
         var e = await fn.Should().ThrowExactlyAsync<OperationCanceledException>();
         e.Which.CancellationToken.Should().Be(token);
     }
+
+    [Fact]
+    public async Task EnterAsync__should_not_start__with_cancelled_token()
+    {
+        _ = await _lock.EnterAsync(TestContext.Current.CancellationToken);
+
+        using var cts = new CancellationTokenSource();
+        var token = cts.Token;
+        
+        // Act 
+        cts.Cancel();
+        
+        // Assert
+        var fn = async () => await _lock.EnterAsync(token);
+
+        var e = await fn.Should().ThrowExactlyAsync<TaskCanceledException>();
+        e.Which.CancellationToken.Should().Be(token);
+    }
+
+    [Fact]
+    public async Task TryEnterAsync__should_not_start__with_cancelled_token()
+    {
+        _ = await _lock.EnterAsync(TestContext.Current.CancellationToken);
+
+        using var cts = new CancellationTokenSource();
+        var token = cts.Token;
+        
+        // Act 
+        cts.Cancel();
+        
+        // Assert
+        var fn = async () => await _lock.TryEnterAsync(TimeSpan.FromSeconds(5), token);
+
+        var e = await fn.Should().ThrowExactlyAsync<TaskCanceledException>();
+        e.Which.CancellationToken.Should().Be(token);
+    }
 }
