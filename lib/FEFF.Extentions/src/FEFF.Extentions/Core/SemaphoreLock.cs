@@ -31,18 +31,13 @@ public sealed class SemaphoreLock: IDisposable
     private readonly SemaphoreSlim _semaphore;
 
     // awaiting _semaphore.WaitAsync() would not return after _semaphore.Dispose()
-    // (because ManualResetEvent inside _semaphore would be silently disposed)
     // => use _disposingToken to return control to client from [Try]EnterAsync()
+    // using linked token not allows to return when _semaphore is disposed
+    // => we must use Task.WaitAsync(_disposingToken)
+    // [or await task before dispose but it is more complex]
     private readonly CancellationToken _disposingToken;
     private readonly CancellationTokenSource _disposingCTS = new();
     private volatile bool _isDisposed = false;
-    
-//TODO: remove lock?    
-    // avoid race condition between
-    // 0. _isDisposed
-    // 1. _disposingCTS.Cancel()
-    // 2. _semaphore.WaitAsync()
-    private readonly Lock _lockObj = new();
 
     /// <summary>
     /// Gets the current count of the <see cref="SemaphoreSlim"/>.
@@ -71,19 +66,13 @@ public sealed class SemaphoreLock: IDisposable
 
     public void Dispose()
     {
-        // double check (optimization)
         if (_isDisposed)
             return;
 
-        lock(_lockObj)
-        {
-            if (_isDisposed)
-                return;
-            _isDisposed = true;
-                    
-            // cancel pending [Try]EnterAsync requests
-            _disposingCTS.Cancel();
-        }
+        _isDisposed = true;
+    
+        // cancel pending [Try]EnterAsync requests
+        _disposingCTS.Cancel();
 
         _semaphore.Dispose();
         _disposingCTS.Dispose();
@@ -104,25 +93,19 @@ public sealed class SemaphoreLock: IDisposable
     /// </exception>
     public async Task<IDisposable> EnterAsync(CancellationToken cancellationToken = default)
     {
+//TODO: DRY        
         // var r = await TryEnterAsync(Timeout.Infinite, cancellationToken).ConfigureAwait(false);
         // ThrowHelper.Assert(r is not null);// should never happen
         // return r;
 
-        // double check (optimization)
         ObjectDisposedException.ThrowIf(_isDisposed, this);
 
-        Task t;
-        lock(_lockObj)
-        {
-            ObjectDisposedException.ThrowIf(_isDisposed, this);
-            t =_semaphore.WaitAsync(cancellationToken);
-        }
+        var t = _semaphore.WaitAsync(cancellationToken);
 
         try
         {
 //TODO: t.WaitAsync(_disposingToken) - safety of t?
             await t.WaitAsync(_disposingToken).ConfigureAwait(false);
-            return new Scope(_semaphore);
         }
         catch (OperationCanceledException e)
         when (e.CancellationToken == _disposingToken
@@ -131,6 +114,8 @@ public sealed class SemaphoreLock: IDisposable
             ObjectDisposedException.ThrowIf(_isDisposed, this);
             throw;
         }
+        
+        return new Scope(_semaphore);
     }
     /// <summary>
     /// Asynchronously waits to enter the <see cref="SemaphoreLock"/>, using a <see
@@ -159,15 +144,11 @@ public sealed class SemaphoreLock: IDisposable
     /// </exception>
     public async Task<IDisposable?> TryEnterAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
     {
+//TODO: DRY
         // double check (optimization)
         ObjectDisposedException.ThrowIf(_isDisposed, this);
 
-        Task<bool> t;
-        lock(_lockObj)
-        {
-            ObjectDisposedException.ThrowIf(_isDisposed, this);
-            t =_semaphore.WaitAsync(timeout, cancellationToken);
-        }
+        var t = _semaphore.WaitAsync(timeout, cancellationToken);
 
         bool waitResult;
         try
