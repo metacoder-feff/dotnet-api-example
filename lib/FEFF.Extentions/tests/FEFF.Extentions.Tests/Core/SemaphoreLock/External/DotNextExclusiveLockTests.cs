@@ -2,18 +2,14 @@ using DotNext.Threading;
 
 namespace FEFF.Extentions.Tests.SemaphoreLock.External;
 
-public class DotNextExclusiveLockTests : IAsyncDisposable
+public class DotNextExclusiveLockTests : IDisposable
 {
     private readonly AsyncLock _lock = AsyncLock.Exclusive();
     private AsyncLock.Holder _lockHolder = default;
 
-    public async ValueTask DisposeAsync()
+    public void Dispose()
     {
-        // release to avoid deadlock on _loc.DisposeAsync()
-        if(_lockHolder.IsEmpty == false)
-            _lockHolder.Dispose();
-
-        await _lock.DisposeAsync();
+        _lock.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -24,9 +20,18 @@ public class DotNextExclusiveLockTests : IAsyncDisposable
         await _lock.DisposeAsync();
     }
 
-    //BUG
     [Fact]
-    public async Task BUG__DisposeAsync__nonreleased__CANNOT_return()
+    public void Dispose_twice__should__not_throw()
+    {
+        _lock.Dispose();
+        _lock.Dispose();
+    }
+
+    //ATTENTION: 
+    // AsyncLock.Exclusive.DisposeAsync
+    // is 'Graceful' - it waits until all handlers to be released.
+    [Fact]
+    public async Task ATTENTION__DisposeAsync__nonreleased__should_not_return()
     {
         _lockHolder = await _lock.AcquireAsync(TestContext.Current.CancellationToken);
         _lockHolder.IsEmpty.Should().BeFalse();
@@ -34,6 +39,15 @@ public class DotNextExclusiveLockTests : IAsyncDisposable
         var fn = async () => await _lock.DisposeAsync();
 
         await fn.Should().NotCompleteWithinAsync(TimeSpan.FromSeconds(3));
+    }
+
+    [Fact]
+    public async Task Dispose__nonreleased__should_return()
+    {
+        _lockHolder = await _lock.AcquireAsync(TestContext.Current.CancellationToken);
+        _lockHolder.IsEmpty.Should().BeFalse();
+
+        _lock.Dispose();
     }
 
     [Fact]

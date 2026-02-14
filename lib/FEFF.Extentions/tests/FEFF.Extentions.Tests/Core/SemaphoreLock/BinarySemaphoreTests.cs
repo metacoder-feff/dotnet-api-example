@@ -75,7 +75,7 @@ public class BinarySemaphoreTests : IDisposable
     }
 
     [Fact]
-    public async Task DisposeAsync_twice__should__not_throw()
+    public async Task Dispose_twice__should__not_throw()
     {
         _lock.Dispose();
         _lock.Dispose();

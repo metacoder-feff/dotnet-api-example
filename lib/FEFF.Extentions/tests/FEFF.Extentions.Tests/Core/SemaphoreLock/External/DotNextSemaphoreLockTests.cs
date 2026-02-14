@@ -2,15 +2,13 @@ using DotNext.Threading;
 
 namespace FEFF.Extentions.Tests.SemaphoreLock.External;
 
-public class DotNextSemaphoreLockTests : IAsyncDisposable
+public class DotNextSemaphoreLockTests : IDisposable
 {
     private readonly AsyncLock _lock = AsyncLock.Semaphore(1,1);
-    public ValueTask DisposeAsync()
+    public void Dispose()
     {
         _lock.Dispose();
         GC.SuppressFinalize(this);
-
-        return ValueTask.CompletedTask;
     }
 
     [Fact]
@@ -18,6 +16,13 @@ public class DotNextSemaphoreLockTests : IAsyncDisposable
     {
         _lock.Dispose();
         _lock.Dispose();
+    }
+
+    [Fact]
+    public async Task DisposeAsync_twice__should__not_throw()
+    {
+        await _lock.DisposeAsync();
+        await _lock.DisposeAsync();
     }
 
     [Fact]
@@ -41,14 +46,27 @@ public class DotNextSemaphoreLockTests : IAsyncDisposable
         fn.Should().Throw<ObjectDisposedException>();
     }
 
+    //ATTENTION: 
+    // this AsyncLock.Semaphore.DisposeAsync
+    // is not 'Graceful' unlike AsyncLock.Exclusive
     [Fact]
-    public async Task DisposeAsync__nonreleased__should_finish()
+    public async Task ATTENTION__DisposeAsync__nonreleased__should_finish()
     {
         var l = await _lock.AcquireAsync(TestContext.Current.CancellationToken);
         l.IsEmpty.Should().BeFalse();
 
         //act
         await _lock.DisposeAsync();
+    }
+
+    [Fact]
+    public async Task Dispose__nonreleased__should_finish()
+    {
+        var l = await _lock.AcquireAsync(TestContext.Current.CancellationToken);
+        l.IsEmpty.Should().BeFalse();
+
+        //act
+        _lock.Dispose();
     }
     
     //BUG
@@ -68,6 +86,29 @@ public class DotNextSemaphoreLockTests : IAsyncDisposable
 
         // Act 
         _lock.Dispose();
+
+        // Assert
+        var fn = async () => await t;
+        await fn.Should().NotCompleteWithinAsync(TimeSpan.FromSeconds(5));
+    }
+    
+    //BUG
+    [Fact]
+    public async Task BUG__AcquireAsync__when_disposingAsync__CANNOT_return()
+    {
+        var l1 = await _lock.AcquireAsync(TestContext.Current.CancellationToken);
+        l1.IsEmpty.Should().BeFalse();
+        
+        var t = Task.Run(
+            async () => await _lock.AcquireAsync(TimeSpan.FromSeconds(2), TestContext.Current.CancellationToken),
+            TestContext.Current.CancellationToken
+        );
+
+        // start TryEnterAsync before 'Act'
+        await Task.Delay(100, TestContext.Current.CancellationToken);
+
+        // Act 
+        await _lock.DisposeAsync();
 
         // Assert
         var fn = async () => await t;
