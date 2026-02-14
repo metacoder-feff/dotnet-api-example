@@ -115,7 +115,7 @@ public sealed class SemaphoreLock: IDisposable
             throw;
         }
         
-        return new Scope(_semaphore);
+        return new Scope(this);
     }
     /// <summary>
     /// Asynchronously waits to enter the <see cref="SemaphoreLock"/>, using a <see
@@ -167,7 +167,25 @@ public sealed class SemaphoreLock: IDisposable
         if(waitResult == false)
             return null;
 
-        return new Scope(_semaphore);
+        return new Scope(this);
+    }
+
+    // The aim of 'SemaphoreLock' is to avoid concurrent access to a resource.
+    // There is no matter to throw at Release() because Lock would never be entered again
+    // when SemaphoreLock (=SemaphoreSlim) is disposed
+    private void ReleaseNoThrowDisposed()
+    {
+        // double check: optimization
+        if(_isDisposed)
+            return;
+
+        try
+        {
+            _semaphore.Release();
+        }
+        catch(ObjectDisposedException)
+        {
+        }
     }
 
 //TODO: ref struct like System.Threading.Lock.Scope
@@ -175,15 +193,14 @@ public sealed class SemaphoreLock: IDisposable
     // to avoid accidental copy and double release
     private sealed class Scope: IDisposable
     {
-        private readonly SemaphoreSlim _semaphore;
+        private readonly SemaphoreLock _releaser;
 
         // threadsafe bool, interlocked
         private volatile int _isDisposed = 0; //false;
 
-        public Scope(SemaphoreSlim semaphore)
+        public Scope(SemaphoreLock releaser)
         {
-            ArgumentNullException.ThrowIfNull(semaphore);
-            _semaphore = semaphore;
+            _releaser = releaser;
         }
 
         /// <summary>
@@ -199,16 +216,7 @@ public sealed class SemaphoreLock: IDisposable
             if (hasAlreadyBeenDisposed > 0)
                 return;
 
-            try
-            {
-                _semaphore.Release();
-            }
-            catch(ObjectDisposedException)
-            {
-                // The aim of 'SemaphoreLock' is to avoid concurrent access to a resource.
-                // There is no matter to throw at Release() because Lock would never be entered again
-                // when SemaphoreLock (=SemaphoreSlim) is disposed
-            }
+            _releaser.ReleaseNoThrowDisposed();
 
             GC.SuppressFinalize(this);
         }
