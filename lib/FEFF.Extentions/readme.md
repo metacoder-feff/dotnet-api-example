@@ -1,4 +1,4 @@
-|  | Binary<br>Lock | Counting<br>Lock | Release after Dispose<br>Not Throws (*1) | Interrupt Lock awaiting<br>on Dispose (*2) | Graceful Dispose (*3) |
+|  | Binary<br>Lock | Counting<br>Lock | Do not throw at Release<br>after Dispose (*1) | Interrupt Lock awaiting<br>on Dispose (*2) | Graceful<br>releasing (*3) |
 |---|---|---|---|---|---|
 | DotNext.AsyncLock.Semaphore | ✅ | ✅ | ❌ | ❌ | ✅ |
 | DotNext.AsyncLock.Exclusive | ✅ | ❌ | ❌ | ✅ | ❌ |
