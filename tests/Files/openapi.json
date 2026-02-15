@@ -13,7 +13,7 @@
     "/weatherforecast": {
       "get": {
         "tags": [
-          "Example.Api"
+          "ExampleApiModule"
         ],
         "operationId": "GetWeatherForecast",
         "responses": {
@@ -81,7 +81,7 @@
   },
   "tags": [
     {
-      "name": "Example.Api"
+      "name": "ExampleApiModule"
     }
   ]
 }
