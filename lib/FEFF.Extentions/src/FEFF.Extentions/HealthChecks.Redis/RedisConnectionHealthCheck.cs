@@ -9,7 +9,7 @@ namespace FEFF.Extentions.HealthChecks.Redis;
 public interface IRedisHealthConnectionProvider
 {
     bool IsConnectionRequested { get; }
-    ConnectionMultiplexer? ActiveConnection { get; }
+    IConnectionMultiplexer? ActiveConnection { get; }
 }
 
 internal class RedisConnectionFactoryHealthCheck<T> : IHealthCheck
@@ -48,7 +48,7 @@ where T: IRedisHealthConnectionProvider
         }
     }
 
-    private static async Task<string?> CheckHealthAsync(ConnectionMultiplexer connection, CancellationToken cancellationToken)
+    private static async Task<string?> CheckHealthAsync(IConnectionMultiplexer connection, CancellationToken cancellationToken)
     {
         connection.CheckConnection();
 

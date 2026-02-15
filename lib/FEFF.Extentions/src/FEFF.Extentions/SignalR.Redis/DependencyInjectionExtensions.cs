@@ -14,10 +14,10 @@ public static class SignalRBuilderExtention
     /// 1. SignalR redis connection<br/>
     /// 2. Healthcheck of this redis connection
     /// </summary>
-    public static ISignalRServerBuilder AddRedisByConnectionFactory(this ISignalRServerBuilder builder, Action<IRedisConfigFactoryBuilder> config)
+    public static ISignalRServerBuilder AddRedisByConnectionFactory(this ISignalRServerBuilder builder, Action<IRedisConfigurationFactoryBuilder> config)
     {
         builder.AddStackExchangeRedis();
-        builder.Services.AddRedisConnectionFactory(config);
+        builder.Services.AddRedisConnectionFactory<SignalRedisConnectionFactoryProxy>(config);
 
         // this Singleton proxy stores a connection (last and single) to perform a HealthCheck
         builder.Services.TryAddSingleton<SignalRedisConnectionFactoryProxy>();

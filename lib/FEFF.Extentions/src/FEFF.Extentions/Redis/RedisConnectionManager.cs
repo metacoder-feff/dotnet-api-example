@@ -3,17 +3,18 @@ using StackExchange.Redis;
 
 namespace FEFF.Extentions.Redis;
 
+//TODO: multiple singletons with different factories/options
 public sealed class RedisConnectionManager : IAsyncDisposable
 {
     private readonly SemaphoreLock _asyncLock = new();
 
-    private readonly RedisConnectionFactory _factory;
+    private readonly IRedisConnectionFactory _factory;
 
     // Automatically reconnects
-    private volatile ConnectionMultiplexer? _connection;
+    private volatile IConnectionMultiplexer? _connection;
     // public string? KeyPrefix => _options.KeyPrefix;
 
-    public RedisConnectionManager(RedisConnectionFactory factory)
+    public RedisConnectionManager(RedisConnectionFactory<RedisConnectionManager> factory)
     {
         _factory = factory;
     }
@@ -49,7 +50,7 @@ public sealed class RedisConnectionManager : IAsyncDisposable
         return res.WithKeyPrefix(prefix);
     }
 */
-    public async Task<ConnectionMultiplexer> GetConnectionAsync(CancellationToken cancellationToken = default)
+    public async Task<IConnectionMultiplexer> GetConnectionAsync(CancellationToken cancellationToken = default)
     {
         // double-check (optimization)
         if (_connection != null)

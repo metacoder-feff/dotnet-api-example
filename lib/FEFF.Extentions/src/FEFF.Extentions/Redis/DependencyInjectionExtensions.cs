@@ -4,36 +4,44 @@ using StackExchange.Redis;
 namespace Microsoft.Extensions.DependencyInjection;
 
 using FEFF.Extentions.Redis;
+using Microsoft.Extensions.Options;
 
 public static class DependencyInjectionExtensions
 {
     // split interfaces for different use-cases
     // implement single realization for simplicity
-    internal record Builder(IServiceCollection Services) : IRedisConfigurationBuilder, IRedisConfigurationFactoryBuilder, IRedisConfigFactoryBuilder;
+    internal record Builder(OptionsBuilder<RedisConnectionFactory.Options> OptionsBuilder) : IRedisConfigurationFactoryBuilder, IRedisConfigurationBuilder;
 
-    public static IServiceCollection AddRedisConnectionFactory(this IServiceCollection services, Action<IRedisConfigFactoryBuilder> config)
+// TODO: test different options created and used for different factories
+    public static IServiceCollection AddRedisConnectionFactory<TDiscriminator>(this IServiceCollection services, Action<IRedisConfigurationFactoryBuilder> config)
+    where TDiscriminator : class
     {
-        services.TryAddTransient<RedisConnectionFactory>();
-        var builder = new Builder(services);
+        services.TryAddTransient<RedisConnectionFactory<TDiscriminator>>();
+
+        var name = NameHelper.GetTypeName<TDiscriminator>();
+        var optsBuilder = services.AddOptions<RedisConnectionFactory.Options>(name);
+        var builder = new Builder(optsBuilder);
         config(builder);
+
         return services;
     }
 
-    public static IServiceCollection AddRedisConnectionManager(this IServiceCollection services, Action<IRedisConfigFactoryBuilder> config)
+// TODO: multiple RedisConnectionManager
+    public static IServiceCollection AddRedisConnectionManager(this IServiceCollection services, Action<IRedisConfigurationFactoryBuilder> config)
     {
         services.TryAddSingleton<RedisConnectionManager>();
-        services.AddRedisConnectionFactory(config);
+        services.AddRedisConnectionFactory<RedisConnectionManager>(config);
         return services;
     }
 
     /// <summary>
     /// Use this method to override setting parsed from ConnectionString and to setup additional settings.
     /// </summary>
-    public static IRedisConfigBuilder Configure(this IRedisConfigBuilder builder,  Action<ConfigurationOptions> config)
+    public static IRedisConfigurationBuilder Configure(this IRedisConfigurationBuilder builder,  Action<ConfigurationOptions> config)
     {
-        builder.Services.AddOptions<RedisConnectionFactory.Options>()
+        builder.OptionsBuilder
             .Configure(x => config(x.ConfigurationOptions));
-            
+
         return builder;
     }
 
@@ -46,9 +54,9 @@ public static class DependencyInjectionExtensions
     /// <remarks>
     /// Rewrites whole <see cref="ConfigurationOptions"/> object.
     /// </remarks>
-    public static IRedisConfigBuilder ReadConnectionString(this IRedisConfigFactoryBuilder builder, string connectionStringName, bool ignoreUnknown = false)
+    public static IRedisConfigurationBuilder ReadConnectionString(this IRedisConfigurationFactoryBuilder builder, string connectionStringName, bool ignoreUnknown = false)
     {
-        builder.Services.AddOptions<RedisConnectionFactory.Options>()
+        builder.OptionsBuilder
             .Configure<IConfiguration>((opts, conf) =>
             {
                 var cs = conf.GetRequiredConnectionString(connectionStringName);
@@ -86,22 +94,22 @@ public static class DependencyInjectionExtensions
     /// <remarks>
     /// Rewrites whole <see cref="ConfigurationOptions"/> object.
     /// </remarks>
-    public static IRedisConfigBuilder ParseConfiguration(this IRedisConfigFactoryBuilder builder, string configuration, bool ignoreUnknown = false)
+    public static IRedisConfigurationBuilder ParseConfiguration(this IRedisConfigurationFactoryBuilder builder, string configuration, bool ignoreUnknown = false)
     {
-        builder.Services.AddOptions<RedisConnectionFactory.Options>()
+        builder.OptionsBuilder
             .Configure( (opts) =>
                 opts.ConfigurationOptions = ConfigurationOptions.Parse(configuration, ignoreUnknown)
             );
             
         return builder;
     }
-    public static IRedisConfigBuilder SetLoggerFactory(this IRedisConfigBuilder src)
+    public static IRedisConfigurationBuilder SetLoggerFactory(this IRedisConfigurationBuilder builder)
     {
-        src.Services.AddOptions<RedisConnectionFactory.Options>()
-        .Configure<ILoggerFactory>(
-            (opt, factory) => opt.ConfigurationOptions.LoggerFactory = factory
-        );
+        builder.OptionsBuilder
+            .Configure<ILoggerFactory>(
+                (opt, factory) => opt.ConfigurationOptions.LoggerFactory = factory
+            );
 
-        return src;
+        return builder;
     }
 }

@@ -7,7 +7,7 @@ using FEFF.Extentions.Redis;
 // use subclass to distinguish from other redis connections (e.g. distributed chache)
 internal class SignalRedisConnectionFactoryProxy : RedisConnectionFactoryProxy
 {
-    public SignalRedisConnectionFactoryProxy(RedisConnectionFactory factory) : base(factory)
+    public SignalRedisConnectionFactoryProxy(RedisConnectionFactory<SignalRedisConnectionFactoryProxy> factory) : base(factory)
     {
     }
 }

@@ -1,31 +1,18 @@
+using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
 namespace FEFF.Extentions.Redis;
 
-public interface IRedisConfigBuilder
-{
-    IServiceCollection Services { get; }
-}
-
-public interface IRedisConfigFactoryBuilder : IRedisConfigBuilder
-{
-}
-
 public interface IRedisConfigurationBuilder
 {
-    IServiceCollection Services { get; }
+    OptionsBuilder<RedisConnectionFactory.Options> OptionsBuilder { get; }
 }
 
-public interface IRedisConfigurationFactoryBuilder
+public interface IRedisConfigurationFactoryBuilder : IRedisConfigurationBuilder
 {
-    IServiceCollection Services { get; }
 }
 
-// public interface IRedisConnectionFactory
-// {
-//     Task<IConnectionMultiplexer> CreateConnectionAsync(TextWriter? log);
-// }
-
-//TODO: IRedisDatabaseFactory
-//TODO: public ConfigurationOptionsFactory.Options
-//TODO: internal RedisConnectionFactory RedisDatabaseFactory ConfigurationOptionsFactory
+public interface IRedisConnectionFactory
+{
+    Task<IConnectionMultiplexer> ConnectAsync(TextWriter? log = null);
+}

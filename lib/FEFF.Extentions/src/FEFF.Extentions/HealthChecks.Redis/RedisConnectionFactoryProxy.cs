@@ -13,19 +13,19 @@ using FEFF.Extentions.Redis;
 /// 1. To use as a proxy for a HealthCheck it should be registered as a Singleton.<br/>
 /// 2. This class does not dispose a connection - it is responsibility of a consumer (e.g. SignalR).<br/>
 /// </remarks>
-public class RedisConnectionFactoryProxy : /*IRedisConnectionFactory,*/ IRedisHealthConnectionProvider
+public class RedisConnectionFactoryProxy : IRedisConnectionFactory, IRedisHealthConnectionProvider
 {
 //TODO: return stored _connection?
 //TODO: store last exception?
-    private readonly RedisConnectionFactory _factory;
+    private readonly IRedisConnectionFactory _factory;
 
-    private volatile ConnectionMultiplexer? _lastConnection;
+    private volatile IConnectionMultiplexer? _lastConnection;
     private volatile bool _isRequested;
 
     public bool IsConnectionRequested => _isRequested;
-    public ConnectionMultiplexer? ActiveConnection => _lastConnection;
+    public IConnectionMultiplexer? ActiveConnection => _lastConnection;
 
-    public RedisConnectionFactoryProxy(RedisConnectionFactory factory)
+    public RedisConnectionFactoryProxy(IRedisConnectionFactory factory)
     {
         _factory = factory;
     }

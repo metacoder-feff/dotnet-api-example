@@ -153,7 +153,7 @@ static class InfrastructureModule
 
     // use same redis configurations for both connections: 
     // RedisConnectionManager & SignalR
-    private static void ConfigureRedis(IRedisConfigFactoryBuilder builder)
+    private static void ConfigureRedis(IRedisConfigurationFactoryBuilder builder)
     {
         builder
             .ReadConnectionString("Redis")

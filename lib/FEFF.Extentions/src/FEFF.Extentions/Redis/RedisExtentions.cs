@@ -7,9 +7,9 @@ public static class RedisExtentions
     // - if configured multiple masters\
     // - no errors from StackExchange.Redis
     // - undefined (untested) behavior 
-    public static void CheckConnection(this ConnectionMultiplexer c)
+    public static void CheckConnection(this IConnectionMultiplexer src)
     {
-        var servers = c.GetServers();
+        var servers = src.GetServers();
 
         var allStandalone = servers.All(x => x.ServerType == ServerType.Standalone);
         // TOOD: better message
