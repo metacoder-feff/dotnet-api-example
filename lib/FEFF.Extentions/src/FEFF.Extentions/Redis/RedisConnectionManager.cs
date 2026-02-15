@@ -1,35 +1,35 @@
-using Microsoft.Extensions.Options;
 using StackExchange.Redis;
-using StackExchange.Redis.KeyspaceIsolation;
+// using StackExchange.Redis.KeyspaceIsolation;
 
 namespace FEFF.Extentions.Redis;
 
-public sealed partial class RedisConnectionManager : IAsyncDisposable
+public sealed class RedisConnectionManager : IAsyncDisposable
 {
     private readonly SemaphoreLock _asyncLock = new();
-//TODO: freeze
-    private readonly Options _options;
+
+    private readonly RedisConnectionFactory _factory;
 
     // Automatically reconnects
     private volatile ConnectionMultiplexer? _connection;
-    public string? KeyPrefix => _options.KeyPrefix;
+    // public string? KeyPrefix => _options.KeyPrefix;
 
-    public RedisConnectionManager(IOptions<Options> o)
+    public RedisConnectionManager(RedisConnectionFactory factory)
     {
-        _options = o.Value;
+        _factory = factory;
     }
-    
+
     public async ValueTask DisposeAsync()
     {
         _asyncLock.Dispose();
 
         if (_connection != null)
         {
+            // send some finishing messages
             await _connection.DisposeAsync().ConfigureAwait(false);
             _connection = null;
         }
     }
-
+/*/
     public async Task<IDatabase> GetDatabaseAsync(CancellationToken token = default)
     {
         // for tests
@@ -48,7 +48,7 @@ public sealed partial class RedisConnectionManager : IAsyncDisposable
         // namespace for Redis keyspace DB API
         return res.WithKeyPrefix(prefix);
     }
-
+*/
     public async Task<ConnectionMultiplexer> GetConnectionAsync(CancellationToken cancellationToken = default)
     {
         // double-check (optimization)
@@ -60,16 +60,11 @@ public sealed partial class RedisConnectionManager : IAsyncDisposable
             if (_connection != null)
                 return _connection;
 
-            _connection = await ConnectAsync(cancellationToken).ConfigureAwait(false);
+//TODO (StackExchange.Redis): cancellationToken
+            _connection = await _factory.ConnectAsync().ConfigureAwait(false);
         }
 
         return _connection;
-    }
-
-    private async Task<ConnectionMultiplexer> ConnectAsync(CancellationToken cancellationToken)
-    {
-//TODO: cancellation
-        return await ConnectionMultiplexer.ConnectAsync(_options.ConfigurationOptions).ConfigureAwait(false);
     }
 }
 

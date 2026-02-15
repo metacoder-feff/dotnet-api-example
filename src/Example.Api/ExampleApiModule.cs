@@ -39,8 +39,10 @@ static class ExampleApiModule
             ))
             .ToArray();
 
-//TODO: BL + test
-        var db = await redis.GetDatabaseAsync();
+//TODO: BL + test + KeyPrefix
+        //var db = await redis.GetDatabaseAsync();
+        var connection = await redis.GetConnectionAsync();
+        var db = connection.GetDatabase();
         var cmd = await db.ListLeftPopAsync("commands");
         logger.LogDebug("cmd:{}", cmd);
 

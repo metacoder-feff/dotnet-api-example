@@ -145,6 +145,7 @@ public static class DependencyInjectionExtensions
     
     public static IServiceCollection AddRedisConnectioManager(this IServiceCollection services, Action<IRedisConfigFactoryBuilder> config)
     {
+        services.TryAddTransient<RedisConnectionFactory>();
         services.TryAddSingleton<RedisConnectionManager>();
         var builder = new Builder(services);
         config(builder);
@@ -153,7 +154,7 @@ public static class DependencyInjectionExtensions
 
     public static IRedisConfigBuilder Configure(this IRedisConfigBuilder builder,  Action<ConfigurationOptions> config)
     {
-        builder.Services.AddOptions<RedisConnectionManager.Options>()
+        builder.Services.AddOptions<RedisConnectionFactory.Options>()
             .Configure(x => config(x.ConfigurationOptions));
             
         return builder;
@@ -161,7 +162,7 @@ public static class DependencyInjectionExtensions
 
     public static IRedisConfigBuilder ReadConnectionString(this IRedisConfigFactoryBuilder builder, string connectionStringName, bool ignoreUnknown = false)
     {
-        builder.Services.AddOptions<RedisConnectionManager.Options>()
+        builder.Services.AddOptions<RedisConnectionFactory.Options>()
             .Configure<IConfiguration>((opts, conf) =>
             {
                 var cs = conf.GetRequiredConnectionString(connectionStringName);
@@ -173,7 +174,7 @@ public static class DependencyInjectionExtensions
 
     public static IRedisConfigBuilder ParseConfiguration(this IRedisConfigFactoryBuilder builder, string configuration, bool ignoreUnknown = false)
     {
-        builder.Services.AddOptions<RedisConnectionManager.Options>()
+        builder.Services.AddOptions<RedisConnectionFactory.Options>()
             .Configure( (opts) =>
                 opts.ConfigurationOptions = ConfigurationOptions.Parse(configuration, ignoreUnknown)
             );
@@ -182,7 +183,7 @@ public static class DependencyInjectionExtensions
     }
     public static IRedisConfigBuilder SetLoggerFactory(this IRedisConfigBuilder src)
     {
-        src.Services.AddOptions<RedisConnectionManager.Options>()
+        src.Services.AddOptions<RedisConnectionFactory.Options>()
         .Configure<ILoggerFactory>(
             (opt, factory) => opt.ConfigurationOptions.LoggerFactory = factory
         );
