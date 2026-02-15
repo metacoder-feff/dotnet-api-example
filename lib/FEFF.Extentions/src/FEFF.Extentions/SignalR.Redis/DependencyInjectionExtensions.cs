@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.SignalR.StackExchangeRedis;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using StackExchange.Redis;
 
 namespace Microsoft.AspNetCore.SignalR;
 
 using FEFF.Extentions.HealthChecks.Redis;
+using FEFF.Extentions.Redis;
 using FEFF.Extentions.SignalR.Redis;
 
 public static class SignalRBuilderExtention
@@ -14,9 +14,10 @@ public static class SignalRBuilderExtention
     /// 1. SignalR redis connection<br/>
     /// 2. Healthcheck of this redis connection
     /// </summary>
-    public static ISignalRServerBuilder AddRedisByConnectionFactory(this ISignalRServerBuilder builder)
+    public static ISignalRServerBuilder AddRedisByConnectionFactory(this ISignalRServerBuilder builder, Action<IRedisConfigFactoryBuilder> config)
     {
         builder.AddStackExchangeRedis();
+        builder.Services.AddRedisConnectionFactory(config);
 
         // this Singleton proxy stores a connection (last and single) to perform a HealthCheck
         builder.Services.TryAddSingleton<SignalRedisConnectionFactoryProxy>();
@@ -24,7 +25,7 @@ public static class SignalRBuilderExtention
         builder.Services
             .AddOptions<RedisOptions>()
             .Configure<SignalRedisConnectionFactoryProxy>((opts, rfc) =>
-                opts.ConnectionFactory = rfc.CreateConnectionAsync
+                opts.ConnectionFactory = rfc.ConnectAsync
             );
 
         return builder;

@@ -3,7 +3,7 @@ using StackExchange.Redis;
 
 namespace FEFF.Extentions.Redis;
 
-public class RedisConnectionFactory
+public class RedisConnectionFactory /*: IRedisConnectionFactory*/
 {
 //TODO: 'TextWriter? log' from options?
     private readonly ConfigurationOptions _options;

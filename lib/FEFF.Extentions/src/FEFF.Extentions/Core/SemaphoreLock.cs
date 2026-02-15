@@ -205,7 +205,7 @@ public sealed class SemaphoreLock: IDisposable
 
         /// <summary>
         /// Release the lock
-        /// Does not throw when <see cref="SemaphoreLock"/> is disposed.</br>
+        /// Does not throw when <see cref="SemaphoreLock"/> is disposed.
         /// </summary>
         public void Dispose()
         {

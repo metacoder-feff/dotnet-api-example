@@ -11,6 +11,7 @@ using StackExchange.Redis.Configuration;
 using FEFF.Extentions.EntityFrameworkCore;
 using FEFF.Extentions.HealthChecks;
 using FEFF.Extentions.OpenApi.NodaTime;
+using FEFF.Extentions.Redis;
 
 namespace Example.Api;
 using SignalR;
@@ -58,59 +59,7 @@ static class InfrastructureModule
         /*------------------------------------------------*/
         // RedisConnectioManager
         /*------------------------------------------------*/
-        services.AddRedisConnectioManager(builder => builder
-            .ReadConnectionString("Redis")
-            .SetLoggerFactory()
-            .Configure(options =>
-            {
-                // Enable reconnecting by default
-                options.AbortOnConnectFail = false;
-
-                // FROM 'SignalR.Connect()'
-                // suffix SignalR onto the declared library name
-                var provider = DefaultOptionsProvider.GetProvider(options.EndPoints);
-                options.LibraryName = $"{provider.LibraryName} FEFF+SignalR";
-
-                // trust all cerificates
-                options.CertificateValidation += delegate { return true; };
-//TODO: test with self-signed CA
-                //options.CertificateSelection  += SelectLocalCertificate;
-                //options.TrustIssuer("CA-path"); // or X509-obj (overload)
-
-                // also we can set ENV_variable: "SERedis_IssuerCertPath" targeting at "CA-path"
-                // see: https://github.com/StackExchange/StackExchange.Redis/blob/main/src/StackExchange.Redis/PhysicalConnection.cs#L1470C70-L1470C92
-            })
-        );
-
-//TODO: DRY
-        /*------------------------------------------------*/
-        // Redis
-        // setup one configuration for different connections
-        // (for different use cases)
-        /*------------------------------------------------*/
-        services.AddRedisConfiguration("Redis") // The name of 'connection-string to search' is argument here.
-            .AddLoggerFactory()
-            .Configure(options =>
-            {
-                // Enable reconnecting by default
-                options.AbortOnConnectFail = false;
-
-                // FROM 'SignalR.Connect()'
-                // suffix SignalR onto the declared library name
-                var provider = DefaultOptionsProvider.GetProvider(options.EndPoints);
-                options.LibraryName = $"{provider.LibraryName} FEFF+SignalR";
-
-                // trust all cerificates
-                options.CertificateValidation += delegate { return true; };
-//TODO: test with self-signed CA
-                //options.CertificateSelection  += SelectLocalCertificate;
-                //options.TrustIssuer("CA-path"); // or X509-obj (overload)
-
-                // also we can set ENV_variable: "SERedis_IssuerCertPath" targeting at "CA-path"
-                // see: https://github.com/StackExchange/StackExchange.Redis/blob/main/src/StackExchange.Redis/PhysicalConnection.cs#L1470C70-L1470C92
-            });
-            // Allow key space isolation (for tests)
-            //services.AddRedisDatabaseFactory();
+        services.AddRedisConnectionManager(ConfigureRedis);
 
         /*------------------------------------------------*/
         // SignalR
@@ -124,7 +73,7 @@ static class InfrastructureModule
             // provides a connection for SignalR via ConnectionFactory
             // and exports the connection to the healthcheck
             // the connection is managed (requested and disposed) by SignalR singleton service
-            .AddRedisByConnectionFactory()
+            .AddRedisByConnectionFactory(ConfigureRedis)
             ;
 
         /*------------------------------------------------*/
@@ -200,5 +149,33 @@ static class InfrastructureModule
         o.ReadCommentHandling    = JsonCommentHandling.Skip;
 
         o.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+    }
+
+    // use same redis configurations for both connections: 
+    // RedisConnectionManager & SignalR
+    private static void ConfigureRedis(IRedisConfigFactoryBuilder builder)
+    {
+        builder
+            .ReadConnectionString("Redis")
+            .SetLoggerFactory()
+            .Configure(options =>
+            {
+                // Enable reconnecting by default
+                options.AbortOnConnectFail = false;
+
+                // FROM 'SignalR.Connect()'
+                // suffix SignalR onto the declared library name
+                var provider = DefaultOptionsProvider.GetProvider(options.EndPoints);
+                options.LibraryName = $"{provider.LibraryName} FEFF+SignalR";
+
+                // trust all cerificates
+                options.CertificateValidation += delegate { return true; };
+//TODO: test with self-signed CA
+                //options.CertificateSelection  += SelectLocalCertificate;
+                //options.TrustIssuer("CA-path"); // or X509-obj (overload)
+
+                // also we can set ENV_variable: "SERedis_IssuerCertPath" targeting at "CA-path"
+                // see: https://github.com/StackExchange/StackExchange.Redis/blob/main/src/StackExchange.Redis/PhysicalConnection.cs#L1470C70-L1470C92
+            });
     }
 }
