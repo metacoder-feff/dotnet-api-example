@@ -54,7 +54,35 @@ static class InfrastructureModule
                 // overview
                 .AddRedisConnectionForSignalRCheck()
                 ;
+//TODO: DRY
+        /*------------------------------------------------*/
+        // RedisConnectioManager
+        /*------------------------------------------------*/
+        services.AddRedisConnectioManager(builder => builder
+            .ReadConnectionString("Redis")
+            .SetLoggerFactory()
+            .Configure(options =>
+            {
+                // Enable reconnecting by default
+                options.AbortOnConnectFail = false;
 
+                // FROM 'SignalR.Connect()'
+                // suffix SignalR onto the declared library name
+                var provider = DefaultOptionsProvider.GetProvider(options.EndPoints);
+                options.LibraryName = $"{provider.LibraryName} FEFF+SignalR";
+
+                // trust all cerificates
+                options.CertificateValidation += delegate { return true; };
+//TODO: test with self-signed CA
+                //options.CertificateSelection  += SelectLocalCertificate;
+                //options.TrustIssuer("CA-path"); // or X509-obj (overload)
+
+                // also we can set ENV_variable: "SERedis_IssuerCertPath" targeting at "CA-path"
+                // see: https://github.com/StackExchange/StackExchange.Redis/blob/main/src/StackExchange.Redis/PhysicalConnection.cs#L1470C70-L1470C92
+            })
+        );
+
+//TODO: DRY
         /*------------------------------------------------*/
         // Redis
         // setup one configuration for different connections

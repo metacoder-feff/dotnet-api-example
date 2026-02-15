@@ -2,6 +2,15 @@ using StackExchange.Redis;
 
 namespace FEFF.Extentions.Redis;
 
+public interface IRedisConfigBuilder
+{
+    IServiceCollection Services { get; }
+}
+
+public interface IRedisConfigFactoryBuilder : IRedisConfigBuilder
+{
+}
+
 public interface IRedisConfigurationBuilder
 {
     IServiceCollection Services { get; }
