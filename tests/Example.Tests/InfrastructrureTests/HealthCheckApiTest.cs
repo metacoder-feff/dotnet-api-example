@@ -114,6 +114,13 @@ public class HealthCheckApiTest : ApiTestBase
             "duration": "00:00:00.555",
             "checks": [
                 {
+                    "name": "redis-conn-2",
+                    "description": "Redis Connection is alive.",
+                    "duration": "00:00:00.555",
+                    "status": "healthy",
+                    "data": {}
+                },
+                {
                     "name": "RedisConnection_For_SignalR",
                     "description": "Redis Connection is alive.",
                     "duration": "00:00:00.555",
@@ -167,7 +174,7 @@ public class HealthCheckApiTest : ApiTestBase
     [Theory]
     [InlineData(true, HttpStatusCode.OK)]
     [InlineData(false, HttpStatusCode.InternalServerError)]
-    public async Task Overview__should__depend_on_redis(bool whenHealthy, HttpStatusCode healthcheckResult)
+    public async Task Overview__should__depend_on_redis_signalR(bool whenHealthy, HttpStatusCode healthcheckResult)
     {
         await SetupCheckedServices(redisHealthy: whenHealthy);
 
@@ -196,6 +203,37 @@ public class HealthCheckApiTest : ApiTestBase
             "checks": [
                 {
                     "name": "RedisConnection_For_SignalR",
+                    "status": "unhealthy",
+                },
+            ]
+        }
+        """);
+    }
+
+    [Theory]
+    [InlineData(true, HttpStatusCode.OK)]
+    [InlineData(false, HttpStatusCode.InternalServerError)]
+    public async Task Overview__should__depend_on_redis_conn_2(bool whenHealthy, HttpStatusCode healthcheckResult)
+    {
+        await SetupCheckedServices(redisHealthy: whenHealthy);
+
+        var timeout = 1.5;
+        if (whenHealthy == false) 
+            //timeout = 6;
+            timeout = 15;
+
+        var body = await GetProbeAsync(HealthAllUri, expected: healthcheckResult, timeout: timeout);
+        
+        // positive body is asserted in Overview__should_be__ok
+        if(whenHealthy)
+            return;
+
+        body.ParseJToken()
+            .Should().ContainSubtree("""
+        {
+            "checks": [
+                {
+                    "name": "redis-conn-2",
                     "status": "unhealthy",
                 },
             ]

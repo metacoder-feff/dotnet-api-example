@@ -54,8 +54,9 @@ static class InfrastructureModule
                 .AddDbContextCheck<WeatherContext>(tags: [HealthCheckTag.Readiness])
                 // overview
                 .AddRedisConnectionForSignalRCheck()
+                .AddRedisConnectionManagerHealthCheck("redis-conn-2");
                 ;
-//TODO: DRY
+        
         /*------------------------------------------------*/
         // RedisConnectioManager
         /*------------------------------------------------*/
