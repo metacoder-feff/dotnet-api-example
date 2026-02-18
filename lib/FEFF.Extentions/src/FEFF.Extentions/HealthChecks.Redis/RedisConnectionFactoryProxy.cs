@@ -35,6 +35,7 @@ public class RedisConnectionFactoryProxy : /*IRedisConnectionFactory,*/ IRedisHe
         _isRequested = true;
 
 //TODO (StackExchange.Redis): cancellationToken
+//TODO: DRY
         var res = await _factory.ConnectAsync(this.GetType(), log).ConfigureAwait(false);
 
         _lastConnection = res;

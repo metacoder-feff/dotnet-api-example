@@ -73,6 +73,7 @@ public class RedisConnectionManager : IAsyncDisposable
                 return _connection;
 
 //TODO (StackExchange.Redis): cancellationToken
+//TODO: DRY
             _connection = await _factory.ConnectAsync(this.GetType()).ConfigureAwait(false);
         }
 

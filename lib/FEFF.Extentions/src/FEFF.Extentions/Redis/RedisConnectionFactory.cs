@@ -12,18 +12,22 @@ public class RedisConnectionFactory
         _factory = factory;
     }
 
-    //TODO (StackExchange.Redis): cancellationToken
-    public async Task<IConnectionMultiplexer> ConnectAsync(Type discriminator, TextWriter? log = null)
+//TODO (StackExchange.Redis): cancellationToken
+    public async Task<IConnectionMultiplexer> ConnectAsync(Type? optionsDiscriminator = null, TextWriter? log = null)
     {
-        var name = GetTypeName(discriminator);
+        var name = GetTypeName(optionsDiscriminator);
         var opts = _factory.Create(name);
+        // thread-safe guard
+        var config = opts.ConfigurationOptions.Clone();
 
-        return await ConnectionMultiplexer.ConnectAsync(opts.ConfigurationOptions, log).ConfigureAwait(false);
+        return await ConnectionMultiplexer.ConnectAsync(config, log).ConfigureAwait(false);
     }
 
     // use consumer's TypeName as a key for named options
-    internal static string GetTypeName(Type t)
+    internal static string GetTypeName(Type? t)
     {
+        if(t == null)
+            return Microsoft.Extensions.Options.Options.DefaultName;
         return TypeHelper.GetTypeName(t);
     }
 
