@@ -7,18 +7,13 @@ public class RedisConnectionManager : IAsyncDisposable
 {
     private readonly SemaphoreLock _asyncLock = new();
 
-    private readonly IRedisConnectionFactory _factory;
+    private readonly RedisConnectionFactory _factory;
 
     // Automatically reconnects
     private volatile IConnectionMultiplexer? _connection;
     // public string? KeyPrefix => _options.KeyPrefix;
 
-    public RedisConnectionManager(RedisConnectionFactory<RedisConnectionManager> factory)
-    {
-        _factory = factory;
-    }
-
-    public RedisConnectionManager(IRedisConnectionFactory factory)
+    public RedisConnectionManager(RedisConnectionFactory factory)
     {
         _factory = factory;
     }
@@ -78,7 +73,7 @@ public class RedisConnectionManager : IAsyncDisposable
                 return _connection;
 
 //TODO (StackExchange.Redis): cancellationToken
-            _connection = await _factory.ConnectAsync().ConfigureAwait(false);
+            _connection = await _factory.ConnectAsync(this.GetType()).ConfigureAwait(false);
         }
 
         return _connection;

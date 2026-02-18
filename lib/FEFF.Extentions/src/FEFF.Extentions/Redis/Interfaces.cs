@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Options;
-using StackExchange.Redis;
+// using StackExchange.Redis;
 
 namespace FEFF.Extentions.Redis;
 
@@ -12,7 +12,7 @@ public interface IRedisConfigurationFactoryBuilder : IRedisConfigurationBuilder
 {
 }
 
-public interface IRedisConnectionFactory
-{
-    Task<IConnectionMultiplexer> ConnectAsync(TextWriter? log = null);
-}
+// public interface IRedisConnectionFactory
+// {
+//     Task<IConnectionMultiplexer> ConnectAsync(TextWriter? log = null);
+// }

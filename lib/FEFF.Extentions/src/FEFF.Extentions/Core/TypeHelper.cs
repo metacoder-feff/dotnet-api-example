@@ -9,4 +9,12 @@ public class TypeHelper
         ThrowHelper.Assert(name != null);
         return name;
     }
+
+    public static string GetTypeName(Type t)
+    {
+//TODO: no assert?
+        var name = t.FullName;
+        ThrowHelper.Assert(name != null);
+        return name;
+    }
 }
