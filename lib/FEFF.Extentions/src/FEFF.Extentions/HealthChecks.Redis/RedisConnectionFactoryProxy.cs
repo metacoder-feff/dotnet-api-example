@@ -30,13 +30,12 @@ public class RedisConnectionFactoryProxy : /*IRedisConnectionFactory,*/ IRedisHe
         _factory = factory;
     }
 
-    public async Task<IConnectionMultiplexer> ConnectAsync(TextWriter? log)
+    public async Task<IConnectionMultiplexer> ConnectAsync(TextWriter? log, CancellationToken cancellationToken = default)
     {
         _isRequested = true;
 
-//TODO (StackExchange.Redis): cancellationToken
 //TODO: DRY
-        var res = await _factory.ConnectAsync(this.GetType(), log).ConfigureAwait(false);
+        var res = await _factory.ConnectAsync(this.GetType(), log, cancellationToken).ConfigureAwait(false);
 
         _lastConnection = res;
 

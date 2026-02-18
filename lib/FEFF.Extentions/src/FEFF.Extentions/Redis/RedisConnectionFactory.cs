@@ -12,15 +12,16 @@ public class RedisConnectionFactory
         _factory = factory;
     }
 
-//TODO (StackExchange.Redis): cancellationToken
-    public async Task<IConnectionMultiplexer> ConnectAsync(Type? optionsDiscriminator = null, TextWriter? log = null)
+    public async Task<IConnectionMultiplexer> ConnectAsync(Type? optionsDiscriminator = null, TextWriter? log = null, CancellationToken cancellationToken = default)
     {
         var name = GetTypeName(optionsDiscriminator);
         var opts = _factory.Create(name);
         // thread-safe guard
         var config = opts.ConfigurationOptions.Clone();
 
-        return await ConnectionMultiplexer.ConnectAsync(config, log).ConfigureAwait(false);
+//TODO (StackExchange.Redis): cancellationToken
+        var t = ConnectionMultiplexer.ConnectAsync(config, log);
+        return await t.WaitAsync(cancellationToken).ConfigureAwait(false);
     }
 
     // use consumer's TypeName as a key for named options

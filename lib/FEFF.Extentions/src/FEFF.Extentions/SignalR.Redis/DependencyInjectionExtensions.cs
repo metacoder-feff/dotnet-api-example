@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.SignalR.StackExchangeRedis;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using StackExchange.Redis;
 
 namespace Microsoft.AspNetCore.SignalR;
 
@@ -33,6 +34,11 @@ public static class SignalRBuilderExtention
             );
 
         return builder;
+    }
+
+    private static Task<IConnectionMultiplexer> ConnectAsync(this SignalRedisConnectionFactoryProxy src, TextWriter? log)
+    {
+        return src.ConnectAsync(log : log);
     }
 
     /// <summary>
