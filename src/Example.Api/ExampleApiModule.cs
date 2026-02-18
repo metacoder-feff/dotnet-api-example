@@ -1,5 +1,4 @@
 using Example.Api.SignalR;
-using FEFF.Extentions.Redis;
 using NodaTime.Extensions;
 
 namespace Example.Api;
@@ -19,7 +18,7 @@ static class ExampleApiModule
         services.AddTransient<IEventSender, EventSender>();
     }
 
-    private static async Task<WeatherForecast[]> Get(ILogger<EventSender> logger,TimeProvider tp, Random rand, IEventSender sender, RedisConnectionManager redis)
+    private static async Task<WeatherForecast[]> Get(ILogger<EventSender> logger,TimeProvider tp, Random rand, IEventSender sender, RedisConnectionManager2 redis)
     {
         var summaries = new[]
         {

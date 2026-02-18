@@ -26,7 +26,7 @@ public static class DependencyInjectionExtensions
 // TODO: test different options created and used for different factories
         services.TryAddTransient<RedisConnectionFactory<TDiscriminator>>();
 
-        var name = NameHelper.GetTypeName<TDiscriminator>();
+        var name = TypeHelper.GetTypeName<TDiscriminator>();
         var optsBuilder = services.AddOptions<RedisConnectionFactory.Options>(name);
         var builder = new Builder(optsBuilder);
         config(builder);
@@ -34,11 +34,11 @@ public static class DependencyInjectionExtensions
         return services;
     }
 
-// TODO: multiple RedisConnectionManager
-    public static IServiceCollection AddRedisConnectionManager(this IServiceCollection services, Action<IRedisConfigurationFactoryBuilder> config)
+    public static IServiceCollection AddRedis<T>(this IServiceCollection services, Action<IRedisConfigurationFactoryBuilder> config)
+    where T: RedisConnectionManager
     {
-        services.TryAddSingleton<RedisConnectionManager>();
-        services.AddRedisConnectionFactory<RedisConnectionManager>(config);
+        services.TryAddSingleton<T>();
+        services.AddRedisConnectionFactory<T>(config);
         return services;
     }
 

@@ -20,7 +20,6 @@ static class InfrastructureModule
 {
     public const string PgConnectionStringName = "PgDb";
 
-
     public static void SetupServices(IServiceCollection services)
     {
         /*------------------------------------------------*/
@@ -54,13 +53,16 @@ static class InfrastructureModule
                 .AddDbContextCheck<WeatherContext>(tags: [HealthCheckTag.Readiness])
                 // overview
                 .AddRedisConnectionForSignalRCheck()
-                .AddRedisConnectionManagerHealthCheck("redis-conn-2");
+                //.AddRedisConnectionHealthCheck<RedisConnectionManager>("redis-conn-0")
+                .AddRedisConnectionHealthCheck<RedisConnectionManager2>("redis-conn-2")
                 ;
         
         /*------------------------------------------------*/
-        // RedisConnectioManager
+        // Redis connections (self managed)
         /*------------------------------------------------*/
-        services.AddRedisConnectionManager(ConfigureRedis);
+        // example of using multiple connections to same or different clusters
+        //services.AddRedis<RedisConnectionManager>(ConfigureRedis);
+        services.AddRedis<RedisConnectionManager2>(ConfigureRedis);
 
         /*------------------------------------------------*/
         // SignalR
@@ -70,7 +72,6 @@ static class InfrastructureModule
                 ConfigureJsonSerializer(o.PayloadSerializerOptions)
             )
             // RedisConnectionFactory(+Proxy)
-            // uses configuration defined above
             // provides a connection for SignalR via ConnectionFactory
             // and exports the connection to the healthcheck
             // the connection is managed (requested and disposed) by SignalR singleton service

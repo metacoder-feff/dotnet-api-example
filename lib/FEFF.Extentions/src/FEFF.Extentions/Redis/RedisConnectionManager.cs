@@ -3,8 +3,7 @@ using StackExchange.Redis;
 
 namespace FEFF.Extentions.Redis;
 
-//TODO: multiple singletons with different factories/options
-public sealed class RedisConnectionManager : IAsyncDisposable
+public class RedisConnectionManager : IAsyncDisposable
 {
     private readonly SemaphoreLock _asyncLock = new();
 
@@ -19,7 +18,24 @@ public sealed class RedisConnectionManager : IAsyncDisposable
         _factory = factory;
     }
 
+    public RedisConnectionManager(IRedisConnectionFactory factory)
+    {
+        _factory = factory;
+    }
+
     public async ValueTask DisposeAsync()
+    {
+        // Perform async cleanup.
+        await DisposeAsyncCore().ConfigureAwait(false);
+
+        // Dispose of unmanaged resources.
+        //Dispose(false);
+
+        // Suppress finalization.
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual async ValueTask DisposeAsyncCore()
     {
         _asyncLock.Dispose();
 

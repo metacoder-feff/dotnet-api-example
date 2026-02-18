@@ -1,18 +1,21 @@
 namespace Microsoft.Extensions.DependencyInjection;
 
 using FEFF.Extentions.HealthChecks.Redis;
+using FEFF.Extentions.Redis;
 
 public static class RedisHealthchecksExtentions
 {
-    public static IHealthChecksBuilder AddRedisConnectionManagerHealthCheck(
+    public static IHealthChecksBuilder AddRedisConnectionHealthCheck<T>(
         this IHealthChecksBuilder builder,
-        string name,
+        string? name = null,
         IEnumerable<string>? tags = null,
         TimeSpan? timeout = null)
+    where T: RedisConnectionManager
     {
         ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(name);
+        
+        name ??= TypeHelper.GetTypeName<T>();
 
-        return builder.AddCheck<RedisConnectionManagerHealthCheck>(name, null, tags, timeout);
+        return builder.AddCheck<RedisConnectionManagerHealthCheck<T>>(name, null, tags, timeout);
     }
 }

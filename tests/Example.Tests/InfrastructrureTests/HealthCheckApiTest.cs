@@ -113,6 +113,13 @@ public class HealthCheckApiTest : ApiTestBase
             "status": "healthy",
             "duration": "00:00:00.555",
             "checks": [
+                // {
+                //     "name": "redis-conn-0",
+                //     "description": "Redis Connection is alive.",
+                //     "duration": "00:00:00.555",
+                //     "status": "healthy",
+                //     "data": {}
+                // },
                 {
                     "name": "redis-conn-2",
                     "description": "Redis Connection is alive.",
@@ -120,7 +127,7 @@ public class HealthCheckApiTest : ApiTestBase
                     "status": "healthy",
                     "data": {}
                 },
-                {
+                            {
                     "name": "RedisConnection_For_SignalR",
                     "description": "Redis Connection is alive.",
                     "duration": "00:00:00.555",

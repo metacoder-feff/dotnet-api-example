@@ -1,16 +1,18 @@
 // some ideas from: 
 // https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/blob/master/src/HealthChecks.Redis/RedisHealthCheck.cs
 
-using FEFF.Extentions.Redis;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using StackExchange.Redis;
 
 namespace FEFF.Extentions.HealthChecks.Redis;
-internal class RedisConnectionManagerHealthCheck : IHealthCheck
-{
-    private RedisConnectionManager _redis;
+using FEFF.Extentions.Redis;
 
-    public RedisConnectionManagerHealthCheck(RedisConnectionManager m)
+internal class RedisConnectionManagerHealthCheck<T> : IHealthCheck
+where T: RedisConnectionManager
+{
+    private T _redis;
+
+    public RedisConnectionManagerHealthCheck(T m)
     {
         _redis = m;
     }

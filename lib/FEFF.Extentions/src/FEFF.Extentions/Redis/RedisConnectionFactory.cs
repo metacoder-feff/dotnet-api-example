@@ -37,18 +37,7 @@ where TDiscriminator : class
 
     private static Options GetOptions(IOptionsFactory<Options> factory)
     {
-        var name = NameHelper.GetTypeName<TDiscriminator>();
+        var name = TypeHelper.GetTypeName<TDiscriminator>();
         return factory.Create(name);
-    }
-}
-
-internal class NameHelper
-{
-    public static string GetTypeName<T>()
-    {
-//TODO: no assert?
-        var name = typeof(T).FullName;
-        ThrowHelper.Assert(name != null);
-        return name;
     }
 }
