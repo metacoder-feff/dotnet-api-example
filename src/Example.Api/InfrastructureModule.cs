@@ -59,6 +59,7 @@ static class InfrastructureModule
         
         /*------------------------------------------------*/
         // Redis connections (self managed)
+        // the connection is managed (requested and disposed) by RedisConnectionManager(2) singleton service
         /*------------------------------------------------*/
         // example of using multiple connections to same or different clusters
         //services.AddRedis<RedisConnectionManager>(ConfigureRedis);

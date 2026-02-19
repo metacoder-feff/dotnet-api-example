@@ -7,6 +7,7 @@ using StackExchange.Redis;
 namespace FEFF.Extentions.HealthChecks.Redis;
 using FEFF.Extentions.Redis;
 
+//TODO: DRY
 internal class RedisConnectionManagerHealthCheck<T> : IHealthCheck
 where T: RedisConnectionManager
 {

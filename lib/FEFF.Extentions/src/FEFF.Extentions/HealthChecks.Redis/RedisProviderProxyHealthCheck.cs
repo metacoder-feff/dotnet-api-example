@@ -12,12 +12,14 @@ public interface IRedisHealthConnectionProvider
     IConnectionMultiplexer? ActiveConnection { get; }
 }
 
-internal class RedisConnectionFactoryHealthCheck<T> : IHealthCheck
+//TODO: DRY
+//TODO: IRedisHealthConnectionProvider
+internal class RedisProviderProxyHealthCheck<T> : IHealthCheck
 where T: IRedisHealthConnectionProvider
 {
     private IRedisHealthConnectionProvider _redis;
 
-    public RedisConnectionFactoryHealthCheck(T m)
+    public RedisProviderProxyHealthCheck(T m)
     {
         _redis = m;
     }

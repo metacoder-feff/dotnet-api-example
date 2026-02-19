@@ -18,10 +18,10 @@ public static class SignalRBuilderExtention
     public static ISignalRServerBuilder AddRedisWithHealthCheckProxy(this ISignalRServerBuilder builder, Action<IRedisConfigurationFactoryBuilder> config)
     {
         // configure a redis connection
-        builder.Services.AddRedisProviderOptions<SignalRedisConnectionFactoryProxy>(config);
+        builder.Services.AddRedisProviderOptions<SignalRedisProviderProxy>(config);
 
         // this Singleton proxy stores a connection (last and single) to perform a HealthCheck
-        builder.Services.TryAddSingleton<SignalRedisConnectionFactoryProxy>();
+        builder.Services.TryAddSingleton<SignalRedisProviderProxy>();
 
         // add standard 'redis-module-for-SignalR'
         builder.AddStackExchangeRedis();
@@ -29,14 +29,14 @@ public static class SignalRBuilderExtention
         // configure 'redis-module-for-SignalR' with connection from 'SignalRedisConnectionFactoryProxy'
         builder.Services
             .AddOptions<RedisOptions>()
-            .Configure<SignalRedisConnectionFactoryProxy>((opts, rfc) =>
+            .Configure<SignalRedisProviderProxy>((opts, rfc) =>
                 opts.ConnectionFactory = rfc.ConnectAsync
             );
 
         return builder;
     }
 
-    private static Task<IConnectionMultiplexer> ConnectAsync(this SignalRedisConnectionFactoryProxy src, TextWriter? log)
+    private static Task<IConnectionMultiplexer> ConnectAsync(this SignalRedisProviderProxy src, TextWriter? log)
     {
         return src.ConnectAsync(log : log);
     }
@@ -67,6 +67,6 @@ public static class SignalRBuilderExtention
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(name);
 
-        return builder.AddCheck<RedisConnectionFactoryHealthCheck<SignalRedisConnectionFactoryProxy>>(name, null, tags, timeout);
+        return builder.AddCheck<RedisProviderProxyHealthCheck<SignalRedisProviderProxy>>(name, null, tags, timeout);
     }
 }
