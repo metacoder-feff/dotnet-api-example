@@ -2,7 +2,6 @@ using StackExchange.Redis;
 
 namespace FEFF.Extentions.HealthChecks.Redis;
 using FEFF.Extentions.Redis;
-using Microsoft.Extensions.Options;
 
 /// <summary>
 /// To use with external redis connection managers like 'SignalR' or 'Distributed cache.'<br/>
@@ -25,7 +24,7 @@ public class RedisConnectionFactoryProxy : RedisProviderBase, /*IRedisConnection
     public bool IsConnectionRequested => _isRequested;
     public IConnectionMultiplexer? ActiveConnection => _lastConnection;
 
-    public RedisConnectionFactoryProxy(IOptionsFactory<Options> factory) : base(factory)
+    public RedisConnectionFactoryProxy(IRedisProviderOptions options) : base(options)
     {
     }
 

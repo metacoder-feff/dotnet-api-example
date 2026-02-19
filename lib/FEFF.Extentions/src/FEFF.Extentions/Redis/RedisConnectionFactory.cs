@@ -3,8 +3,6 @@ using StackExchange.Redis;
 
 namespace FEFF.Extentions.Redis;
 
-//TODO (SRE): split connector/optionsfactory
-
 /// <summary>
 /// 1. Get options for consumer connection.<br/>
 /// 2. Organize task cancellation.<br/>
@@ -12,42 +10,57 @@ namespace FEFF.Extentions.Redis;
 /// </summary>
 public class RedisProviderBase
 {
-    private IOptionsFactory<Options> _factory;
+    private readonly ConfigurationOptions _options;
 
-    public RedisProviderBase(IOptionsFactory<Options> factory)
+    public RedisProviderBase(IRedisProviderOptions options)
     {
-        _factory = factory;
+        _options = options.ConfigurationOptions.Clone();
     }
 
     protected async Task<IConnectionMultiplexer> ConnectAsync(TextWriter? log = null, CancellationToken cancellationToken = default)
     {
-        var optionsDiscriminator = GetType();
-        var name = GetTypeName(optionsDiscriminator);
-        var opts = _factory.Create(name);
-        // thread-safe guard
-        var config = opts.ConfigurationOptions.Clone();
-
 //TODO (StackExchange.Redis): cancellationToken
-        var t = ConnectionMultiplexer.ConnectAsync(config, log);
+        var t = ConnectionMultiplexer.ConnectAsync(_options, log);
         return await t.WaitAsync(cancellationToken).ConfigureAwait(false);
     }
+}
 
-    // use consumer's TypeName as a key for named options
+public class RedisProviderOptions<T> : IRedisProviderOptions
+{
+    public ConfigurationOptions ConfigurationOptions => GetConfigurationOptions();
+
+    private readonly IOptionsFactory<RedisConfigurationOptions> _optionsFactory;
+
+    public RedisProviderOptions(IOptionsFactory<RedisConfigurationOptions> optionsFactory)
+    {
+        _optionsFactory = optionsFactory;
+    }
+
+    public ConfigurationOptions GetConfigurationOptions()
+    {
+        var name = OptionsNameHelper.GetTypeName<T>();
+        var opts = _optionsFactory.Create(name);
+        return opts.ConfigurationOptions;
+    }
+}
+
+public class RedisConfigurationOptions
+{
+    public ConfigurationOptions ConfigurationOptions { get; set; } = new();
+}
+
+// use consumer's TypeName as a key for named options
+internal static class OptionsNameHelper
+{
     internal static string GetTypeName(Type? optionsDiscriminator)
     {
         if(optionsDiscriminator == null)
-            return Microsoft.Extensions.Options.Options.DefaultName;
+            return Options.DefaultName; //Microsoft.Extensions.Options.Options.DefaultName = ""
         return TypeHelper.GetTypeName(optionsDiscriminator);
     }
 
-    // use consumer's TypeName as a key for named options
-    internal static string GetTypeName<TOptionsDiscriminator>() where TOptionsDiscriminator : class
+    internal static string GetTypeName<TOptionsDiscriminator>()
     {
         return GetTypeName(typeof(TOptionsDiscriminator));
-    }
-
-    public class Options
-    {
-        public ConfigurationOptions ConfigurationOptions { get; set; } = new();
     }
 }

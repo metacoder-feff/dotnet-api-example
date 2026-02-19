@@ -71,11 +71,10 @@ static class InfrastructureModule
             .AddJsonProtocol(o => 
                 ConfigureJsonSerializer(o.PayloadSerializerOptions)
             )
-            // RedisConnectionFactory(+Proxy)
             // provides a connection for SignalR via ConnectionFactory
             // and exports the connection to the healthcheck
             // the connection is managed (requested and disposed) by SignalR singleton service
-            .AddRedisByConnectionFactory(ConfigureRedis)
+            .AddRedisWithHealthCheckProxy(ConfigureRedis)
             ;
 
         /*------------------------------------------------*/

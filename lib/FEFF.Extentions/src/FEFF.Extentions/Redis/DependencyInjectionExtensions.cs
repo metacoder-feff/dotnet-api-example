@@ -10,25 +10,22 @@ public static class DependencyInjectionExtensions
 {
     // split interfaces for different use-cases
     // implement single realization for simplicity
-    internal record Builder(OptionsBuilder<RedisProviderBase.Options> OptionsBuilder) : IRedisConfigurationFactoryBuilder, IRedisConfigurationBuilder;
+    internal record Builder(OptionsBuilder<RedisConfigurationOptions> OptionsBuilder) : IRedisConfigurationFactoryBuilder, IRedisConfigurationBuilder;
     
     /// <summary>
-    /// Register transient <see cref="RedisProviderBase"/> with its configuration.
+    /// Register transient <see cref="RedisProviderOptions&lt;TDiscriminator&gt;"/> with its configuration.
     /// </summary>
-    /// <typeparam name="TDiscriminator">A type used to distinguish different configs/factories - typically a type of consumer of <see cref="RedisProviderBase"/></typeparam>
+    /// <typeparam name="TDiscriminator">A type used to distinguish different <see cref="IRedisProviderOptions"/> - typically a type of consumer - subtype of <see cref="RedisProviderBase"/></typeparam>
     /// <param name="config">The redis connection configuration delegate.</param>
-    /// <remarks>
-    /// RedisConnectionFactories with different 'TDiscriminator' have different configurations.
-    /// </remarks>
-    public static IServiceCollection AddRedisConnectionFactory<TDiscriminator>(this IServiceCollection services, Action<IRedisConfigurationFactoryBuilder> config)
+    public static IServiceCollection AddRedisProviderOptions<TDiscriminator>(this IServiceCollection services, Action<IRedisConfigurationFactoryBuilder> config)
     where TDiscriminator : class
     {
 // TODO: test different options created and used for different factories
-        services.TryAddTransient<RedisProviderBase>();
+        services.TryAddTransient<RedisProviderOptions<TDiscriminator>>();
 
         // use consumer's TypeName as a key for named options
-        var name = RedisProviderBase.GetTypeName<TDiscriminator>();
-        var optsBuilder = services.AddOptions<RedisProviderBase.Options>(name);
+        var name = OptionsNameHelper.GetTypeName<TDiscriminator>();
+        var optsBuilder = services.AddOptions<RedisConfigurationOptions>(name);
         var builder = new Builder(optsBuilder);
         config(builder);
 
@@ -39,7 +36,7 @@ public static class DependencyInjectionExtensions
     where T: RedisConnectionManager
     {
         services.TryAddSingleton<T>();
-        services.AddRedisConnectionFactory<T>(config);
+        services.AddRedisProviderOptions<T>(config);
         return services;
     }
 

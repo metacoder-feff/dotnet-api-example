@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 // using StackExchange.Redis.KeyspaceIsolation;
 
@@ -12,7 +11,11 @@ public class RedisConnectionManager : RedisProviderBase, IAsyncDisposable
     private volatile IConnectionMultiplexer? _connection;
     // public string? KeyPrefix => _options.KeyPrefix;
 
-    public RedisConnectionManager(IOptionsFactory<Options> factory) :base(factory)
+    public RedisConnectionManager(IRedisProviderOptions options) :base(options)
+    {
+    }
+
+    public RedisConnectionManager(RedisProviderOptions<RedisConnectionManager> options) :base(options)
     {
     }
 
