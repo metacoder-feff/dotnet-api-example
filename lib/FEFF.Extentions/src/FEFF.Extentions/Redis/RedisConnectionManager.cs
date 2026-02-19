@@ -1,21 +1,19 @@
+using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 // using StackExchange.Redis.KeyspaceIsolation;
 
 namespace FEFF.Extentions.Redis;
 
-public class RedisConnectionManager : IAsyncDisposable
+public class RedisConnectionManager : RedisProviderBase, IAsyncDisposable
 {
     private readonly SemaphoreLock _asyncLock = new();
-
-    private readonly RedisConnectionFactory _factory;
 
     // Automatically reconnects
     private volatile IConnectionMultiplexer? _connection;
     // public string? KeyPrefix => _options.KeyPrefix;
 
-    public RedisConnectionManager(RedisConnectionFactory factory)
+    public RedisConnectionManager(IOptionsFactory<Options> factory) :base(factory)
     {
-        _factory = factory;
     }
 
     public async ValueTask DisposeAsync()
@@ -69,11 +67,11 @@ public class RedisConnectionManager : IAsyncDisposable
 
         using (var l = await _asyncLock.EnterAsync(cancellationToken).ConfigureAwait(false))
         {
+            // double-check (guard)
             if (_connection != null)
                 return _connection;
 
-//TODO: DRY
-            _connection = await _factory.ConnectAsync(this.GetType(), cancellationToken:cancellationToken).ConfigureAwait(false);
+            _connection = await ConnectAsync(cancellationToken:cancellationToken).ConfigureAwait(false);
         }
 
         return _connection;

@@ -5,7 +5,7 @@ namespace FEFF.Extentions.Redis;
 
 public interface IRedisConfigurationBuilder
 {
-    OptionsBuilder<RedisConnectionFactory.Options> OptionsBuilder { get; }
+    OptionsBuilder<RedisProviderBase.Options> OptionsBuilder { get; }
 }
 
 public interface IRedisConfigurationFactoryBuilder : IRedisConfigurationBuilder

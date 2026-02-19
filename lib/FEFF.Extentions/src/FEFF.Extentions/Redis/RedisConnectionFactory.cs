@@ -10,17 +10,18 @@ namespace FEFF.Extentions.Redis;
 /// 2. Organize task cancellation.<br/>
 /// 2. Create and return connection.
 /// </summary>
-public class RedisConnectionFactory
+public class RedisProviderBase
 {
     private IOptionsFactory<Options> _factory;
 
-    public RedisConnectionFactory(IOptionsFactory<Options> factory)
+    public RedisProviderBase(IOptionsFactory<Options> factory)
     {
         _factory = factory;
     }
 
-    public async Task<IConnectionMultiplexer> ConnectAsync(Type? optionsDiscriminator = null, TextWriter? log = null, CancellationToken cancellationToken = default)
+    protected async Task<IConnectionMultiplexer> ConnectAsync(TextWriter? log = null, CancellationToken cancellationToken = default)
     {
+        var optionsDiscriminator = GetType();
         var name = GetTypeName(optionsDiscriminator);
         var opts = _factory.Create(name);
         // thread-safe guard
