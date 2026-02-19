@@ -31,8 +31,7 @@ internal static class RedisHealthHelper
     {
         connection.CheckConnection();
 
-//TODO: cancellationToken
-        await connection.GetDatabase().PingAsync().ConfigureAwait(false);
+        await connection.GetDatabase().PingAsync(cancellationToken:cancellationToken).ConfigureAwait(false);
 
         // check we have access to a Single Standalone Master 
         var servers = connection.GetServers();
@@ -40,8 +39,7 @@ internal static class RedisHealthHelper
         if (s == null)
             return "Single Standalone Master not found";
 
-//TODO: cancellationToken
-        await s.PingAsync().ConfigureAwait(false);
+        await s.PingAsync(cancellationToken:cancellationToken).ConfigureAwait(false);
 // TODO: test can write
 
 // TODO: add another check for replica

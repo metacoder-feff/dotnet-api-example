@@ -48,6 +48,14 @@ public static class RedisExtentions
     }
 
     /// <summary>
+    /// Adds CancellationToken support to <see cref="IRedisAsync.PingAsync"/>.
+    /// </summary>
+    public static async Task<TimeSpan> PingAsync(this IRedisAsync src, CommandFlags flags = CommandFlags.None, CancellationToken cancellationToken = default)
+    {
+        var t = src.PingAsync(flags);
+        return await t.WaitAsync(cancellationToken).ConfigureAwait(false);
+    }
+    /// <summary>
     /// Adds CancellationToken support to <see cref="ConnectionMultiplexer.ConnectAsync(ConfigurationOptions, TextWriter?)"/>.
     /// </summary>
     public static async Task<ConnectionMultiplexer> ConnectAsync(ConfigurationOptions options, TextWriter? log = null, CancellationToken cancellationToken = default)
