@@ -47,6 +47,16 @@ public static class RedisExtentions
         return (p, s);
     }
 
+    /// <summary>
+    /// Adds CancellationToken support to <see cref="ConnectionMultiplexer.ConnectAsync(ConfigurationOptions, TextWriter?)"/>.
+    /// </summary>
+    public static async Task<ConnectionMultiplexer> ConnectAsync(ConfigurationOptions options, TextWriter? log = null, CancellationToken cancellationToken = default)
+    {
+//TODO (StackExchange.Redis): cancellationToken
+        var t = ConnectionMultiplexer.ConnectAsync(options, log);
+        return await t.WaitAsync(cancellationToken).ConfigureAwait(false);
+    }
+
     //https://github.com/StackExchange/StackExchange.Redis/blob/00711481f92c06ccd4f83886e3d2b6e70718206b/src/StackExchange.Redis/ResultProcessor.cs#L585
     // public static bool TryParse(in RawResult result, out SortedSetEntry? entry)
     // {

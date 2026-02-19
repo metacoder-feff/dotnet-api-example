@@ -4,8 +4,7 @@ namespace FEFF.Extentions.Redis;
 
 /// <summary>
 /// 1. Get redis options.<br/>
-/// 2. Organize task cancellation.<br/>
-/// 3. Create and return connection.
+/// 2. Use ConnectAsync cancellation extention.
 /// </summary>
 public class RedisProviderBase
 {
@@ -16,10 +15,8 @@ public class RedisProviderBase
         _options = options.ConfigurationOptions.Clone();
     }
 
-    protected async Task<IConnectionMultiplexer> ConnectAsync(TextWriter? log = null, CancellationToken cancellationToken = default)
+    protected async Task<ConnectionMultiplexer> ConnectAsync(TextWriter? log = null, CancellationToken cancellationToken = default)
     {
-//TODO (StackExchange.Redis): cancellationToken
-        var t = ConnectionMultiplexer.ConnectAsync(_options, log);
-        return await t.WaitAsync(cancellationToken).ConfigureAwait(false);
+        return await RedisExtentions.ConnectAsync(_options, log, cancellationToken);
     }
 }
