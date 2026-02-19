@@ -34,7 +34,10 @@
 + exceptions at 'WebApplicationBuilder.Build()' are logged + tests
 + appsettings.secrets.json + gitignore
 + Redis + tests
-  + DI container: ConfigureOptions using ConnectionString
+  + BL example
+  + DI container: Singleton 'RedisConnectionManager'
+  + DI container: ConfigureOptions using ConnectionString + delegate
+  + RedisConnection HealthCheck (overview)
 + SignalR + tests
   + ConfigureJsonSerializer
   + Redis (via DI container)
