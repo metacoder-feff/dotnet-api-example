@@ -3,6 +3,13 @@ using StackExchange.Redis;
 
 namespace FEFF.Extentions.Redis;
 
+//TODO (SRE): split connector/optionsfactory
+
+/// <summary>
+/// 1. Get options for consumer connection.<br/>
+/// 2. Organize task cancellation.<br/>
+/// 2. Create and return connection.
+/// </summary>
 public class RedisConnectionFactory
 {
     private IOptionsFactory<Options> _factory;
@@ -25,17 +32,17 @@ public class RedisConnectionFactory
     }
 
     // use consumer's TypeName as a key for named options
-    internal static string GetTypeName(Type? t)
+    internal static string GetTypeName(Type? optionsDiscriminator)
     {
-        if(t == null)
+        if(optionsDiscriminator == null)
             return Microsoft.Extensions.Options.Options.DefaultName;
-        return TypeHelper.GetTypeName(t);
+        return TypeHelper.GetTypeName(optionsDiscriminator);
     }
 
     // use consumer's TypeName as a key for named options
-    internal static string GetTypeName<TDiscriminator>() where TDiscriminator : class
+    internal static string GetTypeName<TOptionsDiscriminator>() where TOptionsDiscriminator : class
     {
-        return GetTypeName(typeof(TDiscriminator));
+        return GetTypeName(typeof(TOptionsDiscriminator));
     }
 
     public class Options
