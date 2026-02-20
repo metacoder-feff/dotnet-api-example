@@ -113,21 +113,21 @@ public class HealthCheckApiTest : ApiTestBase
             "status": "healthy",
             "duration": "00:00:00.555",
             "checks": [
+                {
+                    "name": "FEFF.Extentions.Redis.RedisConnectionManager",
+                    "description": "Redis Connection is alive.",
+                    "duration": "00:00:00.555",
+                    "status": "healthy",
+                    "data": {}
+                },
                 // {
-                //     "name": "redis-conn-0",
+                //     "name": "redis-conn-2",
                 //     "description": "Redis Connection is alive.",
                 //     "duration": "00:00:00.555",
                 //     "status": "healthy",
                 //     "data": {}
                 // },
                 {
-                    "name": "redis-conn-2",
-                    "description": "Redis Connection is alive.",
-                    "duration": "00:00:00.555",
-                    "status": "healthy",
-                    "data": {}
-                },
-                            {
                     "name": "RedisConnection_For_SignalR",
                     "description": "Redis Connection is alive.",
                     "duration": "00:00:00.555",
@@ -240,7 +240,8 @@ public class HealthCheckApiTest : ApiTestBase
         {
             "checks": [
                 {
-                    "name": "redis-conn-2",
+                    //"name": "redis-conn-2",
+                    "name": "FEFF.Extentions.Redis.RedisConnectionManager",
                     "status": "unhealthy",
                 },
             ]

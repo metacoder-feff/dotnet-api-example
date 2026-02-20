@@ -1,11 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;
+using FEFF.Extentions.Redis;
 
 using Example.Api;
 
 namespace Example.Tests;
 
-public class ApiTestBase: IAsyncLifetime
+public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
 {
     private readonly string DbName = $"Weather-test-{Guid.NewGuid()}";
 
@@ -46,16 +47,17 @@ public class ApiTestBase: IAsyncLifetime
         _appFixture = new(AppBuilder);
         _frf = new(AppBuilder);
         _fft = new(AppBuilder);
-        // TODO: fixture as an Action
+// TODO: fixture as an Action
         _ = new DbNameFixture(AppBuilder, DbName, InfrastructureModule.PgConnectionStringName);
-        _ = new RedisPrefixFixture(AppBuilder, DbName);
+        _ = new RedisPrefixFixture<RedisConnectionManager>(AppBuilder, DbName);
+//TODO: channel prefix for SignalR        
     }
 
     #region IAsyncLifetime
-    public virtual ValueTask InitializeAsync()
-    {
-        return ValueTask.CompletedTask;
-    }
+    // public virtual ValueTask InitializeAsync()
+    // {
+    //     return ValueTask.CompletedTask;
+    // }
 
     // Public implementation of Dispose pattern callable by consumers.
     public async ValueTask DisposeAsync()
