@@ -12,6 +12,24 @@ public static class DependencyInjectionExtensions
     // implement single realization for simplicity
     internal record Builder(OptionsBuilder<RedisConfigurationOptions> OptionsBuilder) : IRedisConfigurationFactoryBuilder, IRedisConfigurationBuilder;
     
+    public static IServiceCollection AddRedis<T>(this IServiceCollection services, Action<IRedisConfigurationFactoryBuilder> config)
+    where T: RedisConnectionManager
+    {
+        services.TryAddSingleton<T>();
+        services.AddRedisProviderOptions<T>(config);
+        services.TryAddTransient<RedisDatabaseProvider<T>>();
+        return services;
+    }
+
+//TODO: keyed
+    public static IServiceCollection AddRedisInterfacesFor<T>(this IServiceCollection services)
+    where T: RedisConnectionManager
+    {
+        services.AddInterfaceForImplementation<IRedisConnectionProvider, T>();
+        services.AddInterfaceForImplementation<IRedisDatabaseProvider, RedisDatabaseProvider<T>>();
+        return services;
+    }
+
     /// <summary>
     /// Register transient <see cref="RedisProviderOptions&lt;&gt;"/> with its configuration.
     /// </summary>
@@ -29,15 +47,6 @@ public static class DependencyInjectionExtensions
         var builder = new Builder(optsBuilder);
         config(builder);
 
-        return services;
-    }
-
-    public static IServiceCollection AddRedis<T>(this IServiceCollection services, Action<IRedisConfigurationFactoryBuilder> config)
-    where T: RedisConnectionManager
-    {
-        services.TryAddSingleton<T>();
-        services.AddRedisProviderOptions<T>(config);
-        services.TryAddTransient<RedisDatabaseProvider<T>>();
         return services;
     }
 

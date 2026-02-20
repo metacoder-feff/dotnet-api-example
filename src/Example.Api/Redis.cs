@@ -1,4 +1,4 @@
-
+/*
 using FEFF.Extentions.Redis;
 
 namespace Example.Api;
@@ -10,3 +10,4 @@ internal class RedisConnectionManager2 : RedisConnectionManager
     {
     }
 }
+*/
