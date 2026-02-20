@@ -42,21 +42,8 @@ static class InfrastructureModule
         //     o.ConfigureNodaTime()
         // );
         // workaround - add to csproj
-        // <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.OpenApi.Generated</InterceptorsNamespaces>   
+        // <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.OpenApi.Generated</InterceptorsNamespaces>
 
-        /*------------------------------------------------*/
-        // Health
-        /*------------------------------------------------*/
-        services.AddHealthChecks()
-                .AddSimpleLivenessCheck()
-                // readiness
-                .AddDbContextCheck<WeatherContext>(tags: [HealthCheckTag.Readiness])
-                // overview
-                .AddRedisConnectionForSignalRCheck()
-                .AddRedisConnectionCheck<RedisConnectionManager>()
-                //.AddRedisConnectionCheck<RedisConnectionManager2>("redis-conn-2")
-                ;
-        
         /*------------------------------------------------*/
         // Redis connections (self managed)
         // the connection is managed (requested and disposed) by RedisConnectionManager(2) singleton service
@@ -100,6 +87,20 @@ static class InfrastructureModule
             var i = sp.GetRequiredService<CreatedAtUpdatedAtInterceptor>();
             opt.AddInterceptors(i);
         });
+
+        /*------------------------------------------------*/
+        // Health
+        /*------------------------------------------------*/
+        services.AddHealthChecks()
+            // liveness:
+            .AddSimpleLivenessCheck()
+            // readiness:
+            .AddDbContextCheck<WeatherContext>(tags: [HealthCheckTag.Readiness])
+            // overview - all above plus:
+            .AddRedisConnectionForSignalRCheck()
+            .AddRedisConnectionCheck<RedisConnectionManager>()
+            //.AddRedisConnectionCheck<RedisConnectionManager2>("redis-conn-2")
+            ;
     }
 
     public static void SetupPipeline(WebApplication app)
