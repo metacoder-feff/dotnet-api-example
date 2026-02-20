@@ -13,16 +13,16 @@ internal static class RedisHealthHelper
     {
         try
         {
-//TODO: timeouts        
-                var error = await CheckHealthAsync(conn, cancellationToken);
-                if (error != null)
-                    return new HealthCheckResult(registration.FailureStatus, "Redis HealthCheck failure: " + error);
+//TODO: timeouts
+            var error = await CheckHealthAsync(conn, cancellationToken);
+            if (error != null)
+                return new HealthCheckResult(registration.FailureStatus, "Redis HealthCheck failure: " + error);
 
-                return HealthCheckResult.Healthy("Redis Connection is alive.");
+            return HealthCheckResult.Healthy("Redis Connection is alive.");
         }
         catch (Exception ex)
         {
-                return new HealthCheckResult(registration.FailureStatus, "Redis HealthCheck exception.", ex);
+            return new HealthCheckResult(registration.FailureStatus, "Redis HealthCheck exception.", ex);
         }
         
     }

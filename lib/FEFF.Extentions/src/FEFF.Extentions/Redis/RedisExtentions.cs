@@ -12,17 +12,18 @@ public static class RedisExtentions
         var servers = src.GetServers();
 
         var allStandalone = servers.All(x => x.ServerType == ServerType.Standalone);
-        // TOOD: better message
+// TODO: better message
         if (allStandalone == false)
             throw new InvalidOperationException("Not all servers have type 'Standalone'.");
 
-        var masterCnt = servers.Where(x => x.IsReplica == false && x.IsConnected).Count();
+        var masterCnt = servers.Count(x => x.IsReplica == false && x.IsConnected);
         if (masterCnt > 1)
             throw new InvalidOperationException("More than ONE master Standalone defined for redis connection.");
     }
 
 //TODO: add tests
-    public static async Task<(long position, double score)?> SortedSetRankWithScoreAsync(this IDatabase db, RedisKey key, RedisValue member, Order order = Order.Ascending, CommandFlags flags = CommandFlags.None)
+//TODO: cancellation/ new request model
+    public static async Task<(long position, double score)?> SortedSetRankWithScoreAsync(this IDatabaseAsync db, RedisKey key, RedisValue member, Order order = Order.Ascending, CommandFlags flags = CommandFlags.None)
     {
         //https://github.com/StackExchange/StackExchange.Redis/blob/main/src/StackExchange.Redis/RedisDatabase.cs
         //order == Order.Descending ? RedisCommand.ZREVRANK : RedisCommand.ZRANK
@@ -50,6 +51,7 @@ public static class RedisExtentions
     /// <summary>
     /// Adds CancellationToken support to <see cref="IRedisAsync.PingAsync"/>.
     /// </summary>
+//TODO: new request model
     public static async Task<TimeSpan> PingAsync(this IRedisAsync src, CommandFlags flags = CommandFlags.None, CancellationToken cancellationToken = default)
     {
         var t = src.PingAsync(flags);
