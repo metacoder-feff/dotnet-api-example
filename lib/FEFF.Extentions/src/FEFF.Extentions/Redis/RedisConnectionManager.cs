@@ -1,20 +1,20 @@
 using StackExchange.Redis;
-// using StackExchange.Redis.KeyspaceIsolation;
 
 namespace FEFF.Extentions.Redis;
 
-public class RedisConnectionManager : RedisProviderBase, IAsyncDisposable
+public class RedisConnectionManager : RedisProviderBase, IRedisConnectionProvider, IAsyncDisposable
 {
     private readonly SemaphoreLock _asyncLock = new();
 
     // Automatically reconnects
     private volatile IConnectionMultiplexer? _connection;
-    // public string? KeyPrefix => _options.KeyPrefix;
 
+    // for subclasses
     public RedisConnectionManager(IRedisProviderOptions options) :base(options)
     {
     }
 
+    // for registring this class in DI
     public RedisConnectionManager(RedisProviderOptions<RedisConnectionManager> options) :base(options)
     {
     }
@@ -42,26 +42,7 @@ public class RedisConnectionManager : RedisProviderBase, IAsyncDisposable
             _connection = null;
         }
     }
-/*/
-    public async Task<IDatabase> GetDatabaseAsync(CancellationToken token = default)
-    {
-        // for tests
-        var prefix = _options.KeyPrefix;
 
-        // namespace for Redis pub/sub API
-        // if (prefix.IsNullOrEmpty() == false)
-        //     o.Configuration.ChannelPrefix = RedisChannel.Literal(prefix)
-
-        var c = await GetConnectionAsync(token).ConfigureAwait(false);
-
-        var res = c.GetDatabase();
-        if (prefix.IsNullOrEmpty())
-            return res;
-
-        // namespace for Redis keyspace DB API
-        return res.WithKeyPrefix(prefix);
-    }
-*/
     public async Task<IConnectionMultiplexer> GetConnectionAsync(CancellationToken cancellationToken = default)
     {
         // double-check (optimization)
@@ -80,4 +61,3 @@ public class RedisConnectionManager : RedisProviderBase, IAsyncDisposable
         return _connection;
     }
 }
-

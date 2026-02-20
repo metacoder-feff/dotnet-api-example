@@ -37,6 +37,7 @@ public static class DependencyInjectionExtensions
     {
         services.TryAddSingleton<T>();
         services.AddRedisProviderOptions<T>(config);
+        services.TryAddTransient<RedisDatabaseProvider<T>>();
         return services;
     }
 

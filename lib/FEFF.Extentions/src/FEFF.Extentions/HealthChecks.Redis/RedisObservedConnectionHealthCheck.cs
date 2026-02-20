@@ -6,19 +6,19 @@ using StackExchange.Redis;
 
 namespace FEFF.Extentions.HealthChecks.Redis;
 
-public interface IRedisHealthConnectionProvider
+// A connection is not created and/or disposed by implementation of this interface.
+public interface IRedisConnectionObservable
 {
     bool IsConnectionRequested { get; }
     IConnectionMultiplexer? ActiveConnection { get; }
 }
 
-//TODO: IRedisHealthConnectionProvider
-internal class RedisProviderProxyHealthCheck<T> : IHealthCheck
-where T: IRedisHealthConnectionProvider
+internal class RedisObservedConnectionHealthCheck<T> : IHealthCheck
+where T: IRedisConnectionObservable
 {
-    private IRedisHealthConnectionProvider _redis;
+    private IRedisConnectionObservable _redis;
 
-    public RedisProviderProxyHealthCheck(T m)
+    public RedisObservedConnectionHealthCheck(T m)
     {
         _redis = m;
     }
@@ -26,11 +26,11 @@ where T: IRedisHealthConnectionProvider
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
         if(_redis.IsConnectionRequested == false)
-            return HealthCheckResult.Healthy("RedisConnectionFactory has not been requested yet.");
+            return HealthCheckResult.Healthy("RedisConnection has not been requested yet.");
 
         var conn = _redis.ActiveConnection;
         if(conn == null)
-            return HealthCheckResult.Unhealthy("RedisConnectionFactory is starting a connection.");
+            return HealthCheckResult.Unhealthy("RedisConnection is starting.");
 
 //TODO: _redis.LastConnectionException
 

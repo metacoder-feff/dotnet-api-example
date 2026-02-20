@@ -53,8 +53,8 @@ static class InfrastructureModule
                 .AddDbContextCheck<WeatherContext>(tags: [HealthCheckTag.Readiness])
                 // overview
                 .AddRedisConnectionForSignalRCheck()
-                //.AddRedisConnectionHealthCheck<RedisConnectionManager>("redis-conn-0")
-                .AddRedisConnectionHealthCheck<RedisConnectionManager2>("redis-conn-2")
+                //.AddRedisConnectionCheck<RedisConnectionManager>()
+                .AddRedisConnectionCheck<RedisConnectionManager2>("redis-conn-2")
                 ;
         
         /*------------------------------------------------*/
@@ -64,6 +64,8 @@ static class InfrastructureModule
         // example of using multiple connections to same or different clusters
         //services.AddRedis<RedisConnectionManager>(ConfigureRedis);
         services.AddRedis<RedisConnectionManager2>(ConfigureRedis);
+//TODO: lib        
+        services.AddInterfaceForImplementation<IRedisDatabaseProvider, RedisDatabaseProvider<RedisConnectionManager2>>();
 
         /*------------------------------------------------*/
         // SignalR

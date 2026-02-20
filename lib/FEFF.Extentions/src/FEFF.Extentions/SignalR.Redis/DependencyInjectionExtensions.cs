@@ -67,6 +67,6 @@ public static class SignalRBuilderExtention
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(name);
 
-        return builder.AddCheck<RedisProviderProxyHealthCheck<SignalRedisProviderProxy>>(name, null, tags, timeout);
+        return builder.AddCheck<RedisObservedConnectionHealthCheck<SignalRedisProviderProxy>>(name, null, tags, timeout);
     }
 }

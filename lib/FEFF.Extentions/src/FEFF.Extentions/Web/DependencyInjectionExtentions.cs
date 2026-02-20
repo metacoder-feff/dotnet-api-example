@@ -6,6 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 //TODO: split namespaces/files
 public static class DependencyInjectionExtentions
 {
+//TODO: keyed
     public static IServiceCollection AddInterfaceForImplementation<TService, TImplementation>(this IServiceCollection services)
         where TImplementation     : class, TService
         where TService : class

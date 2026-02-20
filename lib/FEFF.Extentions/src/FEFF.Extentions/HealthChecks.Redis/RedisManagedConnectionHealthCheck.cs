@@ -6,12 +6,12 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 namespace FEFF.Extentions.HealthChecks.Redis;
 using FEFF.Extentions.Redis;
 
-internal class RedisConnectionManagerHealthCheck<T> : IHealthCheck
-where T: RedisConnectionManager
+internal class RedisManagedConnectionHealthCheck<T> : IHealthCheck
+where T: IRedisConnectionProvider
 {
     private T _redis;
 
-    public RedisConnectionManagerHealthCheck(T m)
+    public RedisManagedConnectionHealthCheck(T m)
     {
         _redis = m;
     }
