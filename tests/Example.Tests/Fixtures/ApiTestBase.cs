@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;
+
 using FEFF.Extentions.Redis;
+using FEFF.Extentions.SignalR.Redis;
 
 using Example.Api;
 
@@ -49,8 +51,10 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
         _fft = new(AppBuilder);
 // TODO: fixture as an Action
         _ = new DbNameFixture(AppBuilder, DbName, InfrastructureModule.PgConnectionStringName);
+        // KeyPrefix and ChannelPrefix for main redis connection
         _ = new RedisPrefixFixture<RedisConnectionManager>(AppBuilder, DbName);
-//TODO: channel prefix for SignalR        
+        // channel prefix for SignalR redis connection
+        _ = new RedisChannelPrefixFixture<SignalRedisProviderProxy>(AppBuilder, DbName);
     }
 
     #region IAsyncLifetime
