@@ -25,6 +25,7 @@ where TRedisProvider : RedisProviderBase
 }
 
 // DI: Named options
+//TODO: remove
 public class RedisConfigurationOptions
 {
     public ConfigurationOptions ConfigurationOptions { get; set; } = new();

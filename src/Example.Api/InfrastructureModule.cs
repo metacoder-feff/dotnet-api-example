@@ -46,12 +46,13 @@ static class InfrastructureModule
 
         /*------------------------------------------------*/
         // Redis connections (self managed)
-        // the connection is managed (requested and disposed) by RedisConnectionManager(2) singleton service
+        // the connection is managed (requested and disposed) by RedisConnectionManager singleton service
         /*------------------------------------------------*/
         services.AddRedis<RedisConnectionManager>(ConfigureRedis);
+        // we can register multiple subclases of 'RedisConnectionManager' but here we use only one
+        // Add interfaces to registred above services
+        // for easier use
         services.AddRedisInterfacesFor<RedisConnectionManager>();
-        // example of using multiple connections to same or different clusters
-        //services.AddRedis<RedisConnectionManager2>(ConfigureRedis);
 
         /*------------------------------------------------*/
         // SignalR
@@ -99,7 +100,6 @@ static class InfrastructureModule
             // overview - all above plus:
             .AddRedisConnectionForSignalRCheck()
             .AddRedisConnectionCheck<RedisConnectionManager>()
-            //.AddRedisConnectionCheck<RedisConnectionManager2>("redis-conn-2")
             ;
     }
 
