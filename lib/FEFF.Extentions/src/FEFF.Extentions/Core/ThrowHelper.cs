@@ -15,11 +15,26 @@ public static class ThrowHelper
         [DoesNotReturnIf(false)]
             bool argument,
         [CallerArgumentExpression(nameof(argument))]
-            string? paramName = null)
+            string? argumentExpression = null)
     {
         if (argument == false)
         {
-            throw new InvalidOperationException($"Assertion violated: '{paramName}'");
+            throw new InvalidOperationException($"Assertion violated: '{argumentExpression}'");
+        }
+    }
+
+    public static class Argument
+    {
+        public static void ThrowIfNullOrEmpty<T>(
+            [NotNull]
+                IEnumerable<T>? argument,
+            [CallerArgumentExpression(nameof(argument))]
+                string? paramName = null)
+        {
+            ArgumentNullException.ThrowIfNull(argument, paramName);
+
+            if(argument.Any() == false)
+                throw new ArgumentException("The value cannot be an empty collection.", paramName);
         }
     }
 }
