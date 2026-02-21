@@ -37,4 +37,34 @@ public static class ThrowHelper
                 throw new ArgumentException("The value cannot be an empty collection.", paramName);
         }
     }
+/* Alternative  'extensible' way
+    public interface IArgumentExceptionFactory
+    {
+        [DoesNotReturn]
+        void Throw(string? message, string? paramName);
+    }
+
+    public class ArgumentExceptionFactory : IArgumentExceptionFactory
+    {
+        [DoesNotReturn]
+        public void Throw(string? message, string? paramName)
+        {
+            throw new ArgumentException(message, paramName);
+        }
+    }
+
+    public static readonly ArgumentExceptionFactory Argument = new ();
+
+    public static void ThrowIfNullOrEmpty<T>(this IArgumentExceptionFactory src,
+        [NotNull]
+            IEnumerable<T>? argument,
+        [CallerArgumentExpression(nameof(argument))]
+            string? paramName = null)
+    {
+        ArgumentNullException.ThrowIfNull(argument, paramName);
+
+        if(argument.Any() == false)
+            src.Throw("The value cannot be an empty collection.", paramName);
+    }
+    //*/
 }
