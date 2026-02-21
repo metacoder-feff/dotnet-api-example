@@ -32,11 +32,11 @@ public sealed class SemaphoreLock: IDisposable
 
     // awaiting _semaphore.WaitAsync() would not return after _semaphore.Dispose()
     // => use _disposingToken to return control to client from [Try]EnterAsync()
-    // using linked token not allows to return when _semaphore is disposed
+    // using linked token does not allow returning the control when _semaphore is disposed
     // => we must use Task.WaitAsync(_disposingToken)
     // [or await task before dispose but it is more complex]
     private readonly CancellationToken _disposingToken;
-    private readonly CancellationTokenSource _disposingCTS = new();
+    private readonly CancellationTokenSource _disposingCTS;
     private volatile bool _isDisposed = false;
 
     /// <summary>
@@ -61,6 +61,8 @@ public sealed class SemaphoreLock: IDisposable
         // because we do not allow 'Release()' without 'Wait()'
         // via encapsulation
         _semaphore = new (maxParallelism);
+
+        _disposingCTS = new();
         _disposingToken = _disposingCTS.Token;
     }
 
@@ -145,7 +147,6 @@ public sealed class SemaphoreLock: IDisposable
     public async Task<IDisposable?> TryEnterAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
     {
 //TODO: DRY
-        // double check (optimization)
         ObjectDisposedException.ThrowIf(_isDisposed, this);
 
         var t = _semaphore.WaitAsync(timeout, cancellationToken);
