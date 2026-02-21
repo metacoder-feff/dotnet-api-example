@@ -41,10 +41,10 @@ public class ThrowHelperTest
     }
     #endregion
     
-    #region System.ArgumentException.ThrowIfNullOrEmpty(string?)
+    #region ThrowHelper.Argument.ThrowIfNullOrEmpty(string?)
     private static Action ThrowIfNullOrEmptyString(string? str)
     {
-        return () => ArgumentException.ThrowIfNullOrEmpty(str);
+        return () => ThrowHelper.Argument.ThrowIfNullOrEmpty(str);
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class ThrowHelperTest
     public void Argument_String_ThrowIfNullOrEmpty__null()
     {
         ThrowIfNullOrEmptyString(null)
-        .Should()
+            .Should()
             .Throw<ArgumentNullException>()
             .WithMessage("Value cannot be null. (Parameter 'str')");
     }

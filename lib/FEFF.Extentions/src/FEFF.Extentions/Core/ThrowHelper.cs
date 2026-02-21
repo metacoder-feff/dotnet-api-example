@@ -36,6 +36,16 @@ public static class ThrowHelper
             if(argument.Any() == false)
                 throw new ArgumentException("The value cannot be an empty collection.", paramName);
         }
+
+        // The overload to avoid confusion because string is IEnumerable<char>
+        public static void ThrowIfNullOrEmpty(
+            [NotNull]
+                string? argument,
+            [CallerArgumentExpression(nameof(argument))]
+                string? paramName = null)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(argument, paramName);
+        }
     }
 /* Alternative  'extensible' way
     public interface IArgumentExceptionFactory
