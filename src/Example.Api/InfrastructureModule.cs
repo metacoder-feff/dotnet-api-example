@@ -19,6 +19,9 @@ using SignalR;
 static class InfrastructureModule
 {
     public const string PgConnectionStringName = "PgDb";
+    public const string JwtOptionsSection = "JWT";
+
+    public const string UserAuthPolicyName = "User";
 
     public static void SetupServices(IServiceCollection services)
     {
@@ -28,6 +31,20 @@ static class InfrastructureModule
         services.ConfigureHttpJsonOptions(o => 
             ConfigureJsonSerializer(o.SerializerOptions)
         );
+
+        /*------------------------------------------------*/
+        // JWT Authentication & Authorization policy
+        /*------------------------------------------------*/
+//TODO: better
+        services.AddJwtBearerAuthenticationServices(JwtOptionsSection);
+        //services.AddAuthentication().AddJwtBearer();
+        //services.AddAuthorization();
+        services.AddAuthorizationBuilder()
+            .AddPolicy(UserAuthPolicyName, policy => policy
+                .RequireRole("user")
+                //.RequireClaim("scope", "greetings_api")
+            );
+
 
         /*------------------------------------------------*/
         // OpenApi
@@ -46,7 +63,7 @@ static class InfrastructureModule
 
         /*------------------------------------------------*/
         // Redis connections (self managed)
-        // the connection is managed (requested and disposed) by RedisConnectionManager singleton service
+        // the connection is managed (created and disposed) by RedisConnectionManager singleton service
         /*------------------------------------------------*/
         services.AddRedis<RedisConnectionManager>(ConfigureRedis);
         // we can register multiple subclases of 'RedisConnectionManager' but here we use only one
@@ -74,9 +91,6 @@ static class InfrastructureModule
         services.AddTransient<CreatedAtUpdatedAtInterceptor>();
         services.AddDbContext<WeatherContext>((sp, opt) =>
         {
-            //opt.SetupContextOptions(pgConnectionStringName, sp, "primary");
-            //opt.SetupContextOptions(pgConnectionStringName, sp, null);
-
             var connstr = sp.GetRequiredConnectionString(PgConnectionStringName);
             opt.UseNpgsql(
                 connstr,
@@ -135,11 +149,28 @@ static class InfrastructureModule
             // see https://learn.microsoft.com/en-us/aspnet/core/signalr/authn-and-authz?view=aspnetcore-8.0#authenticate-users-connecting-to-a-signalr-hub
             opts.CloseOnAuthenticationExpiration = true;
         });
+        
+        // Apps typically don't need to call UseRouting or UseEndpoints. 
+        // WebApplicationBuilder configures a middleware pipeline that wraps middleware added in Program.cs with UseRouting and UseEndpoints.
+        // Calling UseAuthentication and UseAuthorization adds the authentication and authorization middleware. 
+        // These middleware are placed between UseRouting and UseEndpoints.
+        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-10.0
+
+        // By default, the WebApplication automatically registers the authentication and authorization middlewares if certain authentication and authorization services are enabled. 
+        // In the following sample, it's not necessary to invoke UseAuthentication or UseAuthorization to register the middlewares because WebApplication does this automatically after AddAuthentication or AddAuthorization are called.
+        // In some cases, such as controlling middleware order, it's necessary to explicitly register authentication and authorization.
+        // In the following sample, the authentication middleware runs after the CORS middleware has run.
+        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/security?view=aspnetcore-10.0
+        
+        // app.UseCors();
+        // app.UseAuthentication();
+        // app.UseAuthorization();
     }
 
     private static void ConfigureOpenApi(OpenApiOptions o)
     {
         o.ConfigureNodaTime();
+//TODO: add JWT        
     }
 
     internal static void ConfigureJsonSerializer(JsonSerializerOptions o)

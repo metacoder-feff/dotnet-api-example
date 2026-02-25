@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using FEFF.Extentions.Web;
 
 namespace Microsoft.Extensions.DependencyInjection;
+using FEFF.Extentions.Web;
 
 //TODO: split namespaces/files
 public static class DependencyInjectionExtentions
@@ -24,12 +24,6 @@ public static class DependencyInjectionExtentions
     public static void AddRandom(this IServiceCollection services)
     {
         services.TryAddSingleton((_) => Random.Shared);
-    }
-
-    public static IHostApplicationBuilder AddStdCloudLogging(this IHostApplicationBuilder builder)
-    {
-        builder.Services.AddStdCloudLogging();
-        return builder;
     }
 
     public static IServiceCollection AddStdCloudLogging(this IServiceCollection services)
@@ -73,15 +67,10 @@ public static class DependencyInjectionExtentions
     }
 
     /// <summary>
-    /// Add configuration from "appsettings.secrets.json" (parse now)
-    /// only if Asp environment is 'Development' by default
+    /// Add configuration from "appsettings.secrets.json" (parse right now)
     /// </summary>
-    public static void AddAppSettingSecretsJson(this IHostApplicationBuilder builder, bool inDevelopmentOnly = true)
+    public static void AddAppSettingSecretsJson(this IConfigurationManager configuration)
     {
-        if(inDevelopmentOnly && !builder.Environment.IsDevelopment())
-            return;
-
-        var configuration = builder.Configuration;
         var reloadOnChange = configuration.GetReloadConfigOnChangeValue();
         configuration
             .AddJsonFile("appsettings.secrets.json", optional: true, reloadOnChange: reloadOnChange);

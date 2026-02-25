@@ -14,21 +14,21 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
 
     // fixures
     protected ITestApplicationBuilder AppBuilder {get; }
-    private readonly TestApplicationFixture _appFixture;
+    protected TestApplicationFixture AppFixture {get; }
     private readonly FakeTimeFixture _fft;
     private readonly FakeRandomFixture _frf;
 
     // props from fixtures for smart access
-    protected ITestApplication TestApplication => _appFixture.LazyTestApplication;
+    protected ITestApplication TestApplication => AppFixture.LazyTestApplication;
     
     protected FakeRandom FakeRandom => _frf.FakeRandom;
 
-    protected FakeTimeProvider  FakeTime => _fft.FakeTime;
+    protected FakeTimeProvider FakeTime => _fft.FakeTime;
 
     /// <summary>
     /// Run TestApp, create, memoize and return HttpClient connected to TestApp.
     /// </summary>
-    protected HttpClient Client => _appFixture.LazyClient;
+    protected HttpClient Client => AppFixture.LazyClient;
 
     /// <summary>
     /// Run TestApp, get, memoize and return DbContext instance form TestApp.
@@ -37,7 +37,7 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
     {
         get
         {
-            field ??= _appFixture.LazyScopeServiceProvider.GetRequiredService<WeatherContext>();
+            field ??= AppFixture.LazyScopeServiceProvider.GetRequiredService<WeatherContext>();
             return field;
         }
     }
@@ -46,7 +46,7 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
     {
         // build fixtures tree
         AppBuilder = new TestApplicationBuilder<Program>();
-        _appFixture = new(AppBuilder);
+        AppFixture = new(AppBuilder);
         _frf = new(AppBuilder);
         _fft = new(AppBuilder);
 // TODO: fixture as an Action
@@ -73,7 +73,7 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
     // Protected implementation of Dispose pattern.
     protected async Task DisposeAsyncCore()
     {
-        await _appFixture.DisposeAsync().ConfigureAwait(false);
+        await AppFixture.DisposeAsync().ConfigureAwait(false);
     }
     #endregion
 
@@ -81,5 +81,5 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
     /// Run TestApp, get, memoize and return TService instance form TestApp.
     /// </summary>
     public TService GetRequiredService<TService>() where TService : notnull =>
-        _appFixture.LazyScopeServiceProvider.GetRequiredService<TService>();
+        AppFixture.LazyScopeServiceProvider.GetRequiredService<TService>();
 }

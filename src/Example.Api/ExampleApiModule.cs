@@ -7,8 +7,8 @@ namespace Example.Api;
 
 static class ExampleApiModule
 {
-   internal static void SetupPipeline(WebApplication app)
-   {
+    internal static void SetupPipeline(IEndpointRouteBuilder app)
+    {
         app.MapGet("/weatherforecast", Get)
             .WithName("GetWeatherForecast");
     }

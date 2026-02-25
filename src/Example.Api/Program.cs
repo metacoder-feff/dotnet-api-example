@@ -36,10 +36,11 @@ static WebApplication? TryCreateApp(string[] args)
         var builder = WebApplication.CreateBuilder(args);
 
         // setup configuration
-        builder.AddAppSettingSecretsJson();
+        if(builder.Environment.IsDevelopment())
+            builder.Configuration.AddAppSettingSecretsJson();
 
         //setup regular logger for app (after building)
-        builder.AddStdCloudLogging();
+        builder.Services.AddStdCloudLogging();
 
         InfrastructureModule.SetupServices(builder.Services);
         ExampleApiModule.SetupServices(builder.Services);
@@ -59,7 +60,13 @@ static int TrySetupAndRunApp(WebApplication app)
     try
     {
         InfrastructureModule.SetupPipeline(app);
-        ExampleApiModule.SetupPipeline(app);
+
+        var api = app
+            .MapGroup("/api/v1/public")
+            .RequireAuthorization(InfrastructureModule.UserAuthPolicyName);
+
+        LoginApiModule.SetupPipeline(api);
+        ExampleApiModule.SetupPipeline(api);
 
         app.Run();
         return 0;

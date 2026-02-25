@@ -8,6 +8,7 @@ public class OpenApiTest : ApiTestBase
     public async Task Swagger_ui_should_be_enabled_if(AspEnvironment env, HttpStatusCode res)
     {
         AppBuilder.UseAspEnvironment(env);
+        AddStubSecrets();
 
         var body = await Client.TestGetStringAsync("/swagger", res);
 
@@ -23,13 +24,20 @@ public class OpenApiTest : ApiTestBase
     public async Task OpenAPI_should_be_enabled_if(AspEnvironment env, HttpStatusCode res)
     {
         AppBuilder.UseAspEnvironment(env);
+        AddStubSecrets();
 
         var body = await Client.TestGetStringAsync("/openapi/v1.json", res);
 
         if (env == AspEnvironment.Development)
             body.Should().Contain("openapi");
     }
-    
+
+    private void AddStubSecrets()
+    {
+        // development mode disables appsettings.secrets.json
+        AppBuilder.UseSetting("JWT:SecretKey", "**********************************");
+    }
+
     /// <summary>
     /// If intended to change API, run this test locally and push updated "tests/Files/openapi.json" to repo.
     /// </summary>
