@@ -1,10 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -17,6 +11,9 @@ public class JwtOptions
     public required TimeSpan TokenLifeTime { get; init; }
     public string? Issuer { get; init; }
     public string? Audience { get; init; }
+
+    // for tests ??
+    public TimeProvider? TimeProvider { get; set; }
 
     public byte[] GetKeyBytes()
     {
