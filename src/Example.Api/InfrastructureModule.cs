@@ -21,8 +21,8 @@ static class InfrastructureModule
 {
     public const string PgConnectionStringName = "PgDb";
     public const string JwtOptionsSection = "JWT";
-
     public const string UserAuthPolicyName = "User";
+    private const string SignalRPath = "/events";
 
     public static void SetupServices(IServiceCollection services)
     {
@@ -34,14 +34,14 @@ static class InfrastructureModule
         );
 
         /*------------------------------------------------*/
-        // JWT Authentication & Authorization policy
+        // JWT Authentication + JwtFacory
+        // & Authorization policy
         /*------------------------------------------------*/
         services.AddAuthentication()
             .AddSymmetricJwt(JwtOptionsSection, configure: static opt =>
             {
-//TODO: const
                 // for SignalR
-                opt.AddQueryStringAuthentication(x => x.StartsWithSegments("/events"));
+                opt.AddQueryStringAuthentication(x => x.StartsWithSegments(SignalRPath));
                 
             });
         //services.AddAuthorization();
@@ -50,7 +50,6 @@ static class InfrastructureModule
                 .RequireRole("user")
                 //.RequireClaim("scope", "greetings_api")
             );
-
 
         /*------------------------------------------------*/
         // OpenApi
@@ -148,8 +147,8 @@ static class InfrastructureModule
         app.MapMetrics();
 
         app.MapStdHealthChecks();
-//TODO: api/v1/public & jwt
-        app.MapHub<EventHub>("/events", opts =>
+//TODO: api/v1/public
+        app.MapHub<EventHub>(SignalRPath, opts =>
         {
             // close whenever jwt-auth-token expires 
             // see https://learn.microsoft.com/en-us/aspnet/core/signalr/authn-and-authz?view=aspnetcore-8.0#authenticate-users-connecting-to-a-signalr-hub
