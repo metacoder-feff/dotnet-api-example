@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -7,39 +8,41 @@ using FEFF.Extentions.Jwt;
 
 public static class ServiceCollectionExtentions
 {
-//TODO: better registry
-//TODO: better doc
     /// <summary>
-    /// Register "IJwtFactory" that can create JWTs.
-    /// And also register system services that can validate these JWTs.
-    /// Both are configured via same "JwtOptions":
+    /// Register <see cref="IJwtFactory"/> that can create JWTs.<br/>
+    /// Register <see cref="JwtBearerHandler"/> that validates JWTs.<br/>
+    /// Both are configured via same <see cref="JwtOptions"/>:
+    /// <code>
     ///   "configSectionPath": {
     ///     "SecretKey"     : "***", // min 32 bytes, KEEP THIS IN SECRET!!!.
     ///     "Issuer"        : "***",
     ///     "Audience"      : "***",
     ///     "TokenLifeTime" : "d.HH:mm:ss "
     ///   }
+    /// </code>
     /// </summary>
-    public static IServiceCollection AddJwtBearerAuthenticationServices(this IServiceCollection services, string configSectionPath)
+    public static IServiceCollection AddSymmetricJwt(this AuthenticationBuilder builder, string configSectionPath, string authenticationScheme = JwtBearerDefaults.AuthenticationScheme, Action<JwtBearerOptions>? configure = null)
     {
+        var services = builder.Services;
+
+        // add JwtBearerHandler
+        if(configure == null)
+            builder.AddJwtBearer(authenticationScheme);
+        else
+            builder.AddJwtBearer(authenticationScheme, configure);
+
+        // add IJwtFactory
+        services.TryAddTransient<IJwtFactory, JwtFactory>();
+
+        // add options for both IJwtFactory & JwtBearerHandler
 //TODO: validate
-        // register app opts
-        // ex. 'Jwt__SecretKey=.....'
         services.AddOptions<JwtOptions>()
                 .BindConfiguration(configSectionPath)
                 //.ValidationHelper().ValidateBy<JwtOptionsValidator>()
                 .ValidateOnStart();
 
-        //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        services.AddAuthentication()
-                .AddJwtBearer(static o => 
-                {
-//TODO: const
-                    // for SignalR
-                    o.AddQueryStringAuthentication(x => x.StartsWithSegments("/events"));
-                });
-
-        services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+        // configure JwtBearerHandler by JwtOptions
+        services.AddOptions<JwtBearerOptions>(authenticationScheme)
             .Configure<IOptions<JwtOptions>>( (dst, src) =>
             {
                 dst.TokenValidationParameters.ValidIssuer      = src.Value.Issuer;
@@ -49,8 +52,6 @@ public static class ServiceCollectionExtentions
                 if(src.Value.TimeProvider != null)
                     dst.TimeProvider = src.Value.TimeProvider;
             });
-
-        services.TryAddTransient<IJwtFactory, JwtFactory>();
 
         return services;
     }

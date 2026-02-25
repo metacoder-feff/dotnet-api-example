@@ -10,6 +10,7 @@ using StackExchange.Redis.Configuration;
 
 using FEFF.Extentions.EntityFrameworkCore;
 using FEFF.Extentions.HealthChecks;
+using FEFF.Extentions.Jwt;
 using FEFF.Extentions.OpenApi.NodaTime;
 using FEFF.Extentions.Redis;
 
@@ -35,9 +36,14 @@ static class InfrastructureModule
         /*------------------------------------------------*/
         // JWT Authentication & Authorization policy
         /*------------------------------------------------*/
-//TODO: better
-        services.AddJwtBearerAuthenticationServices(JwtOptionsSection);
-        //services.AddAuthentication().AddJwtBearer();
+        services.AddAuthentication()
+            .AddSymmetricJwt(JwtOptionsSection, configure: static opt =>
+            {
+//TODO: const
+                // for SignalR
+                opt.AddQueryStringAuthentication(x => x.StartsWithSegments("/events"));
+                
+            });
         //services.AddAuthorization();
         services.AddAuthorizationBuilder()
             .AddPolicy(UserAuthPolicyName, policy => policy
@@ -142,7 +148,7 @@ static class InfrastructureModule
         app.MapMetrics();
 
         app.MapStdHealthChecks();
-
+//TODO: api/v1/public & jwt
         app.MapHub<EventHub>("/events", opts =>
         {
             // close whenever jwt-auth-token expires 
