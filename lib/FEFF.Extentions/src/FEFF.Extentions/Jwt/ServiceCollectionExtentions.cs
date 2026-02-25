@@ -47,24 +47,13 @@ public static class ServiceCollectionExtentions
 
         // add regular JwtAuthentication (from manuals)
         // is used in request pipeline
-        services.AddAuthentication(opt =>
-                {
-                    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    //opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
+        //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddAuthentication()
                 .AddJwtBearer(static o => 
                 /* also is configured by JwtService.Configure(...)*/
                 {
-                    // allow to pass token via url query parameter
-                    o.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = static context =>
-                        {
-                            if (context.Request.Query.TryGetValue("access_token", out var token))
-                                context.Token = token;
-                            return Task.CompletedTask;
-                        }
-                    };
+                    // for SignalR
+                    o.AddQueryStringAuthentication();
                 });
 
         services.AddScoped<IJwtFactory, SymmetricJwtService>();
