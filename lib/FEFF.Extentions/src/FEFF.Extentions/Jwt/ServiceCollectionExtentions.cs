@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Microsoft.Extensions.DependencyInjection;
 using FEFF.Extentions.Jwt;
@@ -52,8 +51,9 @@ public static class ServiceCollectionExtentions
                 .AddJwtBearer(static o => 
                 /* also is configured by JwtService.Configure(...)*/
                 {
+//TODO: const
                     // for SignalR
-                    o.AddQueryStringAuthentication();
+                    o.AddQueryStringAuthentication(x => x.StartsWithSegments("/events"));
                 });
 
         services.AddScoped<IJwtFactory, SymmetricJwtService>();
