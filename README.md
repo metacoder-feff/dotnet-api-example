@@ -20,11 +20,12 @@
   + Automate CreatedAt/UpdatedAt
 + JWT Auth + tests
   + login returns token
-  + token validation
+  + token validation middleware
   + configuration
 + appsettings.secrets.json + gitignore
 + openapi/swagger-ui only in DEV + tests
   + NodaTime integration
+  + JWT integration
 + prometheus metrics + tests
 + cloud-compatible healthchecks + tests
   + liveness
@@ -47,6 +48,7 @@
   + Redis (via DI container)
   + RedisConnection HealthCheck (overview)
   + Jwt Auth
+  + Send messages to user by Id from JWT
 
 
 ## Testing
