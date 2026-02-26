@@ -13,6 +13,7 @@ using FEFF.Extentions.HealthChecks;
 using FEFF.Extentions.Jwt;
 using FEFF.Extentions.OpenApi.NodaTime;
 using FEFF.Extentions.Redis;
+using FEFF.Extentions.JWT;
 
 namespace Example.Api;
 
@@ -168,7 +169,7 @@ static class InfrastructureModule
     private static void ConfigureOpenApi(OpenApiOptions o)
     {
         o.ConfigureNodaTime();
-//TODO: add JWT        
+        o.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
     }
 
     internal static void ConfigureJsonSerializer(JsonSerializerOptions o)
