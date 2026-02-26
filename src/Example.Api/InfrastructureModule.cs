@@ -169,7 +169,7 @@ static class InfrastructureModule
     private static void ConfigureOpenApi(OpenApiOptions o)
     {
         o.ConfigureNodaTime();
-        o.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+        o.AddBearerSecurity();
     }
 
     internal static void ConfigureJsonSerializer(JsonSerializerOptions o)
