@@ -18,6 +18,11 @@
   + HealthCheck (readiness)
   + Optimistic lock (concurrency exception)
   + Automate CreatedAt/UpdatedAt
++ JWT Auth + tests
+  + login returns token
+  + token validation
+  + configuration
++ appsettings.secrets.json + gitignore
 + openapi/swagger-ui only in DEV + tests
   + NodaTime integration
 + prometheus metrics + tests
@@ -32,7 +37,6 @@
   + timestamp format
 + exceptions at 'WebApplication.Run()' are logged + tests
 + exceptions at 'WebApplicationBuilder.Build()' are logged + tests
-+ appsettings.secrets.json + gitignore
 + Redis + tests
   + BL example
   + DI container: Singleton 'RedisConnectionManager'
@@ -42,6 +46,7 @@
   + ConfigureJsonSerializer
   + Redis (via DI container)
   + RedisConnection HealthCheck (overview)
+  + Jwt Auth
 
 
 ## Testing
