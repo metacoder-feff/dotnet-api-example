@@ -7,6 +7,36 @@ public class AuthTests : ApiTestBase
     [Theory]
     [InlineData(true, HttpStatusCode.OK)]
     [InlineData(false, HttpStatusCode.Unauthorized)]
+    public async Task SignalR_HttpStatus_should_depend_on_authorization(bool authorize, HttpStatusCode expected)
+    {
+        string? token = null;
+        if(authorize == true)
+        {
+            token = await LoginAsync();
+        }
+
+        await using var signalr = TestApplication.CreateSignalRClient("/api/v1/public/events", token);
+
+        // Act
+        var act = () => signalr.StartAsync();
+
+        // Assert
+        if(authorize)
+        {
+            await act.Should()
+                    .NotThrowAsync();
+        }
+        else
+        {
+            await act.Should()
+                    .ThrowAsync<HttpRequestException>()
+                    .Where(e => e.StatusCode == expected);
+        }
+    }
+
+    [Theory]
+    [InlineData(true, HttpStatusCode.OK)]
+    [InlineData(false, HttpStatusCode.Unauthorized)]
     public async Task Api_HttpStatus_should_depend_on_authorization(bool authorize, HttpStatusCode expected)
     {
         if(authorize == true)
