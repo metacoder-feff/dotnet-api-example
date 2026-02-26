@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 
@@ -10,7 +11,45 @@ public static class OpenApiExtentions
 {
     public static OpenApiOptions AddBearerSecurity(this OpenApiOptions src, string schemeName = JwtBearerDefaults.AuthenticationScheme, string loginPath = "/login")
     {
-        return src.AddBearerSecurityScheme(schemeName, loginPath);
+        return src
+            .AddBearerSecurityScheme(schemeName, loginPath)
+            .AddOperations(schemeName)
+            ;
+    }
+
+    internal static OpenApiOptions AddOperations(this OpenApiOptions src, string schemeName)
+    {
+        src.AddOperationTransformer((operation, context, cancellationToken) =>
+        {
+            // Check if the endpoint has authorization/anonymous metadata
+            if (IsAuthorizationRequired(context) == false)
+                return Task.CompletedTask;
+            if (IsAnonymousAllowed(context) == true)
+                return Task.CompletedTask;
+
+            operation.Security ??= [];
+            operation.Security.Add(new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference(schemeName, context.Document)] = []
+            });
+
+            operation.Responses ??= [];
+            operation.Responses.Add("401", new OpenApiResponse { Description = "Unauthorized" });
+            operation.Responses.Add("403", new OpenApiResponse { Description = "Forbidden" });
+
+            return Task.CompletedTask;
+        });
+        return src;
+    }
+
+    private static bool IsAnonymousAllowed(OpenApiOperationTransformerContext context)
+    {
+        return context.Description.ActionDescriptor.EndpointMetadata.OfType<IAllowAnonymous>().Any();
+    }
+
+    private static bool IsAuthorizationRequired(OpenApiOperationTransformerContext context)
+    {
+        return context.Description.ActionDescriptor.EndpointMetadata.OfType<IAuthorizeData>().Any();
     }
 
     internal static OpenApiOptions AddBearerSecurityScheme(this OpenApiOptions src, string schemeName, string loginPath)
@@ -35,14 +74,15 @@ public static class OpenApiExtentions
             document.Components.SecuritySchemes = securitySchemes;
 
             // Add Security Requirement gloablly
-            foreach (var operation in document.Paths.Values.SelectMany(path => path.Operations ?? []))
-            {
-                operation.Value.Security ??= [];
-                operation.Value.Security.Add(new OpenApiSecurityRequirement
-                {
-                    [new OpenApiSecuritySchemeReference(schemeName, document)] = []
-                });
-            }
+            // foreach (var operation in document.Paths.Values.SelectMany(path => path.Operations ?? []))
+            // {
+            //     operation.Value.Security ??= [];
+            //     operation.Value.Security.Add(new OpenApiSecurityRequirement
+            //     {
+            //         [new OpenApiSecuritySchemeReference(schemeName, document)] = []
+            //     });
+            // }
+
             return Task.CompletedTask;
         });
         return src;
