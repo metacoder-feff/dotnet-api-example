@@ -16,6 +16,13 @@ public static class DependencyInjectionExtentions
         return services;
     }
 
+    public static void AddHttpUserIdentityProvider(this IServiceCollection services)
+    {
+        services.AddHttpContextAccessor();
+        services.TryAddTransient<IUserIdentityProvider, HttpUserIdentityProvider>();
+    }
+
+
     public static void AddTimeProvider(this IServiceCollection services)
     {
         services.TryAddSingleton((_) => TimeProvider.System);

@@ -6,8 +6,7 @@ namespace Example.Api.SignalR;
 //TODO: sync via internal queue
 public interface IEventSender
 {
-    //Task SendFinishedOkAsync(string userId);
-    Task SendFinishedOkAsync();
+    Task SendFinishedOkAsync(string userId);
 }
 
 public class EventSender : IEventSender
@@ -27,10 +26,11 @@ public class EventSender : IEventSender
     //     await _hubCtx.Clients.User(userId).SendAsync(MethodName);
     // }
 
-    public async Task SendFinishedOkAsync()
+    public async Task SendFinishedOkAsync(string userId)
     {
-        // await _hubCtx.Clients.All.SendAsync(MethodName);
         var d = new {Result = "ok", FinishedAt = _time.GetCurrentInstant() };
-        await _hubCtx.Clients.All.SendAsync(MethodName, d);
+        await _hubCtx.Clients
+            .User(userId)
+            .SendAsync(MethodName, d);
     }
 }
