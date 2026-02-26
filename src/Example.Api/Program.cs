@@ -62,9 +62,10 @@ static int TrySetupAndRunApp(WebApplication app)
         InfrastructureModule.SetupPipeline(app);
 
         var api = app
-            .MapGroup("/api/v1/public")
+            .MapGroup(InfrastructureModule.PublicApiPath)
             .RequireAuthorization(InfrastructureModule.UserAuthPolicyName);
 
+        SignalRModule.SetupPipeline(api);
         LoginApiModule.SetupPipeline(api);
         ExampleApiModule.SetupPipeline(api);
 

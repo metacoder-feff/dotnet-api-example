@@ -18,7 +18,7 @@ static class LoginApiModule
     //     services.AddTransient<IEventSender, EventSender>();
     // }
 
-   internal static void SetupPipeline(IEndpointRouteBuilder app)
+    internal static void SetupPipeline(IEndpointRouteBuilder app)
     {
         app
             .MapPost("/login", Login)

@@ -15,14 +15,14 @@ using FEFF.Extentions.OpenApi.NodaTime;
 using FEFF.Extentions.Redis;
 
 namespace Example.Api;
-using SignalR;
 
 static class InfrastructureModule
 {
     public const string PgConnectionStringName = "PgDb";
     public const string JwtOptionsSection = "JWT";
     public const string UserAuthPolicyName = "User";
-    private const string SignalRPath = "/events";
+    public const string PublicApiPath = "/api/v1/public";
+    private const string SignalRPath = PublicApiPath + SignalRModule.SignalRPath;
 
     public static void SetupServices(IServiceCollection services)
     {
@@ -147,13 +147,6 @@ static class InfrastructureModule
         app.MapMetrics();
 
         app.MapStdHealthChecks();
-//TODO: api/v1/public
-        app.MapHub<EventHub>(SignalRPath, opts =>
-        {
-            // close whenever jwt-auth-token expires 
-            // see https://learn.microsoft.com/en-us/aspnet/core/signalr/authn-and-authz?view=aspnetcore-8.0#authenticate-users-connecting-to-a-signalr-hub
-            opts.CloseOnAuthenticationExpiration = true;
-        });
         
         // Apps typically don't need to call UseRouting or UseEndpoints. 
         // WebApplicationBuilder configures a middleware pipeline that wraps middleware added in Program.cs with UseRouting and UseEndpoints.

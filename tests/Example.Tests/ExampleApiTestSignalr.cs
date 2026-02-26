@@ -12,17 +12,17 @@ public class ExampleApiTestSignalr : ApiTestBase
     public async Task Weatherforecast__should__send_event()
     {
         // PREPARE
-        await using var signalr = TestApplication.CreateSignalRClient("/events");
-        signalr.Subscribe(EventSender.MethodName, 1);
-        await signalr.StartAsync();
-
 //TODO: fixture AuthorizedClient
         var jwt = AppFixture.LazyScopeServiceProvider.GetRequiredService<IJwtFactory>();
         var token = LoginApiModule.CreateToken(jwt, "testuser");
         Client.AddJwtHeader(token);
+
+        await using var signalr = TestApplication.CreateSignalRClient("/api/v1/public/events", token);
+        signalr.Subscribe(EventSender.MethodName, 1);
+        await signalr.StartAsync();
         
         // ACT
-        var rStr = await Client.TestGetStringAsync("api/v1/public/weatherforecast");
+        var rStr = await Client.TestGetStringAsync("/api/v1/public/weatherforecast");
         var resp = await signalr.WaitForEvent(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
         
         // ASSERT
