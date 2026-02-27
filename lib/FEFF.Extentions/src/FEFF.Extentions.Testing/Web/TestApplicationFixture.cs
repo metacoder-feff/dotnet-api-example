@@ -9,6 +9,7 @@ public sealed class TestApplicationFixture : IAsyncDisposable
 {
     private readonly Lazy<ITestApplication> _app;
     private readonly Lazy<AsyncServiceScope> _appServiceScope;
+    private readonly Lazy<HttpClient> _client;
 
     //public TestingAppBuilder AppBuilder {get; } = new();
 
@@ -20,14 +21,7 @@ public sealed class TestApplicationFixture : IAsyncDisposable
     /// <summary>
     /// Runs AppFactory, creates, memoizes and returns Client.
     /// </summary>
-    public HttpClient LazyClient
-    {
-        get
-        {
-            field ??= LazyTestApplication.CreateClient();
-            return field;
-        }
-    }
+    public HttpClient LazyClient => _client.Value;
 
     /// <summary>
     /// Runs AppFactory, creates, memoizes and returns ServiceScope.
@@ -36,15 +30,20 @@ public sealed class TestApplicationFixture : IAsyncDisposable
 
     public TestApplicationFixture(ITestApplicationBuilder appBuilder)
     {
-        _app = new (() => appBuilder.Build());
+        _app = new (appBuilder.Build);
+
         // cannot remove lambda expression because acces to 'App.Services' starts an app
         // but we only need to register callback
-        _appServiceScope = new(() => LazyTestApplication.Services.CreateAsyncScope()); 
+        _appServiceScope = new(() => LazyTestApplication.Services.CreateAsyncScope());
+        _client = new(() => LazyTestApplication.CreateClient());
     }
 
     public async ValueTask DisposeAsync()
     {
 //TODO: (warning) multithreaded error
+        if (_client.IsValueCreated)
+            _client.Value.Dispose();
+
         if (_appServiceScope.IsValueCreated)
             await _appServiceScope.Value.DisposeAsync();
 

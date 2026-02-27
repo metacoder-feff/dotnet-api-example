@@ -27,14 +27,19 @@ public class TestApplicationBuilder<TEntryPoint> : ITestApplicationBuilder
 where TEntryPoint: class
 {
     private readonly List<Action<IWebHostBuilder>> _builderOverrides = [];
+    private bool _isBuilt = false;
 
     public void ConfigureWebHost(Action<IWebHostBuilder> action)
     {
+        if(_isBuilt)
+            throw new InvalidOperationException("Configuration can't be changed after the app is started.");
+
         _builderOverrides.Add(action);
     }
 
     public ITestApplication Build()
     {
+        _isBuilt = true;
         return new OverridenWebApplicationFactory<TEntryPoint>(_builderOverrides.ToFrozenSet());
     }
 }
@@ -42,7 +47,7 @@ where TEntryPoint: class
 internal class OverridenWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint>, ITestApplication
 where TEntryPoint: class
 {
-    private FrozenSet<Action<IWebHostBuilder>> _builderOverrides;
+    private readonly FrozenSet<Action<IWebHostBuilder>> _builderOverrides;
 
     public OverridenWebApplicationFactory(FrozenSet<Action<IWebHostBuilder>> builderOverrides)
     {
@@ -53,7 +58,7 @@ where TEntryPoint: class
     {
         base.ConfigureWebHost(builder);
 
-        foreach(var a in _builderOverrides)
-            a(builder);
+        foreach(var configureAction in _builderOverrides)
+            configureAction(builder);
     }
 }
