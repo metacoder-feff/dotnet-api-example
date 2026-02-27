@@ -75,10 +75,10 @@ public static class OpenApiExtentions
                         $"Please enter token{loginDescr}.\n" +
                         "Example: 'eyJh...mA' (without quotes).",
                     Name         = "Authorization",
-                    In           = ParameterLocation.Header,
                     Type         = SecuritySchemeType.Http,
-                    Scheme       = "Bearer", // "bearer" refers to the header name here (RFC 7235)
-                    BearerFormat = "JWT",
+                    In           = ParameterLocation.Header,
+                    Scheme       = HttpClientExtentions.BearerAuthHeader, // "bearer" refers to the header name here (RFC 7235)
+                    BearerFormat = "Json Web Token (JWT)",
                 }
             };
             document.Components ??= new OpenApiComponents();

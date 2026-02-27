@@ -1,5 +1,3 @@
-using FEFF.Extentions.Jwt;
-
 namespace Example.Tests.InfrastructrureTests;
 
 public class AuthTests : ApiTestBase
@@ -42,7 +40,7 @@ public class AuthTests : ApiTestBase
         if(authorize == true)
         {
             var token = await LoginAsync();
-            Client.AddJwtHeader(token);
+            Client.AddBearerHeader(token);
         }
 
         // ACT & Assert

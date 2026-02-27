@@ -17,7 +17,7 @@ public class ExampleApiTest : ApiTestBase
 //TODO: fixture AuthorizedClient
         var jwt = AppFixture.LazyScopeServiceProvider.GetRequiredService<IJwtFactory>();
         var token = LoginApiModule.CreateToken(jwt, "testuser");
-        Client.AddJwtHeader(token);
+        Client.AddBearerHeader(token);
 
         // ACT
         var rStr = await Client.TestGetStringAsync("/api/v1/public/weatherforecast");

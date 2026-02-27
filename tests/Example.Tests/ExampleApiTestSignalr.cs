@@ -15,7 +15,7 @@ public class ExampleApiTestSignalr : ApiTestBase
 //TODO: fixture AuthorizedClient
         var jwt = AppFixture.LazyScopeServiceProvider.GetRequiredService<IJwtFactory>();
         var token = LoginApiModule.CreateToken(jwt, "testuser");
-        Client.AddJwtHeader(token);
+        Client.AddBearerHeader(token);
 
         await using var signalr = TestApplication.CreateSignalRClient("/api/v1/public/events", token);
         signalr.Subscribe(EventSender.MethodName, 1);
