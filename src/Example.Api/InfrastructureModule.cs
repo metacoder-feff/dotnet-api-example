@@ -169,7 +169,7 @@ static class InfrastructureModule
     private static void ConfigureOpenApi(OpenApiOptions o)
     {
         o.ConfigureNodaTime();
-        o.AddBearerSecurity();
+        o.AddBearerSecurity(loginPathHint: "/login");
     }
 
     internal static void ConfigureJsonSerializer(JsonSerializerOptions o)

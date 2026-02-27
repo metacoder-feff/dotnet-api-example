@@ -5,19 +5,26 @@ using Microsoft.OpenApi;
 
 namespace FEFF.Extentions.JWT;
 
-// see also: MMonrad.OpenApi
-
 public static class OpenApiExtentions
 {
-    public static OpenApiOptions AddBearerSecurity(this OpenApiOptions src, string schemeName = JwtBearerDefaults.AuthenticationScheme, string loginPath = "/login")
+    /// <summary>
+    /// Add BearerSecurityScheme (JWT) to OpenApi document.<br/>
+    /// Add SecurityRequirements of tis scheme to operations.<br/>
+    /// Add 401,403 responses to operations.<br/>
+    /// Operations are filtered by authorization/anonymous metadata.
+    /// </summary>
+    /// <param name="openApiSecurityschemeName">A name of a new security scheme in the OpenApi document.</param>
+    /// <param name="loginPathHint">A hint shown in a description of the security scheme.</param>
+    /// <returns></returns>
+    public static OpenApiOptions AddBearerSecurity(this OpenApiOptions src, string openApiSecurityschemeName = JwtBearerDefaults.AuthenticationScheme, string? loginPathHint = null)
     {
         return src
-            .AddBearerSecurityScheme(schemeName, loginPath)
-            .AddOperations(schemeName)
+            .AddBearerSecurityScheme(openApiSecurityschemeName, loginPathHint)
+            .AddOperationsSecurityRequirements(openApiSecurityschemeName)
             ;
     }
 
-    internal static OpenApiOptions AddOperations(this OpenApiOptions src, string schemeName)
+    internal static OpenApiOptions AddOperationsSecurityRequirements(this OpenApiOptions src, string schemeName)
     {
         src.AddOperationTransformer((operation, context, cancellationToken) =>
         {
@@ -52,8 +59,12 @@ public static class OpenApiExtentions
         return context.Description.ActionDescriptor.EndpointMetadata.OfType<IAuthorizeData>().Any();
     }
 
-    internal static OpenApiOptions AddBearerSecurityScheme(this OpenApiOptions src, string schemeName, string loginPath)
+    internal static OpenApiOptions AddBearerSecurityScheme(this OpenApiOptions src, string schemeName, string? loginPath)
     {
+        var loginDescr = "";
+        if(loginPath.IsNullOrEmpty() == false)
+            loginDescr = $" from '{loginPath}' output";
+
         src.AddDocumentTransformer( (document, context, cancellationToken) =>
         {
             var securitySchemes = new Dictionary<string, IOpenApiSecurityScheme>
@@ -61,7 +72,7 @@ public static class OpenApiExtentions
                 [schemeName] = new OpenApiSecurityScheme
                 {
                     Description  = 
-                        $"Please enter token from '{loginPath}' output.\n" +
+                        $"Please enter token{loginDescr}.\n" +
                         "Example: 'eyJh...mA' (without quotes).",
                     Name         = "Authorization",
                     In           = ParameterLocation.Header,
@@ -89,7 +100,7 @@ public static class OpenApiExtentions
     }
 }
 
-// Transformer class allows inject services
+// Transformer class allows to inject services
 // in this example injected service is used to disable transform when scheme is not present:
 //
 // public sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
