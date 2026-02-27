@@ -4,7 +4,7 @@ public static class ConfigurationExtensions
 {
     public static string GetRequiredConnectionString(this IConfiguration configuration, string connectionStringName)
     {
-        return  configuration
+        return configuration
             .GetConnectionString(connectionStringName) 
             ?? throw new InvalidOperationException($"ConnectionString not found: '{connectionStringName}'");
     }

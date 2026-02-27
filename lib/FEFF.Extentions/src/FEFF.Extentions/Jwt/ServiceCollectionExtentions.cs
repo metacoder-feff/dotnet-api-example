@@ -23,6 +23,12 @@ public static class ServiceCollectionExtentions
     /// </summary>
     public static IServiceCollection AddSymmetricJwt(this AuthenticationBuilder builder, string configSectionPath, string authenticationScheme = JwtBearerDefaults.AuthenticationScheme, Action<JwtBearerOptions>? configure = null)
     {
+        /// <remarks>
+        /// We could configure ValidIssuer,ValidAudience and IssuerSigningKey via standard configuration and get them for token generation & validation.<br/>
+        /// But we also need to configure TokenLifeTime.<br/>
+        /// So decision is to place all options together into <see cref="JwtOptions"/>.
+        /// </remarks>
+
         var services = builder.Services;
 
         // add JwtBearerHandler
@@ -35,10 +41,9 @@ public static class ServiceCollectionExtentions
         services.TryAddTransient<IJwtFactory, JwtFactory>();
 
         // add options for both IJwtFactory & JwtBearerHandler
-//TODO: validate
         services.AddOptions<JwtOptions>()
                 .BindConfiguration(configSectionPath)
-                //.ValidationHelper().ValidateBy<JwtOptionsValidator>()
+                .ValidationHelper().ValidateBy<JwtOptionsValidator>()
                 .ValidateOnStart();
 
         // configure JwtBearerHandler by JwtOptions

@@ -21,7 +21,7 @@
 + JWT Auth + tests
   + login returns token
   + token validation middleware
-  + configuration
+  + configuration + options validation
 + appsettings.secrets.json + gitignore
 + openapi/swagger-ui only in DEV + tests
   + NodaTime integration
