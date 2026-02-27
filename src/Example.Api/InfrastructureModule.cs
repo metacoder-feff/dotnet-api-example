@@ -38,6 +38,7 @@ static class InfrastructureModule
         // JWT Authentication + JwtFacory
         // & Authorization policy
         /*------------------------------------------------*/
+        // we have only one AuthenticationScheme thus no need to set 'defaultScheme'
         services.AddAuthentication()
             .AddSymmetricJwt(JwtOptionsSection, configure: static opt =>
             {
@@ -45,11 +46,15 @@ static class InfrastructureModule
                 opt.AddQueryStringAuthentication(x => x.StartsWithSegments(SignalRPath));
                 
             });
-        //services.AddAuthorization();
+
+        // AddAuthorization() inside
         services.AddAuthorizationBuilder()
             .AddPolicy(UserAuthPolicyName, policy => policy
                 .RequireRole("user")
+                // require default AuthenticationScheme
+
                 //.RequireClaim("scope", "greetings_api")
+                //.AddAuthenticationSchemes("")
             );
 
         /*------------------------------------------------*/
@@ -169,7 +174,7 @@ static class InfrastructureModule
     private static void ConfigureOpenApi(OpenApiOptions o)
     {
         o.ConfigureNodaTime();
-        o.AddBearerSecurity(loginPathHint: "/login");
+        o.AddJwtBearerSecurity(loginPathHint: "/login");
     }
 
     internal static void ConfigureJsonSerializer(JsonSerializerOptions o)

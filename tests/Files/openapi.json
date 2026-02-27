@@ -61,7 +61,7 @@
         },
         "security": [
           {
-            "Bearer": [ ]
+            "Bearer-JWT": [ ]
           }
         ]
       }
@@ -127,11 +127,11 @@
       }
     },
     "securitySchemes": {
-      "Bearer": {
+      "Bearer-JWT": {
         "type": "http",
         "description": "Please enter token from '/login' output.\nExample: 'eyJh...mA' (without quotes).",
         "scheme": "Bearer",
-        "bearerFormat": "JWT"
+        "bearerFormat": "Json Web Token (JWT)"
       }
     }
   },

@@ -1,29 +1,33 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 
 namespace FEFF.Extentions.JWT;
 
+//TODO: multiple SecurityScheme ??
+//TODO: automate AuthenticationScheme loookup ?? + map AuthenticationScheme.Name -> SecurityScheme.Name
 public static class OpenApiExtentions
 {
     /// <summary>
     /// Add BearerSecurityScheme (JWT) to OpenApi document.<br/>
-    /// Add SecurityRequirements of tis scheme to operations.<br/>
+    /// Add SecurityRequirements of this scheme to operations.<br/>
     /// Add 401,403 responses to operations.<br/>
     /// Operations are filtered by authorization/anonymous metadata.
     /// </summary>
-    /// <param name="openApiSecurityschemeName">A name of a new security scheme in the OpenApi document.</param>
+    /// <param name="openApiSecuritySchemeName">A name of a new security scheme in the OpenApi document. Also shown in swagger UI.</param>
     /// <param name="loginPathHint">A hint shown in a description of the security scheme.</param>
     /// <returns></returns>
-    public static OpenApiOptions AddBearerSecurity(this OpenApiOptions src, string openApiSecurityschemeName = JwtBearerDefaults.AuthenticationScheme, string? loginPathHint = null)
+    public static OpenApiOptions AddJwtBearerSecurity(this OpenApiOptions src, string openApiSecuritySchemeName = "Bearer-JWT", string? loginPathHint = null)
+    //public static OpenApiOptions AddJwtBearerSecurity(this OpenApiOptions src, string openApiSecuritySchemeName = JwtBearerDefaults.AuthenticationScheme, string? loginPathHint = null)
     {
         return src
-            .AddBearerSecurityScheme(openApiSecurityschemeName, loginPathHint)
-            .AddOperationsSecurityRequirements(openApiSecurityschemeName)
+            .AddBearerSecurityScheme(openApiSecuritySchemeName, loginPathHint)
+            .AddOperationsSecurityRequirements(openApiSecuritySchemeName)
             ;
     }
 
+//TODO: automate SecurityScheme loookup ??
+//TODO: multiple SecurityScheme ??
     internal static OpenApiOptions AddOperationsSecurityRequirements(this OpenApiOptions src, string schemeName)
     {
         src.AddOperationTransformer((operation, context, cancellationToken) =>
@@ -56,6 +60,7 @@ public static class OpenApiExtentions
 
     private static bool IsAuthorizationRequired(OpenApiOperationTransformerContext context)
     {
+        var xx = context.Description.ActionDescriptor.EndpointMetadata.OfType<IAuthorizeData>().ToList();
         return context.Description.ActionDescriptor.EndpointMetadata.OfType<IAuthorizeData>().Any();
     }
 
