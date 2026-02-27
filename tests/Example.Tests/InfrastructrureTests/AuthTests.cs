@@ -13,6 +13,8 @@ public class AuthTests : ApiTestBase
             token = await LoginAsync();
         }
 
+//TODO: DRY
+//TODO: fixture SignalRClient??
         await using var signalr = TestApplication.CreateSignalRClient("/api/v1/public/events", token);
 
         // Act

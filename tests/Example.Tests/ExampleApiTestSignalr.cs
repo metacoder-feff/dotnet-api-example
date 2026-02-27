@@ -16,6 +16,8 @@ public class ExampleApiTestSignalr : ApiTestBase
         var token = LoginApiModule.CreateToken(jwt, "testuser");
         Client.AddBearerHeader(token);
 
+//TODO: DRY
+//TODO: fixture SignalRClient??
         await using var signalr = TestApplication.CreateSignalRClient("/api/v1/public/events", token);
         signalr.Subscribe(EventSender.MethodName, 1);
         await signalr.StartAsync();

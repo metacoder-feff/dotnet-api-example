@@ -27,13 +27,13 @@ public static class ChannelEx
     }
 }
 
-//TODO: dispose
-public sealed class SignalrTestClient
+public sealed class SignalrTestClient : IAsyncDisposable
 {
     private readonly Channel<ServerEvent> _eventsQueue = Channel.CreateUnbounded<ServerEvent>();
     private readonly HubConnection _connection;
 
-    public SignalrTestClient(HubConnection connection)
+    // internal because owns HubConnection
+    internal SignalrTestClient(HubConnection connection)
     {
         _connection = connection;
     }
