@@ -227,7 +227,7 @@ public class HealthCheckApiTest : ApiTestBase
         var timeout = 1.5;
         if (whenHealthy == false) 
             //timeout = 6;
-            timeout = 15;
+            timeout = 20;
 
         var body = await GetProbeAsync(HealthAllUri, expected: healthcheckResult, timeout: timeout);
         

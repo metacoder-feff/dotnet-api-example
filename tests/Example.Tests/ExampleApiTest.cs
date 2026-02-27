@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-
 using FEFF.Extentions.Jwt;
 
 namespace Example.Tests;
@@ -14,14 +12,11 @@ public class ExampleApiTest : ApiTestBase
         FakeRandom.IntStrategy = FakeRandom.ConstStrategy(2);
         FakeTime.SetNow("2005-05-05T15:15:15Z");
 
-//TODO: fixture AuthorizedClient
-        var jwt = AppFixture.LazyScopeServiceProvider.GetRequiredService<IJwtFactory>();
-        var token = LoginApiModule.CreateToken(jwt, "testuser");
-        Client.AddBearerHeader(token);
+        AuthorizeClient();
 
         // ACT
         var rStr = await Client.TestGetStringAsync("/api/v1/public/weatherforecast");
-        
+
         // ASSERT
         rStr
             .ParseJToken()
@@ -37,5 +32,14 @@ public class ExampleApiTest : ApiTestBase
               }
             ]
             """.ParseJToken());
+    }
+
+    private void AuthorizeClient()
+    {
+//TODO: DRY
+//TODO: fixture AuthorizedClient
+        var jwt = GetRequiredService<IJwtFactory>();
+        var token = LoginApiModule.CreateToken(jwt, "testuser");
+        Client.AddBearerHeader(token);
     }
 }

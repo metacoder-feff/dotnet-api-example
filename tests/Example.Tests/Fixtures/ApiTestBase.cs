@@ -12,52 +12,64 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
 {
     private readonly string DbName = $"Weather-test-{Guid.NewGuid()}";
 
-    // fixures
+    #region Stored fixtures
     protected ITestApplicationBuilder AppBuilder {get; }
-    protected TestApplicationFixture AppFixture {get; }
-    private readonly FakeTimeFixture _fft;
-    private readonly FakeRandomFixture _frf;
+    private readonly TestApplicationFixture _appFixture;
+    private readonly FakeTimeFixture _fakeTimeFixture;
+    private readonly FakeRandomFixture _fakeRandomFixture;
+    private readonly ClientFixture _clientFixture;
+    private readonly AppServiceScopeFixture _scopeFixture;
+    #endregion
 
-    // props from fixtures for smart access
-    protected ITestApplication TestApplication => AppFixture.LazyTestApplication;
-    
-    protected FakeRandom FakeRandom => _frf.FakeRandom;
+    #region props from fixtures for smart access
 
-    protected FakeTimeProvider FakeTime => _fft.FakeTime;
+    protected FakeRandom FakeRandom => _fakeRandomFixture.FakeRandom;
+
+    protected FakeTimeProvider FakeTime => _fakeTimeFixture.FakeTime;
 
     /// <summary>
-    /// Run TestApp, create, memoize and return HttpClient connected to TestApp.
+    /// Build, memoize and return ITestApplication.
     /// </summary>
-    protected HttpClient Client => AppFixture.LazyClient;
+    protected ITestApplication TestApplication => _appFixture.LazyTestApplication;
 
     /// <summary>
-    /// Run TestApp, get, memoize and return DbContext instance form TestApp.
+    /// Build&Run TestApp, create, memoize and return HttpClient connected to TestApp.
+    /// </summary>
+    protected HttpClient Client => _clientFixture.Client;
+
+    /// <summary>
+    /// Build&Run TestApp, get, memoize and return DbContext instance form TestApp.
     /// </summary>
     public WeatherContext DbCtx
     {
         get
         {
-            field ??= AppFixture.LazyScopeServiceProvider.GetRequiredService<WeatherContext>();
+            field ??= _scopeFixture.LazyScopeServiceProvider.GetRequiredService<WeatherContext>();
             return field;
         }
     }
+    #endregion
 
     public ApiTestBase()
     {
         // build fixtures tree
         AppBuilder = new TestApplicationBuilder<Program>();
-        AppFixture = new(AppBuilder);
-        _frf = new(AppBuilder);
-        _fft = new(AppBuilder);
-// TODO: fixture as an Action
+        _fakeRandomFixture = new(AppBuilder);
+        _fakeTimeFixture = new(AppBuilder);
+
+// TODO: fixture as an Action ??
         _ = new DbNameFixture(AppBuilder, DbName, InfrastructureModule.PgConnectionStringName);
         // KeyPrefix and ChannelPrefix for main redis connection
         _ = new RedisPrefixFixture<RedisConnectionManager>(AppBuilder, DbName);
         // channel prefix for SignalR redis connection
         _ = new RedisChannelPrefixFixture<SignalRedisProviderProxy>(AppBuilder, DbName);
+        
+        _appFixture = new(AppBuilder);
+        _clientFixture = new(_appFixture);
+        _scopeFixture = new(_appFixture);
     }
 
-    #region IAsyncLifetime
+    #region IAsyncDisposable //IAsyncLifetime
     // public virtual ValueTask InitializeAsync()
     // {
     //     return ValueTask.CompletedTask;
@@ -73,7 +85,9 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
     // Protected implementation of Dispose pattern.
     protected async Task DisposeAsyncCore()
     {
-        await AppFixture.DisposeAsync().ConfigureAwait(false);
+        _clientFixture.Dispose();
+        await _scopeFixture.DisposeAsync().ConfigureAwait(false);
+        await _appFixture.DisposeAsync().ConfigureAwait(false);
     }
     #endregion
 
@@ -81,5 +95,5 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
     /// Run TestApp, get, memoize and return TService instance form TestApp.
     /// </summary>
     public TService GetRequiredService<TService>() where TService : notnull =>
-        AppFixture.LazyScopeServiceProvider.GetRequiredService<TService>();
+        _scopeFixture.LazyScopeServiceProvider.GetRequiredService<TService>();
 }

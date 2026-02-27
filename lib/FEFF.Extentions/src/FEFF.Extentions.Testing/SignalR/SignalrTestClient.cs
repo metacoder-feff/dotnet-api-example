@@ -27,6 +27,7 @@ public static class ChannelEx
     }
 }
 
+//TODO: dispose
 public sealed class SignalrTestClient
 {
     private readonly Channel<ServerEvent> _eventsQueue = Channel.CreateUnbounded<ServerEvent>();

@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-
 using FEFF.Extentions.Jwt;
 
 namespace Example.Tests;
@@ -12,8 +10,9 @@ public class ExampleApiTestSignalr : ApiTestBase
     public async Task Weatherforecast__should__send_event()
     {
         // PREPARE
+//TODO: DRY
 //TODO: fixture AuthorizedClient
-        var jwt = AppFixture.LazyScopeServiceProvider.GetRequiredService<IJwtFactory>();
+        var jwt = GetRequiredService<IJwtFactory>();
         var token = LoginApiModule.CreateToken(jwt, "testuser");
         Client.AddBearerHeader(token);
 
