@@ -9,19 +9,18 @@ namespace FEFF.Extentions.Testing;
 /// Mutates connectionstring - changes DB name.
 /// TODO: remove db after test (without dbcontext)
 /// </summary>
-public class DbNameFixture
+public class DbNameFixtureBase
 {
-    private readonly string _newDbName;
+    private readonly string _prefix;
     private readonly string _connectionStringName;
     private string? _oldCs;
     private string? _newCs;
 
-    public DbNameFixture(ITestApplicationBuilder appBuilder, string newDbName, string connectionStringName)
+    public DbNameFixtureBase(ITestApplicationBuilder appBuilder, TestIdFixture testId, string connectionStringName)
     {
-        ArgumentException.ThrowIfNullOrEmpty(newDbName);
         ArgumentException.ThrowIfNullOrEmpty(connectionStringName);
-
-        _newDbName = newDbName;
+//TODO: DRY
+        _prefix = $"test-{testId.TestId}-";
         _connectionStringName = connectionStringName;
 
         appBuilder.ConfigureServices(ReconfigureFactory);
@@ -41,8 +40,7 @@ public class DbNameFixture
         {
             ConnectionString = cs
         };
-//TODO: append suffix to existing name
-        csb["Database"] = _newDbName;
+        csb["Database"] = _prefix + csb["Database"];
         var newCs = csb.ConnectionString;
         config[key] = newCs;
 
