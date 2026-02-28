@@ -1,8 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 
-using FEFF.Extentions.Redis;
-using FEFF.Extentions.SignalR.Redis;
-
 namespace Example.Tests.Fixures;
 
 public sealed class FixtureContainer : IAsyncDisposable
@@ -11,10 +8,12 @@ public sealed class FixtureContainer : IAsyncDisposable
 
     public FixtureContainer()
     {    
-        var services = new ServiceCollection();
-
 //TODO: auto
-        services.AddSingleton<ITestApplicationBuilder, TestApplicationBuilder<Program>>();
+        var services = new ServiceCollection();
+        
+        services.AddSingleton<TestApplicationBuilder<Program>>();
+        services.AddSingleton<ITestApplicationBuilder>(sp => sp.GetRequiredService<TestApplicationBuilder<Program>>());
+
         services.AddSingleton<TestApplicationFixture>();
         services.AddSingleton<FakeTimeFixture>();
         services.AddSingleton<FakeRandomFixture>();
@@ -25,8 +24,8 @@ public sealed class FixtureContainer : IAsyncDisposable
 // TODO: fixture as an Action ??
         services.AddSingleton<TestIdFixture>();
         services.AddSingleton<DbNameFixture>();
-        services.AddSingleton<RedisPrefixFixture<RedisConnectionManager>>();
-        services.AddSingleton<RedisChannelPrefixFixture<SignalRedisProviderProxy>>();
+        services.AddSingleton(typeof(RedisPrefixFixture<>));
+        services.AddSingleton(typeof(RedisChannelPrefixFixture<>));
 
         _provider = services.BuildServiceProvider();
     }
