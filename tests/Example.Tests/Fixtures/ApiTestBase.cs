@@ -14,28 +14,28 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
 
     #region Stored fixtures
     protected ITestApplicationBuilder AppBuilder {get; }
-    private readonly TestApplicationFixture _appFixture;
-    private readonly FakeTimeFixture _fakeTimeFixture;
-    private readonly FakeRandomFixture _fakeRandomFixture;
-    private readonly ClientFixture _clientFixture;
-    private readonly AppServiceScopeFixture _scopeFixture;
+    protected TestApplicationFixture AppFixture {get; }
+    protected FakeTimeFixture FakeTimeFixture {get; }
+    protected FakeRandomFixture FakeRandomFixture {get; }
+    protected ClientFixture ClientFixture {get; }
+    protected AppServiceScopeFixture ScopeFixture {get; }
     #endregion
 
     #region props from fixtures for smart access
 
-    protected FakeRandom FakeRandom => _fakeRandomFixture.FakeRandom;
+    protected FakeRandom FakeRandom => FakeRandomFixture.FakeRandom;
 
-    protected FakeTimeProvider FakeTime => _fakeTimeFixture.FakeTime;
+    protected FakeTimeProvider FakeTime => FakeTimeFixture.FakeTime;
 
     /// <summary>
     /// Build, memoize and return ITestApplication.
     /// </summary>
-    protected ITestApplication TestApplication => _appFixture.LazyTestApplication;
+    protected ITestApplication TestApplication => AppFixture.LazyTestApplication;
 
     /// <summary>
     /// Build&Run TestApp, create, memoize and return HttpClient connected to TestApp.
     /// </summary>
-    protected HttpClient Client => _clientFixture.Client;
+    protected virtual HttpClient Client => ClientFixture.Client;
 
     /// <summary>
     /// Build&Run TestApp, get, memoize and return DbContext instance form TestApp.
@@ -44,7 +44,7 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
     {
         get
         {
-            field ??= _scopeFixture.LazyScopeServiceProvider.GetRequiredService<WeatherContext>();
+            field ??= ScopeFixture.LazyScopeServiceProvider.GetRequiredService<WeatherContext>();
             return field;
         }
     }
@@ -54,8 +54,8 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
     {
         // build fixtures tree
         AppBuilder = new TestApplicationBuilder<Program>();
-        _fakeRandomFixture = new(AppBuilder);
-        _fakeTimeFixture = new(AppBuilder);
+        FakeRandomFixture = new(AppBuilder);
+        FakeTimeFixture = new(AppBuilder);
 
 // TODO: fixture as an Action ??
         _ = new DbNameFixture(AppBuilder, DbName, InfrastructureModule.PgConnectionStringName);
@@ -64,9 +64,9 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
         // channel prefix for SignalR redis connection
         _ = new RedisChannelPrefixFixture<SignalRedisProviderProxy>(AppBuilder, DbName);
         
-        _appFixture = new(AppBuilder);
-        _clientFixture = new(_appFixture);
-        _scopeFixture = new(_appFixture);
+        AppFixture = new(AppBuilder);
+        ScopeFixture = new(AppFixture);
+        ClientFixture = new(AppFixture);
     }
 
     #region IAsyncDisposable //IAsyncLifetime
@@ -83,11 +83,11 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
     }
 
     // Protected implementation of Dispose pattern.
-    protected async Task DisposeAsyncCore()
+    protected virtual async Task DisposeAsyncCore()
     {
-        _clientFixture.Dispose();
-        await _scopeFixture.DisposeAsync().ConfigureAwait(false);
-        await _appFixture.DisposeAsync().ConfigureAwait(false);
+        ClientFixture.Dispose();
+        await ScopeFixture.DisposeAsync().ConfigureAwait(false);
+        await AppFixture.DisposeAsync().ConfigureAwait(false);
     }
     #endregion
 
@@ -95,5 +95,5 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
     /// Run TestApp, get, memoize and return TService instance form TestApp.
     /// </summary>
     public TService GetRequiredService<TService>() where TService : notnull =>
-        _scopeFixture.LazyScopeServiceProvider.GetRequiredService<TService>();
+        ScopeFixture.LazyScopeServiceProvider.GetRequiredService<TService>();
 }

@@ -65,6 +65,7 @@
   + random test DB name (for postgres)
   + random Key/Channel prefix (for redis)
 + Example API tests
+  + Authorized HttpClient/SignalRClient
 + Infrastructure API tests
 + "openapi.json" should not be changed
 + coverage

@@ -1,9 +1,6 @@
-using FEFF.Extentions.Jwt;
-
 namespace Example.Tests;
-using Example.Api;
 
-public class ExampleApiTest : ApiTestBase
+public class ExampleApiTest : AuthorizedApiTestBase
 {
     [Fact]
     public async Task Weatherforecast_should_contain_data()
@@ -11,8 +8,6 @@ public class ExampleApiTest : ApiTestBase
         // PREPARE
         FakeRandom.IntStrategy = FakeRandom.ConstStrategy(2);
         FakeTime.SetNow("2005-05-05T15:15:15Z");
-
-        AuthorizeClient();
 
         // ACT
         var rStr = await Client.TestGetStringAsync("/api/v1/public/weatherforecast");
@@ -32,14 +27,5 @@ public class ExampleApiTest : ApiTestBase
               }
             ]
             """.ParseJToken());
-    }
-
-    private void AuthorizeClient()
-    {
-//TODO: DRY
-//TODO: fixture AuthorizedClient
-        var jwt = GetRequiredService<IJwtFactory>();
-        var token = LoginApiModule.CreateToken(jwt, "testuser");
-        Client.AddBearerHeader(token);
     }
 }

@@ -22,7 +22,7 @@ public class SelfTests : ApiTestBase
         b1.Should().BeFalse();
 
         // Assert the check is correct
-        // after creation in should change status
+        // It should change status after creation
         await DbCtx.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
         var b2 = await GetDbExistsAsync();
         b2.Should().BeTrue();
