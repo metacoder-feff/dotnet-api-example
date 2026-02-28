@@ -7,6 +7,7 @@ namespace FEFF.Extentions.Jwt;
 
 public class JwtFactory : IJwtFactory
 {
+//TODO: Freeze?
     private readonly JwtOptions _options;
 
     public JwtFactory(IOptions<JwtOptions> options)

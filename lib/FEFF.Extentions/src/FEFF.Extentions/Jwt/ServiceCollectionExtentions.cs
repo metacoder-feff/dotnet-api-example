@@ -50,9 +50,17 @@ public static class ServiceCollectionExtentions
         services.AddOptions<JwtBearerOptions>(authenticationScheme)
             .Configure<IOptions<JwtOptions>>( (dst, src) =>
             {
-                dst.TokenValidationParameters.ValidIssuer      = src.Value.Issuer;
-                dst.TokenValidationParameters.ValidAudience    = src.Value.Audience;
                 dst.TokenValidationParameters.IssuerSigningKey = src.Value.GetKey();
+
+                if(src.Value.Issuer.IsNullOrEmpty())
+                    dst.TokenValidationParameters.ValidateIssuer = false;
+                else
+                    dst.TokenValidationParameters.ValidIssuer = src.Value.Issuer;
+
+                if(src.Value.Audience.IsNullOrEmpty())
+                    dst.TokenValidationParameters.ValidateAudience = false;
+                else
+                    dst.TokenValidationParameters.ValidAudience = src.Value.Audience;
 
                 if(src.Value.TimeProvider != null)
                     dst.TimeProvider = src.Value.TimeProvider;

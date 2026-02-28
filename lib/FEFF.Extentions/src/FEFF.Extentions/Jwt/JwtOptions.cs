@@ -7,12 +7,12 @@ namespace FEFF.Extentions.Jwt;
 public class JwtOptions
 {
     // to create KeyedHashAlgorithm for algorithm 'HS256', the key size must be greater than: '256' bits
-    public required string SecretKey { get; init; }
-    public required TimeSpan TokenLifeTime { get; init; }
-    public string? Issuer { get; init; }
-    public string? Audience { get; init; }
+    public required string   SecretKey      { get; set; }
+    public          string?  Issuer         { get; set; }
+    public          string?  Audience       { get; set; }
+    public required TimeSpan TokenLifeTime  { get; set; }
 
-    // for tests ??
+    // for testing
     public TimeProvider? TimeProvider { get; set; }
 
     public byte[] GetKeyBytes()
@@ -27,7 +27,6 @@ public class JwtOptions
     }
 }
 
-//TODO: fluent validation?
 public class JwtOptionsValidator : IValidateOptions<JwtOptions>
 {
     public ValidateOptionsResult Validate(string? name, JwtOptions options)

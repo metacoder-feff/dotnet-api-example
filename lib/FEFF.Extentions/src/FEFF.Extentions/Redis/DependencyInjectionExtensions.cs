@@ -38,7 +38,6 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddRedisProviderOptions<TRedisProvider>(this IServiceCollection services, Action<IRedisConfigurationFactoryBuilder> config)
     where TRedisProvider : RedisProviderBase
     {
-// TODO: test different options created and used for different factories
         services.TryAddTransient<RedisProviderOptions<TRedisProvider>>();
 
         // use consumer's TypeName as a key for named options
