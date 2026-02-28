@@ -1,9 +1,11 @@
 using System.Security.Claims;
 using FEFF.Extentions.Jwt;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Example.Api;
 
 internal record LoginRequest(string Username, string Password);
+internal record LoginResponse(string Token);
 
 static class LoginApiModule
 {
@@ -25,21 +27,19 @@ static class LoginApiModule
             .AllowAnonymous(); // Allow unauthenticated access to the login endpoint
     }
 
-    private static IResult Login(LoginRequest request, IJwtFactory jwt)
+    private static Results<Ok<LoginResponse>, UnauthorizedHttpResult> Login(LoginRequest request, IJwtFactory jwt)
     {
 //TODO: log user scope
-//TODO: 400 validator
-//TODO: auth validator // Mock user validation (replace with actual user validation logic)
-//TODO: openapi results
-//TODO: signalR
+//TODO: 400 validator + openapi
+//TODO: auth validator // Mocked user validation (replace with actual user validation logic)
 
         var res = Authorize(request);
         if (res == false)
-            return Results.Unauthorized();
+            return TypedResults.Unauthorized();
         
         var tokenString = CreateToken(jwt, request.Username);
 
-        return Results.Ok(new { Token = tokenString });
+        return TypedResults.Ok(new LoginResponse(tokenString));
     }
 
     private static bool Authorize(LoginRequest request)
