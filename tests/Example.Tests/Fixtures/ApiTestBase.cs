@@ -16,6 +16,7 @@ public record FixtureSet(
     FakeRandomFixture FakeRandom,
     FakeTimeFixture FakeTime,
 
+// TODO: fixture as an Action ??
     // just override services at app builder
     DbNameFixture DbName,
     // KeyPrefix and ChannelPrefix for main redis connection

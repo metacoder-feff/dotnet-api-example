@@ -5,13 +5,20 @@ namespace Example.Tests.Fixures;
 
 public sealed class FixtureContainer : IAsyncDisposable
 {
+    // thread-safe by default
+    private static readonly Lazy<ServiceCollection> __services = new(CreateServiceCollection);
     private readonly ServiceProvider _provider;
 
     public FixtureContainer()
     {
+        _provider = __services.Value.BuildServiceProvider();
+    }
+
+    private static ServiceCollection CreateServiceCollection()
+    {
         var services = new ServiceCollection();
 
-        //TODO: auto
+//TODO: auto
         //services.AddSingleton<ITestApplicationBuilder, TestApplicationBuilder<Program>>();
         services.AddSingleton<TestApplicationBuilder<Program>>();
         services.AddSingleton<ITestApplicationBuilder>(sp => sp.GetRequiredService<TestApplicationBuilder<Program>>());
@@ -21,15 +28,7 @@ public sealed class FixtureContainer : IAsyncDisposable
 
         foreach (var t in types)
             services.AddSingleton(t);
-
-
-        // // TODO: fixture as an Action ??
-        //         services.AddSingleton<TestIdFixture>();
-        //         services.AddSingleton<DbNameFixture>();
-                 services.AddSingleton(typeof(RedisPrefixFixture<>));
-        //         services.AddSingleton(typeof(RedisChannelPrefixFixture<>));
-
-        _provider = services.BuildServiceProvider();
+        return services;
     }
 
     private static IEnumerable<Type> FindFixtureTypes()
@@ -45,8 +44,8 @@ public sealed class FixtureContainer : IAsyncDisposable
     private static IEnumerable<Assembly> GetAssemblies()
     {
         // var assembly = Assembly.GetExecutingAssembly();
-        // IEnumerable<Assembly> aa = [assembly];
-        // return aa;
+        // return [assembly];
+        
         return AppDomain.CurrentDomain.GetAssemblies();
     }
 
