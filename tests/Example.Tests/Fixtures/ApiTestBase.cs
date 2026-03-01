@@ -8,9 +8,26 @@ namespace Example.Tests;
 using Example.Api;
 using Example.Tests.Fixures;
 
+/// <summary>
+/// This fixures are required by most of tests
+/// </summary>
+[Fixture]
+public record FixtureSet(
+    FakeRandomFixture FakeRandom,
+    FakeTimeFixture FakeTime,
+
+    // just override services at app builder
+    DbNameFixture DbName,
+    // KeyPrefix and ChannelPrefix for main redis connection
+    RedisPrefixFixture<RedisConnectionManager> SecondRedisPrefix,
+    // channel prefix for SignalR redis connection
+    RedisChannelPrefixFixture<SignalRedisProviderProxy> SignalRedisPrefix
+);
+
 public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
 {
     protected FixtureContainer FixtureContainer {get;} = new ();
+    protected FixtureSet FixtureSet {get;}
 
 //TODO: memoize
     #region props from fixtures for smart access
@@ -45,17 +62,7 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
 
     public ApiTestBase()
     {
-        //enforce fixture creation
-//TODO: better
-        _ = GetFixture<FakeRandomFixture>();
-        _ = GetFixture<FakeTimeFixture>();
-
-        // just override services at app builder
-        _ = GetFixture<Fixures.DbNameFixture>();
-        // KeyPrefix and ChannelPrefix for main redis connection
-        _ = GetFixture<RedisPrefixFixture<RedisConnectionManager>>();
-        // channel prefix for SignalR redis connection
-        _ = GetFixture<RedisChannelPrefixFixture<SignalRedisProviderProxy>>();
+        FixtureSet = GetFixture<FixtureSet>();
     }
 
     protected T GetFixture<T>()
