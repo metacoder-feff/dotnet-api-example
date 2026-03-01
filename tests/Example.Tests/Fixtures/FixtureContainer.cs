@@ -18,22 +18,29 @@ public sealed class FixtureContainer : IAsyncDisposable
     {
         var services = new ServiceCollection();
 
-//TODO: auto
-        //services.AddSingleton<ITestApplicationBuilder, TestApplicationBuilder<Program>>();
-        services.AddSingleton<TestApplicationBuilder<Program>>();
-        services.AddSingleton<ITestApplicationBuilder>(sp => sp.GetRequiredService<TestApplicationBuilder<Program>>());
-
-        var types = FindFixtureTypes();
-        var tt = types.ToList();
-
+        var types = FindFixtureTypes<FixtureAttribute>();
         foreach (var t in types)
-            services.AddSingleton(t);
+            RegisterFixureType(services, t);
+        
         return services;
     }
 
-    private static IEnumerable<Type> FindFixtureTypes()
+    private static void RegisterFixureType(ServiceCollection services, Type t)
     {
-        var atr = typeof(FixtureAttribute);
+        services.AddSingleton(t);
+        var attribute = t.GetCustomAttribute<FixtureAttribute>();
+        if (attribute?.FixtureType is null)
+            return;
+
+        if(attribute.FixtureType.IsAssignableFrom(t) == false)
+            throw new InvalidOperationException($"Implementation type'{t}' should be subtype or implement {nameof(FixtureAttribute.FixtureType)} '{attribute.FixtureType}'.");
+
+        services.AddSingleton(attribute.FixtureType, sp => sp.GetRequiredService(t));
+    }
+
+    private static IEnumerable<Type> FindFixtureTypes<TAttribute>()
+    {
+        var atr = typeof(TAttribute);
         
         var types = GetAssemblies()
             .SelectMany(a => a.GetTypes())

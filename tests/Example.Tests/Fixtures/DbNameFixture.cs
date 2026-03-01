@@ -3,10 +3,7 @@ using Example.Api;
 namespace Example.Tests.Fixures;
 
 [Fixture]
-public class DbNameFixture : DbNameFixtureBase
+public class DbNameFixture(ITestApplicationFixture app, TestIdFixture testId) 
+    : DbNameFixtureBase(app, testId, InfrastructureModule.PgConnectionStringName)
 {
-    public DbNameFixture(ITestApplicationBuilder appBuilder, TestIdFixture testId) 
-    : base(appBuilder, testId, InfrastructureModule.PgConnectionStringName)
-    {
-    }
 }

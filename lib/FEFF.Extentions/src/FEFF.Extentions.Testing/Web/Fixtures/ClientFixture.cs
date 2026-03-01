@@ -10,7 +10,7 @@ public sealed class ClientFixture : IDisposable
     /// </summary>
     public HttpClient Client => _client.Value;
 
-    public ClientFixture(TestApplicationFixture app)
+    public ClientFixture(ITestApplicationFixture app)
     {
         // cannot remove lambda expression because access to 'app.LazyTestApplication' finishes app building
         // but we only need to register callback

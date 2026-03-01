@@ -18,9 +18,9 @@ public class TestIdFixture
 public class RedisChannelPrefixFixture<TRedis>
 where TRedis : RedisProviderBase
 {
-    public RedisChannelPrefixFixture(ITestApplicationBuilder appBuilder, TestIdFixture testId)
+    public RedisChannelPrefixFixture(ITestApplicationFixture app, TestIdFixture testId)
     {
-        appBuilder.ConfigureServices( services =>
+        app.ApplicationBuilder.ConfigureServices( services =>
         {
             services.AddRedisProviderOptions<TRedis>(b =>
             {
@@ -40,9 +40,9 @@ where TRedis : RedisProviderBase
 public class RedisPrefixFixture<TRedis>
 where TRedis : RedisConnectionManager
 {
-    public RedisPrefixFixture(ITestApplicationBuilder appBuilder, TestIdFixture testId)
+    public RedisPrefixFixture(ITestApplicationFixture app, TestIdFixture testId)
     {
-        appBuilder.ConfigureServices( services =>
+        app.ApplicationBuilder.ConfigureServices( services =>
         {
             services.AddRedisProviderOptions<TRedis>(b =>
             {

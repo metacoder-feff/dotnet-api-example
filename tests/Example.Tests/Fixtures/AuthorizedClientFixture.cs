@@ -15,7 +15,7 @@ public sealed class AuthorizedClientFixture : IAsyncDisposable
     public HttpClient Client => _client.Value;
     public SignalrTestClient SignalrClient => _signal.Value;
 
-    public AuthorizedClientFixture(TestApplicationFixture app, AppServiceScopeFixture scope)
+    public AuthorizedClientFixture(ITestApplicationFixture app, AppServiceScopeFixture scope)
     {
         // cannot remove lambda expression because access to 'app.LazyTestApplication' finishes app building
         // but we only need to register callback
@@ -23,7 +23,7 @@ public sealed class AuthorizedClientFixture : IAsyncDisposable
         _signal = new(() => CreateSignal(app, scope));
     }
 
-    private static SignalrTestClient CreateSignal(TestApplicationFixture app, AppServiceScopeFixture scope)
+    private static SignalrTestClient CreateSignal(ITestApplicationFixture app, AppServiceScopeFixture scope)
     {
         var jwt = scope.GetRequiredService<IJwtFactory>();
         var token = LoginApiModule.CreateToken(jwt, "testuser");
@@ -31,7 +31,7 @@ public sealed class AuthorizedClientFixture : IAsyncDisposable
         return app.LazyTestApplication.CreateSignalRClient("/api/v1/public/events", token);
     }
 
-    private static HttpClient CreateClient(TestApplicationFixture app, AppServiceScopeFixture scope)
+    private static HttpClient CreateClient(ITestApplicationFixture app, AppServiceScopeFixture scope)
     {
         var jwt = scope.GetRequiredService<IJwtFactory>();
         var token = LoginApiModule.CreateToken(jwt, "testuser");

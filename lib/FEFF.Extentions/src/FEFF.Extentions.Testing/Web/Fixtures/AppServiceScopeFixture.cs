@@ -12,7 +12,7 @@ public sealed class AppServiceScopeFixture : IAsyncDisposable
     /// </summary>
     public IServiceProvider LazyScopeServiceProvider => _appServiceScope.Value.ServiceProvider;
 
-    public AppServiceScopeFixture(TestApplicationFixture app)
+    public AppServiceScopeFixture(ITestApplicationFixture app)
     {
         // cannot remove lambda expression because access to 'app.LazyTestApplication' finishes app building
         // but we only need to register callback

@@ -8,9 +8,9 @@ public class FakeTimeFixture
 {
     public readonly FakeTimeProvider FakeTime = new(new DateTimeOffset(2000, 1, 1, 0, 0, 0, 0, TimeSpan.Zero));
 
-    public FakeTimeFixture(ITestApplicationBuilder appBuilder)
+    public FakeTimeFixture(ITestApplicationFixture app)
     {
-        appBuilder.ConfigureServices(ReconfigureFactory);
+        app.ApplicationBuilder.ConfigureServices(ReconfigureFactory);
     }
 
     private void ReconfigureFactory(IServiceCollection services)

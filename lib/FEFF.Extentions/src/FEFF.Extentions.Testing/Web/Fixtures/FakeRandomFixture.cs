@@ -7,9 +7,9 @@ public class FakeRandomFixture
 {
     public readonly FakeRandom FakeRandom = new();
 
-    public FakeRandomFixture(ITestApplicationBuilder appBuilder)
+    public FakeRandomFixture(ITestApplicationFixture app)
     {
-        appBuilder.ConfigureServices(ReconfigureFactory);
+        app.ApplicationBuilder.ConfigureServices(ReconfigureFactory);
     }
 
     private void ReconfigureFactory(IServiceCollection services)

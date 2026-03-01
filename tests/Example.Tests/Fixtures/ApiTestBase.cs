@@ -8,6 +8,9 @@ namespace Example.Tests;
 using Example.Api;
 using Example.Tests.Fixures;
 
+[Fixture(FixtureType = typeof(ITestApplicationFixture))]
+public class TestApplicationFixture : TestApplicationFixture<Program> {}
+
 /// <summary>
 /// This fixures are required by most of tests
 /// </summary>
@@ -22,7 +25,9 @@ public record FixtureSet(
     // KeyPrefix and ChannelPrefix for main redis connection
     RedisPrefixFixture<RedisConnectionManager> SecondRedisPrefix,
     // channel prefix for SignalR redis connection
-    RedisChannelPrefixFixture<SignalRedisProviderProxy> SignalRedisPrefix
+    RedisChannelPrefixFixture<SignalRedisProviderProxy> SignalRedisPrefix,
+    
+    TestApplicationFixture TestApplication
 );
 
 public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
@@ -30,19 +35,20 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
     protected FixtureContainer FixtureContainer {get;} = new ();
     protected FixtureSet FixtureSet {get;}
 
-//TODO: memoize
     #region props from fixtures for smart access
-    protected ITestApplicationBuilder AppBuilder => GetFixture<ITestApplicationBuilder>();
+    protected ITestApplicationBuilder AppBuilder => FixtureSet.TestApplication.ApplicationBuilder;
 
-    protected FakeRandom FakeRandom => GetFixture<FakeRandomFixture>().FakeRandom;
+//TODO: rename
+    protected FakeRandom FakeRandom => FixtureSet.FakeRandom.FakeRandom;
 
-    protected FakeTimeProvider FakeTime => GetFixture<FakeTimeFixture>().FakeTime;
+    protected FakeTimeProvider FakeTime => FixtureSet.FakeTime.FakeTime;
 
     /// <summary>
     /// Build, memoize and return ITestApplication.
     /// </summary>
-    protected ITestApplication TestApplication => GetFixture<TestApplicationFixture>().LazyTestApplication;
+    protected ITestApplication TestApplication => FixtureSet.TestApplication.LazyTestApplication;
 
+//TODO: memoize
     /// <summary>
     /// Build&Run TestApp, create, memoize and return HttpClient connected to TestApp.
     /// </summary>

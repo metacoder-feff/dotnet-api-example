@@ -16,14 +16,14 @@ public class DbNameFixtureBase
     private string? _oldCs;
     private string? _newCs;
 
-    public DbNameFixtureBase(ITestApplicationBuilder appBuilder, TestIdFixture testId, string connectionStringName)
+    public DbNameFixtureBase(ITestApplicationFixture app, TestIdFixture testId, string connectionStringName)
     {
         ArgumentException.ThrowIfNullOrEmpty(connectionStringName);
 //TODO: DRY
         _prefix = $"test-{testId.TestId}-";
         _connectionStringName = connectionStringName;
 
-        appBuilder.ConfigureServices(ReconfigureFactory);
+        app.ApplicationBuilder.ConfigureServices(ReconfigureFactory);
     }
 
     private void ReconfigureFactory(WebHostBuilderContext ctx, IServiceCollection _)
