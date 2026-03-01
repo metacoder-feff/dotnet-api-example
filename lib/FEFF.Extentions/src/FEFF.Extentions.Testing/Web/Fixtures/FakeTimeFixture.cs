@@ -3,6 +3,7 @@ using Microsoft.Extensions.Time.Testing;
 
 namespace FEFF.Extentions.Testing;
 
+[Fixture]
 public class FakeTimeFixture
 {
     public readonly FakeTimeProvider FakeTime = new(new DateTimeOffset(2000, 1, 1, 0, 0, 0, 0, TimeSpan.Zero));

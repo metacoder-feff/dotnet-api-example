@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FEFF.Extentions.Testing;
 
+[Fixture]
 public class FakeRandomFixture
 {
     public readonly FakeRandom FakeRandom = new();

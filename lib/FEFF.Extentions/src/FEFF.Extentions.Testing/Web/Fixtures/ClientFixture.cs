@@ -1,5 +1,6 @@
 namespace FEFF.Extentions.Testing;
 
+[Fixture]
 public sealed class ClientFixture : IDisposable
 {
     private readonly Lazy<HttpClient> _client;

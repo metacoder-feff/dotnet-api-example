@@ -3,6 +3,7 @@ namespace FEFF.Extentions.Testing;
 //TODO: own ITestApplicationBuilder ???
 //TODO: async StartServerAsync-> OnStartedHandlerAsync[]
 //  e.g. DB.Create
+[Fixture]
 public sealed class TestApplicationFixture : IAsyncDisposable
 {
     private readonly Lazy<ITestApplication> _app;

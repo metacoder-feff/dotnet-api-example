@@ -3,6 +3,7 @@ using FEFF.Extentions.Jwt;
 
 namespace Example.Tests.Fixures;
 
+[Fixture]
 public sealed class AuthorizedClientFixture : IAsyncDisposable
 {
     private readonly Lazy<HttpClient> _client;

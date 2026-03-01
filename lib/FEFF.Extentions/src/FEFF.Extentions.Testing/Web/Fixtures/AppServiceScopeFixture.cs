@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FEFF.Extentions.Testing;
 
+[Fixture]
 public sealed class AppServiceScopeFixture : IAsyncDisposable
 {
     private readonly Lazy<AsyncServiceScope> _appServiceScope;

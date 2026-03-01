@@ -4,6 +4,7 @@ using StackExchange.Redis;
 namespace FEFF.Extentions.Testing;
 using FEFF.Extentions.Redis;
 
+[Fixture]
 public class TestIdFixture
 {
     public string TestId {get;} = Guid.NewGuid().ToString();
@@ -13,6 +14,7 @@ public class TestIdFixture
 /// <summary>
 /// Adds ChannelPrefix to redis configuration.
 /// </summary>
+[Fixture]
 public class RedisChannelPrefixFixture<TRedis>
 where TRedis : RedisProviderBase
 {
@@ -34,6 +36,7 @@ where TRedis : RedisProviderBase
 /// <summary>
 /// Adds KeyPrefix and ChannelPrefix to redis configuration.
 /// </summary>
+[Fixture]
 public class RedisPrefixFixture<TRedis>
 where TRedis : RedisConnectionManager
 {
