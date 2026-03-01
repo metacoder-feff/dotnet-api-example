@@ -2,7 +2,7 @@ using Example.Tests.Fixures;
 
 namespace Example.Tests;
 
-public class AuthorizedApiTestBase: ApiTestBase //IAsyncLifetime
+public class AuthorizedApiTestBase: ApiTestBase
 {
     #region props from fixtures for smart access
 //TODO: memoize

@@ -9,14 +9,12 @@ namespace Example.Tests;
 using Example.Api;
 using Example.Tests.Fixures;
 
-[Fixture(FixtureType = typeof(ITestApplicationFixture))]
-public class TestApplicationFixture : TestApplicationFixture<Program> {}
-
 /// <summary>
 /// This fixures are required by most of tests
 /// </summary>
 [Fixture]
 public record FixtureSet(
+    TestApplicationFixture TestApplication,
     FakeRandomFixture FakeRandom,
     FakeTimeFixture FakeTime,
 
@@ -26,9 +24,7 @@ public record FixtureSet(
     // KeyPrefix and ChannelPrefix for main redis connection
     RedisPrefixFixture<RedisConnectionManager> SecondRedisPrefix,
     // channel prefix for SignalR redis connection
-    RedisChannelPrefixFixture<SignalRedisProviderProxy> SignalRedisPrefix,
-    
-    TestApplicationFixture TestApplication
+    RedisChannelPrefixFixture<SignalRedisProviderProxy> SignalRedisPrefix
 );
 
 public class ApiTestBase: IAsyncDisposable //IAsyncLifetime

@@ -31,7 +31,7 @@ public sealed class FixtureContainer : IAsyncDisposable
         var attribute = t.GetCustomAttribute<FixtureAttribute>();
         if (attribute?.FixtureType is null)
             return;
-
+//TODO: analizer
         if(attribute.FixtureType.IsAssignableFrom(t) == false)
             throw new InvalidOperationException($"Implementation type'{t}' should be subtype or implement {nameof(FixtureAttribute.FixtureType)} '{attribute.FixtureType}'.");
 
