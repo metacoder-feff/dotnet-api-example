@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FEFF.Extentions.Testing;
+namespace FEFF.Extentions.Fixtures;
 
 [Fixture]
 public sealed class AppServiceScopeFixture : IAsyncDisposable

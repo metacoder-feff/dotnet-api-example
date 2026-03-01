@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FEFF.Extentions.Testing;
+namespace FEFF.Extentions.Fixtures;
+using FEFF.Extentions.Testing;
 
 /// <summary>
 /// Mutates connectionstring - changes DB name.

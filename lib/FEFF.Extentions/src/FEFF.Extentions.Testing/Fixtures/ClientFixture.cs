@@ -1,4 +1,4 @@
-namespace FEFF.Extentions.Testing;
+namespace FEFF.Extentions.Fixtures;
 
 [Fixture]
 public sealed class ClientFixture : IDisposable

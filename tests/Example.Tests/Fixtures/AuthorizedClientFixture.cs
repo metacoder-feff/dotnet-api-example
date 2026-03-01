@@ -1,4 +1,5 @@
 using Example.Api;
+using FEFF.Extentions.Fixtures;
 using FEFF.Extentions.Jwt;
 
 namespace Example.Tests.Fixures;

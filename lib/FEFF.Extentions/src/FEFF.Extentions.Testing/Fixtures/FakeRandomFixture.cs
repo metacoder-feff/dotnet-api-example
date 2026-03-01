@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FEFF.Extentions.Testing;
+namespace FEFF.Extentions.Fixtures;
+using FEFF.Extentions.Testing;
 
 [Fixture]
 public class FakeRandomFixture

@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;
 
-namespace FEFF.Extentions.Testing;
+namespace FEFF.Extentions.Fixtures;
+using FEFF.Extentions.Testing;
 
 [Fixture]
 public class FakeTimeFixture

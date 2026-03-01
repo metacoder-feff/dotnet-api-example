@@ -1,4 +1,4 @@
-namespace FEFF.Extentions.Testing;
+namespace FEFF.Extentions.Fixtures;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class FixtureAttribute : Attribute

@@ -1,4 +1,5 @@
-namespace FEFF.Extentions.Testing;
+namespace FEFF.Extentions.Fixtures;
+using FEFF.Extentions.Testing;
 
 public interface ITestApplicationFixture
 {

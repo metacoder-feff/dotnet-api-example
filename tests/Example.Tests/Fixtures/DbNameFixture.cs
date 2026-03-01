@@ -1,4 +1,5 @@
 using Example.Api;
+using FEFF.Extentions.Fixtures;
 
 namespace Example.Tests.Fixures;
 

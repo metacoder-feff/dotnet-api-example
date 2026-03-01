@@ -1,8 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 
-namespace FEFF.Extentions.Testing;
+namespace FEFF.Extentions.Fixtures;
 using FEFF.Extentions.Redis;
+using FEFF.Extentions.Testing;
 
 [Fixture]
 public class TestIdFixture

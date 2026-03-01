@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Time.Testing;
 
+using FEFF.Extentions.Fixtures;
 using FEFF.Extentions.Redis;
 using FEFF.Extentions.SignalR.Redis;
 
