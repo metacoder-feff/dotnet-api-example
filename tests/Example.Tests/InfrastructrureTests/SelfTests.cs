@@ -9,7 +9,7 @@ public class SelfTests : ApiTestBase
         FakeTime.GetInstant()
             .Should().Be("2000-01-01T00:00:00Z");
 
-        var tp = GetRequiredService<TimeProvider>();
+        var tp = GetAppService<TimeProvider>();
         
         tp.GetInstant()
             .Should().Be("2000-01-01T00:00:00Z");

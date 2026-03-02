@@ -30,56 +30,55 @@ public record FixtureSet(
 
 public class ApiTestBase
 {
-//TODO: memoize
-    protected FixtureContainer FixtureContainer => TestContext.Current.GetFixtureContainer();
-    protected FixtureSet FixtureSet {get;}
+    //----------------------------------------------
+    // TestFixures integration requires
+    // [assembly: FEFF.Experimental.TestFixtures.FixturesXUnitExtension]
+    // otherwise manage FixtureContainer manually
+    //----------------------------------------------
+    protected static T GetFixture<T>()
+    where T : notnull
+    {
+        return TestContext.Current.GetFixtureContainer().GetFixture<T>();
+    }
 
-    #region props from fixtures for smart access
+    //----------------------------------------
+
+    protected FixtureSet FixtureSet { get; } = GetFixture<FixtureSet>();
+
+    #region smart access to most used fixtures
+
+    // This only fixture may be accessed only before test application is built otherwise thows
     protected ITestApplicationBuilder AppBuilder => FixtureSet.TestApplication.ApplicationBuilder;
 
-//TODO: rename
     protected FakeRandom FakeRandom => FixtureSet.FakeRandom.Value;
-
     protected FakeTimeProvider FakeTime => FixtureSet.FakeTime.Value;
 
     /// <summary>
-    /// Build, memoize and return ITestApplication.
+    /// Build and return ITestApplication.
     /// </summary>
     protected ITestApplication TestApplication => FixtureSet.TestApplication.LazyCreatedApplication;
 
-//TODO: memoize
     /// <summary>
-    /// Build&Run TestApp, create, memoize and return HttpClient connected to TestApp.
+    /// Build&Run TestApp and return HttpClient connected to TestApp.
     /// </summary>
     protected virtual HttpClient Client => GetFixture<AppClientFixture>().Value;
 
     /// <summary>
-    /// Build&Run TestApp, get, memoize and return DbContext instance form TestApp.
+    /// Build&Run TestApp and return DbContext instance form TestApp.
     /// </summary>
     public WeatherContext DbCtx
     {
         get
         {
-            field ??= GetFixture<AppServicesFixture>().ServiceProvider.GetRequiredService<WeatherContext>();
+            field ??= GetAppService<WeatherContext>();
             return field;
         }
     }
-    #endregion
-
-    public ApiTestBase()
-    {
-        FixtureSet = GetFixture<FixtureSet>();
-    }
-
-    protected T GetFixture<T>()
-    where T : notnull
-    {
-        return FixtureContainer.GetFixture<T>();
-    }
 
     /// <summary>
-    /// Run TestApp, get, memoize and return TService instance form TestApp.
+    /// Build&Run TestApp and return TService instance form TestApp.
     /// </summary>
-    public TService GetRequiredService<TService>() where TService : notnull =>
+    public static TService GetAppService<TService>() where TService : notnull =>
         GetFixture<AppServicesFixture>().ServiceProvider.GetRequiredService<TService>();
+    #endregion
 }

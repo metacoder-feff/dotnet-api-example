@@ -69,6 +69,8 @@ public class FixturesXUnitExtensionAttribute : BeforeAfterTestAttribute, IAssemb
     {
         var test = ctx.Test;
         ThrowHelper.Assert(test != null);
+        //ThrowHelper.Assert(ctx.TestStatus == TestEngineStatus.Initializing || ctx.TestStatus == TestEngineStatus.Running);
+        ThrowHelper.Assert(ctx.TestStatus == TestEngineStatus.Running);
 
 //TODO: test message
         if(Guard.IsInitialized() == false)
