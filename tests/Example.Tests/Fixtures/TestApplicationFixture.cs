@@ -1,4 +1,4 @@
-using FEFF.Extentions.Fixtures;
+using FEFF.Extentions.TestFixtures;
 
 namespace Example.Tests.Fixures;
 

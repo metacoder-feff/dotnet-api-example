@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/lib/">
     <Project Path="lib/FEFF.Extentions/src/FEFF.Extentions/FEFF.Extentions.csproj" />
+    <Project Path="lib/FEFF.Extentions/src/FEFF.Experimental.Testing/FEFF.Experimental.Testing.csproj" />
     <Project Path="lib/FEFF.Extentions/src/FEFF.Extentions.Testing/FEFF.Extentions.Testing.csproj" />
   </Folder>
   <Folder Name="/src/">

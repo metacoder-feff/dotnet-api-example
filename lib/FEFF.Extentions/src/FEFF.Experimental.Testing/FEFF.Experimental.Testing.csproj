@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+     <InternalsVisibleTo Include="FEFF.Extentions.Tests" />
+  </ItemGroup>
+  
+  <ItemGroup>
+
+  </ItemGroup>
+
+    <ItemGroup>
+    <ProjectReference Include="../FEFF.Extentions/FEFF.Extentions.csproj" />
+    <ProjectReference Include="../FEFF.Extentions.Testing/FEFF.Extentions.Testing.csproj" />
+  </ItemGroup>
+
+</Project>

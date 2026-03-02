@@ -1,4 +1,4 @@
-namespace FEFF.Extentions.Fixtures;
+namespace FEFF.Extentions.TestFixtures;
 using FEFF.Extentions.Testing.AspNetCore;
 
 public interface ITestApplicationFixture

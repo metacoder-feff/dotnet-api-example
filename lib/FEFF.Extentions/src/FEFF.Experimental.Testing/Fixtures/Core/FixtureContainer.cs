@@ -1,7 +1,7 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FEFF.Extentions.Fixtures;
+namespace FEFF.Extentions.TestFixtures;
 
 public sealed class FixtureContainer : IAsyncDisposable
 {

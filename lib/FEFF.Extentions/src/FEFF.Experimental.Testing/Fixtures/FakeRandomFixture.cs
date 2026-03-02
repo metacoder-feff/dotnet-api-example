@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FEFF.Extentions.Fixtures;
+namespace FEFF.Extentions.TestFixtures;
 using FEFF.Extentions.Testing;
 using FEFF.Extentions.Testing.AspNetCore;
 

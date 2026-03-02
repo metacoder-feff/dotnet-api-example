@@ -1,5 +1,5 @@
 using Example.Api;
-using FEFF.Extentions.Fixtures;
+using FEFF.Extentions.TestFixtures;
 using FEFF.Extentions.Jwt;
 using FEFF.Extentions.Testing.SignalR;
 

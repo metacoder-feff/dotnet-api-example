@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../../lib/FEFF.Extentions/src/FEFF.Experimental.Testing/FEFF.Experimental.Testing.csproj" />
     <ProjectReference Include="../../lib/FEFF.Extentions/src/FEFF.Extentions.Testing/FEFF.Extentions.Testing.csproj" />
     <ProjectReference Include="../../src/Example.Api/Example.Api.csproj" />
   </ItemGroup>
