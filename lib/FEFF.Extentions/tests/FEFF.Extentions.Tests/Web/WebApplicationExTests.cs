@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Builder;
 
 namespace FEFF.Extentions.Tests.Web;
 
-using FEFF.Extentions.Web;
+using FEFF.Extentions.AspNetCore;
 
 public class WebApplicationExTests
 {

@@ -1,6 +1,6 @@
 
 using Example.Api;
-using FEFF.Extentions.Web;
+using FEFF.Extentions.DependencyInjection;
 
 /*------------------------------------------------*/
 // MAIN

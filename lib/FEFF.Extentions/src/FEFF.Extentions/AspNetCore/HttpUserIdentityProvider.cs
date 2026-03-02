@@ -1,5 +1,5 @@
 using System.Security.Claims;
-namespace FEFF.Extentions.Web;
+namespace FEFF.Extentions.AspNetCore;
     
 public interface IUserIdentityProvider
 {

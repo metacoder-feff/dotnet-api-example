@@ -2,7 +2,7 @@ using Example.Api.SignalR;
 using NodaTime.Extensions;
 
 using FEFF.Extentions.Redis;
-using FEFF.Extentions.Web;
+using FEFF.Extentions.AspNetCore;
 
 namespace Example.Api;
 

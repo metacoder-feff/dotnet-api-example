@@ -1,9 +1,8 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection;
-using FEFF.Extentions.Web;
+using FEFF.Extentions.DependencyInjection;
 
-//TODO: split namespaces/files
 public static class DependencyInjectionExtentions
 {
 //TODO: keyed
@@ -15,13 +14,6 @@ public static class DependencyInjectionExtentions
         services.AddTransient<TService>(x => x.GetRequiredService<TImplementation>());
         return services;
     }
-
-    public static void AddHttpUserIdentityProvider(this IServiceCollection services)
-    {
-        services.AddHttpContextAccessor();
-        services.TryAddTransient<IUserIdentityProvider, HttpUserIdentityProvider>();
-    }
-
 
     public static void AddTimeProvider(this IServiceCollection services)
     {
@@ -71,15 +63,5 @@ public static class DependencyInjectionExtentions
     {
         var configuration = src.GetRequiredService<IConfiguration>();
         return configuration.GetRequiredConnectionString(connectionStringName);
-    }
-
-    /// <summary>
-    /// Add configuration from "appsettings.secrets.json" (parse right now)
-    /// </summary>
-    public static void AddAppSettingSecretsJson(this IConfigurationManager configuration)
-    {
-        var reloadOnChange = configuration.GetReloadConfigOnChangeValue();
-        configuration
-            .AddJsonFile("appsettings.secrets.json", optional: true, reloadOnChange: reloadOnChange);
     }
 }

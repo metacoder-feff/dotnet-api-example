@@ -1,4 +1,4 @@
-namespace FEFF.Extentions.Web;
+namespace FEFF.Extentions.DependencyInjection;
 
 public sealed class SimpleLogContext : IDisposable
 {
