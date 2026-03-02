@@ -20,6 +20,8 @@ public interface ITestApplication : IAsyncDisposable
     TestServer Server { get; }
 
     HttpClient CreateClient();
+
+//TODO: async
     void StartServer();
 }
 

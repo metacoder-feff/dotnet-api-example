@@ -1,5 +1,6 @@
 using Example.Api;
-using FEFF.Extentions.TestFixtures;
+using FEFF.Experimental.TestFixtures;
+using FEFF.Experimental.TestFixtures.AspNetCore;
 using FEFF.Extentions.Jwt;
 using FEFF.Extentions.Testing.SignalR;
 

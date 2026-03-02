@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 
-namespace FEFF.Extentions.TestFixtures;
+namespace FEFF.Experimental.TestFixtures.AspNetCore;
 using FEFF.Extentions.Redis;
 using FEFF.Extentions.Testing.AspNetCore;
 

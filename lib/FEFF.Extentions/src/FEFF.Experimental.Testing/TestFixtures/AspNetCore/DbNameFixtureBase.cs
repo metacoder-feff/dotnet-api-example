@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FEFF.Extentions.TestFixtures;
+namespace FEFF.Experimental.TestFixtures.AspNetCore;
 using FEFF.Extentions.Testing.AspNetCore;
 
 /// <summary>

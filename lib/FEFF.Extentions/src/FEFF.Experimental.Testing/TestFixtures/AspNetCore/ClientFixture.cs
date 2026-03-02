@@ -1,4 +1,4 @@
-namespace FEFF.Extentions.TestFixtures;
+namespace FEFF.Experimental.TestFixtures.AspNetCore;
 
 [Fixture]
 public sealed class ClientFixture : IDisposable

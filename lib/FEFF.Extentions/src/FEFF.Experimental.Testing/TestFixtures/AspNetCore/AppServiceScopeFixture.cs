@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FEFF.Extentions.TestFixtures;
+namespace FEFF.Experimental.TestFixtures.AspNetCore;
 
 [Fixture]
 public sealed class AppServiceScopeFixture : IAsyncDisposable

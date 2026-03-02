@@ -1,4 +1,5 @@
-using FEFF.Extentions.TestFixtures;
+using FEFF.Experimental.TestFixtures;
+using FEFF.Experimental.TestFixtures.AspNetCore;
 
 namespace Example.Tests.Fixures;
 
