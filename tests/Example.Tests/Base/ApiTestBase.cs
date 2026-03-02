@@ -28,9 +28,10 @@ public record FixtureSet(
     RedisChannelPrefixFixture<SignalRedisProviderProxy> SignalRedisPrefix
 );
 
-public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
+public class ApiTestBase
 {
-    protected FixtureContainer FixtureContainer {get;} = new ();
+//TODO: memoize
+    protected FixtureContainer FixtureContainer => TestContext.Current.GetFixtureContainer();
     protected FixtureSet FixtureSet {get;}
 
     #region props from fixtures for smart access
@@ -75,26 +76,6 @@ public class ApiTestBase: IAsyncDisposable //IAsyncLifetime
     {
         return FixtureContainer.GetFixture<T>();
     }
-
-    #region IAsyncDisposable //IAsyncLifetime
-    // public virtual ValueTask InitializeAsync()
-    // {
-    //     return ValueTask.CompletedTask;
-    // }
-
-    // Public implementation of Dispose pattern callable by consumers.
-    public async ValueTask DisposeAsync()
-    {
-        await DisposeAsyncCore().ConfigureAwait(false);
-        GC.SuppressFinalize(this);
-    }
-
-    // Protected implementation of Dispose pattern.
-    protected ValueTask DisposeAsyncCore()
-    {
-        return FixtureContainer.DisposeAsync();
-    }
-    #endregion
 
     /// <summary>
     /// Run TestApp, get, memoize and return TService instance form TestApp.

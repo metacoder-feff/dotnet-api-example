@@ -67,7 +67,7 @@ public sealed class AutoDisposeFixturesAttribute : BeforeAfterTestAttribute, IAs
         ThrowHelper.Assert(test != null);
 
         if(Guard.IsInitialized() == false)
-           throw new InvalidOperationException($"Must use '{nameof(AutoDisposeFixturesAttribute)}' before call to '{nameof(GetFixtureContainer)}'");
+           throw new InvalidOperationException($"Must use '{nameof(AutoDisposeFixturesAttribute)}' a test assembly before call to '{nameof(GetFixtureContainer)}'.");
 
         var k = GetKey(test);
 
