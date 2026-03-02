@@ -33,7 +33,7 @@ public sealed class FixtureContainer : IAsyncDisposable
             return;
 //TODO: analizer
         if(attribute.FixtureType.IsAssignableFrom(t) == false)
-            throw new InvalidOperationException($"Implementation type'{t}' should be subtype or implement {nameof(FixtureAttribute.FixtureType)} '{attribute.FixtureType}'.");
+            throw new InvalidOperationException($"The implementation type'{t}' should be a subtype or implement {nameof(FixtureAttribute.FixtureType)} '{attribute.FixtureType}'.");
 
         services.AddSingleton(attribute.FixtureType, sp => sp.GetRequiredService(t));
     }
@@ -50,6 +50,7 @@ public sealed class FixtureContainer : IAsyncDisposable
 
     private static IEnumerable<Assembly> GetAssemblies()
     {
+//TODO: optimize?        
         // var assembly = Assembly.GetExecutingAssembly();
         // return [assembly];
         

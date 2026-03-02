@@ -61,7 +61,6 @@ public sealed class AutoDisposeFixturesAttribute : BeforeAfterTestAttribute, IAs
         return res as FixtureContainer;
     }
 
-//TODO: thread-safe ??
     internal static FixtureContainer GetFixtureContainer(ITestContext ctx)
     {
         var test = ctx.Test;
@@ -72,13 +71,7 @@ public sealed class AutoDisposeFixturesAttribute : BeforeAfterTestAttribute, IAs
 
         var k = GetKey(test);
 
-        _ = ctx.KeyValueStorage.TryGetValue(k, out var obj);
-        if(obj == null)
-        {
-            var res1 = new FixtureContainer();
-            ctx.KeyValueStorage[k] = res1;
-            return res1;
-        }
+        var obj = ctx.KeyValueStorage.GetOrAdd(k, (_) => new FixtureContainer());
 
 //TODO: utils Cast()
         if(obj is not FixtureContainer res)
