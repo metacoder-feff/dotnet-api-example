@@ -1,20 +1,23 @@
 namespace FEFF.Experimental.TestFixtures.AspNetCore;
 
+/// <summary>
+/// This fixture returns <see cref="HttpClient"/> connected to an application being tested.
+/// </summary>
 [Fixture]
-public sealed class ClientFixture : IDisposable
+public sealed class AppClientFixture : IDisposable
 {
     private readonly Lazy<HttpClient> _client;
 
     /// <summary>
     /// Runs AppFactory, creates, memoizes and returns Client.
     /// </summary>
-    public HttpClient Client => _client.Value;
+    public HttpClient Value => _client.Value;
 
-    public ClientFixture(ITestApplicationFixture app)
+    public AppClientFixture(ITestApplicationFixture app)
     {
         // cannot remove lambda expression because access to 'app.LazyTestApplication' finishes app building
         // but we only need to register callback
-        _client = new(() => app.LazyTestApplication.CreateClient());
+        _client = new(() => app.LazyCreatedApplication.CreateClient());
     }
 
     public void Dispose()

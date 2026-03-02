@@ -5,6 +5,10 @@ namespace FEFF.Experimental.TestFixtures.AspNetCore;
 using FEFF.Extentions.Redis;
 using FEFF.Extentions.Testing.AspNetCore;
 
+//TODO: split NS
+/// <summary>
+/// Returns a unique string for each test.
+/// </summary>
 [Fixture]
 public class TestIdFixture
 {
@@ -13,7 +17,7 @@ public class TestIdFixture
 
 //TODO: DRY
 /// <summary>
-/// Adds ChannelPrefix to redis configuration.
+/// Adds ChannelPrefix to redis configuration in a tested application.
 /// </summary>
 [Fixture]
 public class RedisChannelPrefixFixture<TRedis>
@@ -35,7 +39,7 @@ where TRedis : RedisProviderBase
 
 //TODO: DRY subclass?
 /// <summary>
-/// Adds KeyPrefix and ChannelPrefix to redis configuration.
+/// Adds KeyPrefix and ChannelPrefix to redis configuration in a tested application.
 /// </summary>
 [Fixture]
 public class RedisPrefixFixture<TRedis>

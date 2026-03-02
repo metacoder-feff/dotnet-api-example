@@ -7,9 +7,10 @@ namespace FEFF.Experimental.TestFixtures.AspNetCore;
 using FEFF.Extentions.Testing.AspNetCore;
 
 /// <summary>
-/// Mutates connectionstring - changes DB name.
-/// TODO: remove db after test (without dbcontext)
+/// Mutates connectionstring before tested application is stared.<br/>
+/// Prefixes DB name with test-unique (random) prefix.
 /// </summary>
+//TODO: remove db after test (without dbcontext)
 public class DbNameFixtureBase
 {
     private readonly string _prefix;

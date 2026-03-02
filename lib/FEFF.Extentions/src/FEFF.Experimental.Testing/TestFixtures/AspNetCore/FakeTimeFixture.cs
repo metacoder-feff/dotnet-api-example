@@ -4,10 +4,13 @@ using Microsoft.Extensions.Time.Testing;
 namespace FEFF.Experimental.TestFixtures.AspNetCore;
 using FEFF.Extentions.Testing.AspNetCore;
 
+/// <summary>
+/// Replaces <see cref="TimeProvider"/> service with <see cref="FakeTimeProvider"/> singleton in a tested application.
+/// </summary>
 [Fixture]
 public class FakeTimeFixture
 {
-    public readonly FakeTimeProvider FakeTime = new(new DateTimeOffset(2000, 1, 1, 0, 0, 0, 0, TimeSpan.Zero));
+    public readonly FakeTimeProvider Value = new(new DateTimeOffset(2000, 1, 1, 0, 0, 0, 0, TimeSpan.Zero));
 
     public FakeTimeFixture(ITestApplicationFixture app)
     {
@@ -16,6 +19,6 @@ public class FakeTimeFixture
 
     private void ReconfigureFactory(IServiceCollection services)
     {
-        services.TryReplaceSingleton<TimeProvider>(FakeTime);
+        services.TryReplaceSingleton<TimeProvider>(Value);
     }
 }

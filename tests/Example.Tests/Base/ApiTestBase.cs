@@ -38,20 +38,20 @@ public class ApiTestBase
     protected ITestApplicationBuilder AppBuilder => FixtureSet.TestApplication.ApplicationBuilder;
 
 //TODO: rename
-    protected FakeRandom FakeRandom => FixtureSet.FakeRandom.FakeRandom;
+    protected FakeRandom FakeRandom => FixtureSet.FakeRandom.Value;
 
-    protected FakeTimeProvider FakeTime => FixtureSet.FakeTime.FakeTime;
+    protected FakeTimeProvider FakeTime => FixtureSet.FakeTime.Value;
 
     /// <summary>
     /// Build, memoize and return ITestApplication.
     /// </summary>
-    protected ITestApplication TestApplication => FixtureSet.TestApplication.LazyTestApplication;
+    protected ITestApplication TestApplication => FixtureSet.TestApplication.LazyCreatedApplication;
 
 //TODO: memoize
     /// <summary>
     /// Build&Run TestApp, create, memoize and return HttpClient connected to TestApp.
     /// </summary>
-    protected virtual HttpClient Client => GetFixture<ClientFixture>().Client;
+    protected virtual HttpClient Client => GetFixture<AppClientFixture>().Value;
 
     /// <summary>
     /// Build&Run TestApp, get, memoize and return DbContext instance form TestApp.
@@ -60,7 +60,7 @@ public class ApiTestBase
     {
         get
         {
-            field ??= GetFixture<AppServiceScopeFixture>().LazyScopeServiceProvider.GetRequiredService<WeatherContext>();
+            field ??= GetFixture<AppServicesFixture>().ServiceProvider.GetRequiredService<WeatherContext>();
             return field;
         }
     }
@@ -81,5 +81,5 @@ public class ApiTestBase
     /// Run TestApp, get, memoize and return TService instance form TestApp.
     /// </summary>
     public TService GetRequiredService<TService>() where TService : notnull =>
-        GetFixture<AppServiceScopeFixture>().LazyScopeServiceProvider.GetRequiredService<TService>();
+        GetFixture<AppServicesFixture>().ServiceProvider.GetRequiredService<TService>();
 }

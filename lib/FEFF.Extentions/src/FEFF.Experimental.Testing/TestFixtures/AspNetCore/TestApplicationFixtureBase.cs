@@ -4,13 +4,20 @@ using FEFF.Extentions.Testing.AspNetCore;
 public interface ITestApplicationFixture
 {
     ITestApplicationBuilder ApplicationBuilder  { get; }
-    ITestApplication        LazyTestApplication { get; }
+    ITestApplication        LazyCreatedApplication { get; }
 }
 
-//TODO: rename
+//TODO: doc TEntryPoint
 //TODO: async StartServerAsync-> OnStartedHandlerAsync[]
 //  e.g. DB.Create
-public class TestApplicationFixture<TEntryPoint> : IAsyncDisposable, ITestApplicationFixture
+
+
+/// <summary>
+/// Allows to configure and start tested application via <see cref="Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactory{}"/>.<br/>
+/// User should derive a fixture class with fixed <see cref="TEntryPoint"/> and add <see cref="FixtureAttribute(FixtureType = typeof(ITestApplicationFixture))"/> to register.
+/// </summary>
+/// <typeparam name="TEntryPoint"></typeparam>
+public class TestApplicationFixtureBase<TEntryPoint> : IAsyncDisposable, ITestApplicationFixture
 where TEntryPoint: class
 {
     private readonly TestApplicationBuilder<TEntryPoint> _appBuilder = new();
@@ -28,11 +35,11 @@ where TEntryPoint: class
 
     /// <summary>
     /// Creates, memoizes and returns App. The App may be started.<br/>
-    /// Access to <see cref="LazyTestApplication"/> finishes app building.
+    /// Access to <see cref="LazyCreatedApplication"/> finishes app building.
     /// </summary>
-    public ITestApplication LazyTestApplication => _app.Value;
+    public ITestApplication LazyCreatedApplication => _app.Value;
 
-    public TestApplicationFixture()
+    public TestApplicationFixtureBase()
     {
         _app = new (_appBuilder.Build);
     }

@@ -10,7 +10,7 @@ public class AuthorizedApiTestBase: ApiTestBase
     /// <summary>
     /// Build&Run TestApp, create, memoize and return HttpClient connected to TestApp.
     /// </summary>
-    protected override HttpClient Client => GetFixture<AuthorizedClientFixture>().Client;
+    protected override HttpClient Client => GetFixture<AuthorizedClientFixture>().HttpClient;
     protected SignalrTestClient SignalrClient => GetFixture<AuthorizedClientFixture>().SignalrClient;
     #endregion
 }

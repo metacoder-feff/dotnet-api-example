@@ -2,21 +2,24 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FEFF.Experimental.TestFixtures.AspNetCore;
 
+/// <summary>
+/// This fixture allows to get services from an application being tested including scoped services.
+/// </summary>
 [Fixture]
-public sealed class AppServiceScopeFixture : IAsyncDisposable
+public sealed class AppServicesFixture : IAsyncDisposable
 {
     private readonly Lazy<AsyncServiceScope> _appServiceScope;
 
     /// <summary>
     /// Runs AppFactory, creates, memoizes and returns ServiceScope.
     /// </summary>
-    public IServiceProvider LazyScopeServiceProvider => _appServiceScope.Value.ServiceProvider;
+    public IServiceProvider ServiceProvider => _appServiceScope.Value.ServiceProvider;
 
-    public AppServiceScopeFixture(ITestApplicationFixture app)
+    public AppServicesFixture(ITestApplicationFixture app)
     {
         // cannot remove lambda expression because access to 'app.LazyTestApplication' finishes app building
         // but we only need to register callback
-        _appServiceScope = new(() => app.LazyTestApplication.Services.CreateAsyncScope());
+        _appServiceScope = new(() => app.LazyCreatedApplication.Services.CreateAsyncScope());
     }
 
     public ValueTask DisposeAsync()
@@ -28,5 +31,5 @@ public sealed class AppServiceScopeFixture : IAsyncDisposable
     }
     
     public T GetRequiredService<T>() where T : notnull =>
-        LazyScopeServiceProvider.GetRequiredService<T>();
+        ServiceProvider.GetRequiredService<T>();
 }
