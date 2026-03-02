@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FEFF.Extentions.Fixtures;
 using FEFF.Extentions.Testing;
+using FEFF.Extentions.Testing.AspNetCore;
 
 [Fixture]
 public class FakeRandomFixture

@@ -1,6 +1,7 @@
 using Example.Api;
 using FEFF.Extentions.Fixtures;
 using FEFF.Extentions.Jwt;
+using FEFF.Extentions.Testing.SignalR;
 
 namespace Example.Tests.Fixures;
 
@@ -29,7 +30,7 @@ public sealed class AuthorizedClientFixture : IAsyncDisposable
         var jwt = scope.GetRequiredService<IJwtFactory>();
         var token = LoginApiModule.CreateToken(jwt, "testuser");
 
-        return app.LazyTestApplication.CreateSignalRClient("/api/v1/public/events", token);
+        return app.LazyTestApplication.Server.CreateSignalRClient("/api/v1/public/events", token);
     }
 
     private static HttpClient CreateClient(ITestApplicationFixture app, AppServiceScopeFixture scope)

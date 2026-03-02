@@ -3,7 +3,7 @@ using StackExchange.Redis;
 
 namespace FEFF.Extentions.Fixtures;
 using FEFF.Extentions.Redis;
-using FEFF.Extentions.Testing;
+using FEFF.Extentions.Testing.AspNetCore;
 
 [Fixture]
 public class TestIdFixture

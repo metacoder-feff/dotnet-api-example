@@ -1,4 +1,5 @@
 using Example.Tests.Fixures;
+using FEFF.Extentions.Testing.SignalR;
 
 namespace Example.Tests;
 

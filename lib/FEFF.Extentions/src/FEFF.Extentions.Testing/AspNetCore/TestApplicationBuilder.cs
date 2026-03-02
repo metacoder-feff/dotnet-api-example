@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 
-namespace FEFF.Extentions.Testing;
+namespace FEFF.Extentions.Testing.AspNetCore;
 
 /// <summary>
 /// This abstraction layer is needed to reuse and combinate TestFixtures - 'TestApp extentions'.

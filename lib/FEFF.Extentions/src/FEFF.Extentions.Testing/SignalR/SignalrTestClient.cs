@@ -1,9 +1,9 @@
 ﻿using System.Threading.Channels;
 using Microsoft.AspNetCore.SignalR.Client;
 
-namespace FEFF.Extentions.Testing;
+namespace FEFF.Extentions.Testing.SignalR;
 
-public static class ChannelEx
+internal static class ChannelEx
 {
     public static async Task<T?> TryReadAsync<T>(this ChannelReader<T> src, TimeSpan timeout, CancellationToken cancellationToken)
     where T : notnull

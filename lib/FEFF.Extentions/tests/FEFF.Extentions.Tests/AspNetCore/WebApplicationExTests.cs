@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 
-namespace FEFF.Extentions.Tests.Web;
-
+namespace FEFF.Extentions.Tests.AspNetCore;
 using FEFF.Extentions.AspNetCore;
 
 public class WebApplicationExTests

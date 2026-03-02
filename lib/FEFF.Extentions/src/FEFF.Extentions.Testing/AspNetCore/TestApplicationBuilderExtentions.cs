@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FEFF.Extentions.Testing;
+namespace FEFF.Extentions.Testing.AspNetCore;
 
 public enum AspEnvironment { Development, Production };
 

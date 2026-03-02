@@ -3,7 +3,7 @@ using System.Reflection;
 
 using Xunit.v3;
 
-namespace FEFF.Extentions.Testing;
+namespace FEFF.Extentions.XUinit;
 
 public sealed class SkipUnlessCIAttribute(string? msg = null) :
     BeforeAfterTestAttribute

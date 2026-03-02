@@ -4,3 +4,4 @@ global using NodaTime;
 
 global using FEFF.Extentions;
 global using FEFF.Extentions.Testing;
+global using FEFF.Extentions.XUinit;

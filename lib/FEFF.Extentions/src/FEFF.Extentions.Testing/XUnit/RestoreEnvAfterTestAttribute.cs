@@ -2,7 +2,7 @@ using System.Collections.Frozen;
 using System.Reflection;
 using Xunit.v3;
 
-namespace FEFF.Extentions.Testing;
+namespace FEFF.Extentions.XUinit;
 
 using Env = FrozenDictionary<string, string>;
 

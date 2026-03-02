@@ -1,3 +1,5 @@
+using FEFF.Extentions.Testing.SignalR;
+
 namespace Example.Tests.InfrastructrureTests;
 
 public class AuthTests : ApiTestBase
@@ -15,7 +17,7 @@ public class AuthTests : ApiTestBase
 
 //TODO: DRY
 //TODO: fixture SignalRClient??
-        await using var signalr = TestApplication.CreateSignalRClient("/api/v1/public/events", token);
+        await using var signalr = TestApplication.Server.CreateSignalRClient("/api/v1/public/events", token);
 
         // Act
         var act = () => signalr.StartAsync();

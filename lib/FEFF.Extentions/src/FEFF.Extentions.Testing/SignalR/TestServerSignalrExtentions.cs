@@ -1,17 +1,18 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.TestHost;
 
-namespace FEFF.Extentions.Testing;
+namespace FEFF.Extentions.Testing.SignalR;
 
-public static class WebApplicationFactorySignalrExtentions
+public static class TestServerSignalrExtentions
 {
-    public static SignalrTestClient CreateSignalRClient(this ITestApplication factory, string url, string? token = null)
+    public static SignalrTestClient CreateSignalRClient(this TestServer server, string url, string? token = null)
     {
         var c =  new HubConnectionBuilder()
         .WithUrl(
             url,
             o =>
             {
-                o.HttpMessageHandlerFactory = _ => factory.Server.CreateHandler();
+                o.HttpMessageHandlerFactory = _ => server.CreateHandler();
                 if(token != null)
                     o.AccessTokenProvider = () => Task.FromResult(token)!;
             }

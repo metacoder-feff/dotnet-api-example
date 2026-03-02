@@ -1,4 +1,3 @@
-
 namespace Example.Tests.InfrastructrureTests;
 
 public class MetricsApiTest : ApiTestBase

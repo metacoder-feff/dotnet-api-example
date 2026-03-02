@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FEFF.Extentions.Fixtures;
-using FEFF.Extentions.Testing;
+using FEFF.Extentions.Testing.AspNetCore;
 
 /// <summary>
 /// Mutates connectionstring - changes DB name.
