@@ -4,8 +4,8 @@ namespace Xunit.v3;
 
 public static class TestContextExtentions
 {
-    public static FixtureContainer GetFixtureContainer(this ITestContext ctx)
+    public static IFixtureProvider GetTestCaseFixtureProvider(this ITestContext ctx)
     {
-        return FixturesXUnitExtensionAttribute.GetFixtureContainer(ctx);
+        return TestCaseFixturesXUnitExtensionAttribute.GetTestCaseFixtureProvider(ctx);
     }
 }

@@ -31,16 +31,21 @@ public record FixtureSet(
 public class ApiTestBase
 {
     //----------------------------------------------
-    // TestFixures integration requires
-    // [assembly: FEFF.Experimental.TestFixtures.FixturesXUnitExtension]
-    // otherwise manage FixtureContainer manually
-    //----------------------------------------------
+    /// <summary>
+    /// Get a TestCase-Fixture. It would be destroyed after TestCase finishes.
+    /// </summary>
+    /// <remarks>
+    /// TestCase-Fixure integration requires:
+    /// <code>
+    /// [assembly: FEFF.Experimental.TestFixtures.FixturesXUnitExtension]
+    /// </code>
+    /// Otherwise manage <see cref="IFixtureProvider"/> manually.
+    /// </remarks>
     protected static T GetFixture<T>()
     where T : notnull
     {
-        return TestContext.Current.GetFixtureContainer().GetFixture<T>();
+        return TestContext.Current.GetTestCaseFixtureProvider().GetFixture<T>();
     }
-
     //----------------------------------------
 
     protected FixtureSet FixtureSet { get; } = GetFixture<FixtureSet>();

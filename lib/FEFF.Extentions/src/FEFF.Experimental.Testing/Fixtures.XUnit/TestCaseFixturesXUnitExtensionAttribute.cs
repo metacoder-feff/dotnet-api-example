@@ -8,7 +8,7 @@ namespace FEFF.Experimental.TestFixtures;
 internal sealed class Guard : IDisposable
 {
 //TODO: more unique
-    private const string Key = $"{nameof(FixturesXUnitExtensionAttribute)}.{nameof(Guard)}";
+    private const string Key = $"{nameof(TestCaseFixturesXUnitExtensionAttribute)}.{nameof(Guard)}";
 
     public Guard()
     {
@@ -28,10 +28,10 @@ internal sealed class Guard : IDisposable
 
 /// <summary>
 /// Manages <see cref="FixtureContainer"/> for each XUnit test. <br/>
-/// Allows to use <see cref="TestContextExtentions.GetFixtureContainer"/>.
+/// Allows to use <see cref="TestContextExtentions.GetTestCaseFixtureProvider"/>.
 /// </summary>
 [AttributeUsage(AttributeTargets.Assembly)]
-public class FixturesXUnitExtensionAttribute : BeforeAfterTestAttribute, IAssemblyFixtureAttribute
+public class TestCaseFixturesXUnitExtensionAttribute : BeforeAfterTestAttribute, IAssemblyFixtureAttribute
 {
     public Type AssemblyFixtureType => typeof(Guard);
 
@@ -65,16 +65,18 @@ public class FixturesXUnitExtensionAttribute : BeforeAfterTestAttribute, IAssemb
         return res as FixtureContainer;
     }
 
-    internal static FixtureContainer GetFixtureContainer(ITestContext ctx)
+    internal static FixtureContainer GetTestCaseFixtureProvider(ITestContext ctx)
     {
+//TODO: Test TestEngineStatus.Initializing
+//TODO: Argument
+        ThrowHelper.Assert(ctx.TestStatus == TestEngineStatus.Initializing || ctx.TestStatus == TestEngineStatus.Running);
+        //ThrowHelper.Assert(ctx.TestStatus == TestEngineStatus.Running);
         var test = ctx.Test;
         ThrowHelper.Assert(test != null);
-        //ThrowHelper.Assert(ctx.TestStatus == TestEngineStatus.Initializing || ctx.TestStatus == TestEngineStatus.Running);
-        ThrowHelper.Assert(ctx.TestStatus == TestEngineStatus.Running);
 
 //TODO: test message
         if(Guard.IsInitialized() == false)
-           throw new InvalidOperationException($"Must use '{nameof(FEFF.Experimental.TestFixtures.FixturesXUnitExtensionAttribute)}' a test assembly before calling '{nameof(GetFixtureContainer)}'.");
+           throw new InvalidOperationException($"Must use '{nameof(FEFF.Experimental.TestFixtures.TestCaseFixturesXUnitExtensionAttribute)}' a test assembly before calling '{nameof(GetTestCaseFixtureProvider)}'.");
 
         var k = GetKey(test);
 
@@ -82,7 +84,7 @@ public class FixturesXUnitExtensionAttribute : BeforeAfterTestAttribute, IAssemb
 
 //TODO: utils Cast()
         if(obj is not FixtureContainer res)
-            throw new InvalidOperationException("Stored object is not FixtureContainer");
+            throw new InvalidOperationException($"Stored object is not a {nameof(FixtureContainer)}");
 
         return res;
     }

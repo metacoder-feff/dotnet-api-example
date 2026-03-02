@@ -3,7 +3,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FEFF.Experimental.TestFixtures;
 
-public sealed class FixtureContainer : IAsyncDisposable
+public interface IFixtureProvider
+{
+    T GetFixture<T>() where T : notnull;
+}
+
+public sealed class FixtureContainer : IAsyncDisposable, IFixtureProvider
 {
     // thread-safe by default
     private static readonly Lazy<ServiceCollection> __services = new(CreateServiceCollection);

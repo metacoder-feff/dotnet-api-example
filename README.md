@@ -56,7 +56,7 @@
 + AwesomeAssertions (FluentAssertion)
 + AwesomeAssertions.Json
   + Configure JToken parser
-+ TestFixtures (experimental) - analog of [Pytest fixture with "scope=function"](https://docs.pytest.org/en/6.2.x/fixture.html#fixture-scopes)
++ TestCase-Fixtures (experimental) - analog of [Pytest fixture with "scope=function"](https://docs.pytest.org/en/6.2.x/fixture.html#fixture-scopes)
   + XUnit integration
   + Fixture examples
 + Testing.WebApplicationFactory
