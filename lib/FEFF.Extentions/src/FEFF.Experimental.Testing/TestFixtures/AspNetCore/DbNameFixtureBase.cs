@@ -8,7 +8,7 @@ using FEFF.Extentions.Testing.AspNetCore;
 
 /// <summary>
 /// Mutates connectionstring before tested application is stared.<br/>
-/// Prefixes DB name with test-unique (random) prefix.
+/// Prefixes DB name with test-unique (random) string.
 /// </summary>
 //TODO: remove db after test (without dbcontext)
 public class DbNameFixtureBase

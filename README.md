@@ -56,14 +56,17 @@
 + AwesomeAssertions (FluentAssertion)
 + AwesomeAssertions.Json
   + Configure JToken parser
-+ CaseFixtures (experimental)
-+ WebApplicationFactory
-  + Override app setup
++ TestFixtures (experimental) - analog of [Pytest fixture with "scope=function"](https://docs.pytest.org/en/6.2.x/fixture.html#fixture-scopes)
+  + XUnit integration
+  + Fixture examples
++ Testing.WebApplicationFactory
+  + Override app setup on test's 'ARRANGE'
   + FakeRandom
   + FakeTimeProvider
-  + SignalR-Client
-  + random test DB name (for postgres)
-  + random Key/Channel prefix (for redis)
+  + Testing-HttpClient
+  + Testing-SignalR-Client
+  + Random DB name prefix (for postgres) for each test
+  + Random Key/Channel prefix (for redis) for each test
 + Example API tests
   + Authorized HttpClient/SignalRClient
 + Infrastructure API tests
