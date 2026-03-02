@@ -6,6 +6,6 @@ public static class TestContextExtentions
 {
     public static FixtureContainer GetFixtureContainer(this ITestContext ctx)
     {
-        return AutoDisposeFixturesAttribute.GetFixtureContainer(ctx);
+        return FixturesXUnitExtensionAttribute.GetFixtureContainer(ctx);
     }
 }

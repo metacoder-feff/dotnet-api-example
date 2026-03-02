@@ -8,7 +8,7 @@ namespace FEFF.Experimental.TestFixtures;
 internal sealed class Guard : IDisposable
 {
 //TODO: more unique
-    private const string Key = $"{nameof(AutoDisposeFixturesAttribute)}.{nameof(Guard)}";
+    private const string Key = $"{nameof(FixturesXUnitExtensionAttribute)}.{nameof(Guard)}";
 
     public Guard()
     {
@@ -26,8 +26,12 @@ internal sealed class Guard : IDisposable
     }
 }
 
+/// <summary>
+/// Manages <see cref="FixtureContainer"/> for each XUnit test. <br/>
+/// Allows to use <see cref="TestContextExtentions.GetFixtureContainer"/>.
+/// </summary>
 [AttributeUsage(AttributeTargets.Assembly)]
-public sealed class AutoDisposeFixturesAttribute : BeforeAfterTestAttribute, IAssemblyFixtureAttribute
+public class FixturesXUnitExtensionAttribute : BeforeAfterTestAttribute, IAssemblyFixtureAttribute
 {
     public Type AssemblyFixtureType => typeof(Guard);
 
@@ -66,8 +70,9 @@ public sealed class AutoDisposeFixturesAttribute : BeforeAfterTestAttribute, IAs
         var test = ctx.Test;
         ThrowHelper.Assert(test != null);
 
+//TODO: test message
         if(Guard.IsInitialized() == false)
-           throw new InvalidOperationException($"Must use '{nameof(AutoDisposeFixturesAttribute)}' a test assembly before call to '{nameof(GetFixtureContainer)}'.");
+           throw new InvalidOperationException($"Must use '{nameof(FEFF.Experimental.TestFixtures.FixturesXUnitExtensionAttribute)}' a test assembly before calling '{nameof(GetFixtureContainer)}'.");
 
         var k = GetKey(test);
 
