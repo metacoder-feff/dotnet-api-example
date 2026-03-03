@@ -10,4 +10,4 @@ global using FEFF.Extentions.Testing.AspNetCore;
 global using FEFF.Extentions.XUinit;
 
 
-[assembly: FEFF.Experimental.TestFixtures.TestCaseFixturesXUnitExtension]
+// [assembly: FEFF.Experimental.TestFixtures.TestCaseFixturesXUnitExtension]
