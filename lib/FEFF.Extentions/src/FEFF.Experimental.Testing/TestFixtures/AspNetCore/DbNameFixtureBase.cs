@@ -18,7 +18,7 @@ public class DbNameFixtureBase
     private string? _oldCs;
     private string? _newCs;
 
-    public DbNameFixtureBase(ITestApplicationFixture app, TestIdFixture testId, string connectionStringName)
+    public DbNameFixtureBase(ITestApplicationFixture app, TmpTestIdFixture testId, string connectionStringName)
     {
         ArgumentException.ThrowIfNullOrEmpty(connectionStringName);
 //TODO: DRY

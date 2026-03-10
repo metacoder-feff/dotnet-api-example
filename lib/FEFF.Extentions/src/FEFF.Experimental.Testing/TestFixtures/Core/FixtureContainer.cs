@@ -16,7 +16,7 @@ public sealed class FixtureContainer : IAsyncDisposable, IFixtureProvider
 
     public FixtureContainer()
     {
-        _provider = __services.Value.BuildServiceProvider();
+        _provider = __services.Value.BuildServiceProvider(true);
     }
 
     private static ServiceCollection CreateServiceCollection()

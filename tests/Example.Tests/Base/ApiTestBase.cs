@@ -21,11 +21,11 @@ public record FixtureSet(
 
 // TODO: fixture as an Action ??
     // just override services at app builder
-    DbNameFixture DbName,
-    // KeyPrefix and ChannelPrefix for main redis connection
-    RedisPrefixFixture<RedisConnectionManager> SecondRedisPrefix,
+    TmpDatabaseFixture DbName,
     // channel prefix for SignalR redis connection
-    RedisChannelPrefixFixture<SignalRedisProviderProxy> SignalRedisPrefix
+    RedisChannelPrefixFixture<SignalRedisProviderProxy> SignalRedisPrefix,
+    // KeyPrefix and ChannelPrefix for main redis connection
+    TmpRedisPrefixFixture<RedisConnectionManager> SecondRedisPrefix
 );
 
 public class ApiTestBase

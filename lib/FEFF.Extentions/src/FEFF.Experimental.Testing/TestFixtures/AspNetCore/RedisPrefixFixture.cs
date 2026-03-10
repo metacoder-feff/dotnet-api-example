@@ -10,7 +10,7 @@ using FEFF.Extentions.Testing.AspNetCore;
 /// Returns a unique string for each test.
 /// </summary>
 [Fixture]
-public class TestIdFixture
+public class TmpTestIdFixture
 {
     public string TestId {get;} = Guid.NewGuid().ToString();
 }
@@ -23,7 +23,7 @@ public class TestIdFixture
 public class RedisChannelPrefixFixture<TRedis>
 where TRedis : RedisProviderBase
 {
-    public RedisChannelPrefixFixture(ITestApplicationFixture app, TestIdFixture testId)
+    public RedisChannelPrefixFixture(ITestApplicationFixture app, TmpTestIdFixture testId)
     {
         app.ApplicationBuilder.ConfigureServices( services =>
         {
@@ -42,10 +42,10 @@ where TRedis : RedisProviderBase
 /// Adds KeyPrefix and ChannelPrefix to redis configuration in a tested application.
 /// </summary>
 [Fixture]
-public class RedisPrefixFixture<TRedis>
+public class TmpRedisPrefixFixture<TRedis>
 where TRedis : RedisConnectionManager
 {
-    public RedisPrefixFixture(ITestApplicationFixture app, TestIdFixture testId)
+    public TmpRedisPrefixFixture(ITestApplicationFixture app, TmpTestIdFixture testId)
     {
         app.ApplicationBuilder.ConfigureServices( services =>
         {

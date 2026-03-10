@@ -5,7 +5,7 @@ namespace Example.Tests.Fixures;
 using Example.Api;
 
 [Fixture]
-public class DbNameFixture(ITestApplicationFixture app, TestIdFixture testId) 
+public class TmpDatabaseFixture(ITestApplicationFixture app, TmpTestIdFixture testId) 
     : DbNameFixtureBase(app, testId, InfrastructureModule.PgConnectionStringName)
 {
 }
