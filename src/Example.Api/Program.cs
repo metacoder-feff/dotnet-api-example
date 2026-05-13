@@ -37,7 +37,12 @@ static WebApplication? TryCreateApp(string[] args)
 
         // setup configuration
         if(builder.Environment.IsDevelopment())
+        {
+            // see: appsettings.secrets.json.example
+            // if appsettings.secrets.json not exists 
+            // copy it from the example json and change secret values
             builder.Configuration.AddAppSettingSecretsJson();
+        }
 
         //setup regular logger for app (after building)
         builder.Services.AddStdCloudLogging();

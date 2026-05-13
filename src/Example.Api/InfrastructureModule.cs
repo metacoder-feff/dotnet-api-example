@@ -38,7 +38,12 @@ static class InfrastructureModule
         // JWT Authentication + JwtFacory
         // & Authorization policy
         /*------------------------------------------------*/
-        // we have only one AuthenticationScheme thus no need to set 'defaultScheme'
+        // 1. We have only one AuthenticationScheme thus no need to set 'defaultScheme'
+        // 2. JWT section should be configured
+        // JWT.SecretKey use 
+        //  - appsettings.secrets.json (for local dev)
+        //  - process env variable (for staging/prod)
+        // see: appsettings.secrets.json.example
         services.AddAuthentication()
             .AddSymmetricJwt(JwtOptionsSection, configure: static opt =>
             {
