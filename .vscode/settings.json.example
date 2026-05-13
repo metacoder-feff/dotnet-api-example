@@ -2,4 +2,11 @@
     "dotnet.unitTests.runSettingsPath": "tests.runsettings"
     //"csharp.debug.justMyCode": false,
     //"csharp.debug.symbolOptions.searchNuGetOrgSymbolServer": true
+
+    "remote.extensionKind": {
+        "ms-azuretools.vscode-containers": ["ui"],
+        "ms-azuretools.vscode-docker": ["ui"],
+        "docker.docker": ["ui"],
+        "eamodio.gitlens": ["ui"]
+    }
 }
